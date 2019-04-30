@@ -1,14 +1,14 @@
     // the mapping is arbitrary chosen beforehand and the following are
     // everything that composes the coefficient that shifts eigenvalues
-/*const volVectorField& Ci = Foam::mesh.C(); // center of the cell
 
-    const scalar X1 = Ci.x();
-    const scalar X2 = Ci.y();
+    const scalar x = xyz[0];
+    const scalar y = xyz[1];
+    const scalar z = xyz[2];
     const scalar Tper = 2;
     const scalar pii = Foam::mathematicalConstant::pi;
 
-    scalar curt = mesh_.time().value();
-    scalar detfw = ( 1 + pii/5*Foam::cos(pii*X1/10)*Foam::sin(2*pii*X2/15)*Foam::sin(2*pii*curt/Tper)  );
+
+    scalar detfw = ( 1 + pii/5*Foam::cos(pii*x/10)*Foam::sin(2*pii*y/15)*Foam::sin(2*pii*t/Tper)  );
 
     scalar lambdaw = 1;
     scalar jw      = detfw;
@@ -18,10 +18,4 @@
     lambda1 = (lambdaw/jw) * (lambda1 - cchi);
     lambda2 = (lambdaw/jw) * (lambda2 - cchi);
     lambda3 = (lambdaw/jw) * (lambda3 - cchi);
-*/
 
-// Info << "Hi" << endl;
-// Info << Foam::basicNumericFlux::mesh() <<endl;
-
-
-// const fvMesh& mesh = mesh();

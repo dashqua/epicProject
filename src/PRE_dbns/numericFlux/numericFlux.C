@@ -144,6 +144,7 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux()
     const surfaceVectorField& Cf = mesh.Cf();
     scalarList xyztmp(3);
     scalarList& xyz = xyztmp;
+    const double& t = mesh.time().value();
     
     // Calculate fluxes at internal faces
     forAll (owner, faceI)
@@ -178,7 +179,8 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux()
             Cv[nei],
             Sf[faceI],
             magSf[faceI],
-	    xyz
+	    xyz,
+	    t
         );
     }
 
@@ -307,7 +309,8 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux()
                     pCv[facei],
                     pSf[facei],
                     pMagSf[facei],
-		    xyz
+		    xyz,
+		    t
                 );
             }
         }
@@ -333,7 +336,8 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux()
                     pCv[facei],
                     pSf[facei],
                     pMagSf[facei],
-		    xyz
+		    xyz,
+		    t
                 );
             }
         }

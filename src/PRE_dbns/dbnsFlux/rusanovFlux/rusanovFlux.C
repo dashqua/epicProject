@@ -44,7 +44,8 @@ void Foam::rusanovFlux::evaluateFlux
     const scalar& CvRight,
     const vector& Sf,
     const scalar& magSf,
-    scalarList& xyz
+    scalarList& xyz,
+    const double& t
 ) const
 {
     // Step 1: decode rho left and right:

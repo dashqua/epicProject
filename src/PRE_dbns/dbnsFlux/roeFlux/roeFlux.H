@@ -85,7 +85,8 @@ public:
             const scalar& CvRight,
             const vector& Sf,
             const scalar& magSf,
-	    scalarList& xyz
+	    scalarList& xyz,
+	    const double& t
         ) const;
 };
 

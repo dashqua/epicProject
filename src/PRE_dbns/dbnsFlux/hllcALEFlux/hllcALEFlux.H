@@ -91,7 +91,8 @@ public:
             const vector& Sf,
             const scalar& magSf,
             const vector& dotX,
-	    scalarList& xyz
+	    scalarList& xyz,
+	    const double& t
         ) const;
 };
 
