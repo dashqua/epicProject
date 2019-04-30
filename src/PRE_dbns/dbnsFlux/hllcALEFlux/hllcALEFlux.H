@@ -90,7 +90,8 @@ public:
             const scalar& CvRight,
             const vector& Sf,
             const scalar& magSf,
-            const vector& dotX
+            const vector& dotX,
+	    scalarList& xyz
         ) const;
 };
 

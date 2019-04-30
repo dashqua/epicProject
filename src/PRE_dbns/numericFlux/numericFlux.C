@@ -142,6 +142,8 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux()
     //Get mesh information
     const fvMesh& mesh = this->mesh();
     const surfaceVectorField& Cf = mesh.Cf();
+    scalarList xyztmp(3);
+    scalarList& xyz = xyztmp;
     
     // Calculate fluxes at internal faces
     forAll (owner, faceI)
@@ -152,13 +154,12 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux()
         const vector deltaRLeft = faceCentre[faceI] - cellCentre[own];
         const vector deltaRRight = faceCentre[faceI] - cellCentre[nei];
 
-	/*
-	const scalarList xyz(3);
 	xyz[0] = Cf[faceI].x();
 	xyz[1] = Cf[faceI].y();
 	xyz[2] = Cf[faceI].z();
-	*/
 
+	Info << xyz << endl;
+	
         // calculate fluxes with reconstructed primitive variables at faces
         Flux::evaluateFlux
         (
@@ -176,7 +177,8 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux()
             Cv[own],
             Cv[nei],
             Sf[faceI],
-            magSf[faceI]
+            magSf[faceI],
+	    xyz
         );
     }
 
@@ -304,7 +306,8 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux()
                     pCv[facei],
                     pCv[facei],
                     pSf[facei],
-                    pMagSf[facei]
+                    pMagSf[facei],
+		    xyz
                 );
             }
         }
@@ -329,7 +332,8 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux()
                     pCv[facei],
                     pCv[facei],
                     pSf[facei],
-                    pMagSf[facei]
+                    pMagSf[facei],
+		    xyz
                 );
             }
         }

@@ -43,7 +43,8 @@ void Foam::hllcFlux::evaluateFlux
     const scalar& CvLeft,
     const scalar& CvRight,
     const vector& Sf,
-    const scalar& magSf
+    const scalar& magSf,
+    scalarList& xyz
 ) const
 {
     // Step 1: decode left and right:
