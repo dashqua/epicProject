@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Delete resource &apos;epicSolver&apos;" deleteContents="false" description="Delete resource &apos;epicSolver&apos;" element1="/epicSolver" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1556621813788"/>
-</session>
