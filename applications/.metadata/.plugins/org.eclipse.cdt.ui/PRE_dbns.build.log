@@ -1,0 +1,7 @@
+14:53:27 **** Build of configuration Debug for project PRE_dbns ****
+wmake libso all 
+wmake error: could not change to directory 'all'
+"wmake libso all" terminated with exit code 1. Build might be incomplete.
+
+14:53:28 Build Finished. 0 errors, 0 warnings. (took 841ms)
+

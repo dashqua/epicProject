@@ -1,0 +1,19 @@
+DEPENDENCIES = \
+dbnsFlux/roeFlux/roeFlux.dep\
+dbnsFlux/rusanovFlux/rusanovFlux.dep\
+dbnsFlux/PRE_rusanovFlux/PRE_rusanovFlux.dep\
+dbnsFlux/betaFlux/betaFlux.dep\
+dbnsFlux/hllcFlux/hllcFlux.dep\
+dbnsFlux/hllcALEFlux/hllcALEFlux.dep\
+basicNumericFlux/basicNumericFlux.dep\
+basicNumericFlux/newBasicNumericFlux.dep\
+numericFlux/numericFluxes.dep\
+multigrid/mgMeshLevel/mgMeshLevel.dep\
+multigrid/mgMeshLevel/fineMgMeshLevel.dep\
+multigrid/mgMeshLevel/coarseMgMeshLevel.dep\
+multigrid/mgFieldLevel/mgFieldLevel.dep\
+multigrid/mgFieldLevel/fineMgFieldLevel.dep\
+multigrid/mgFieldLevel/coarseMgFieldLevel.dep\
+timeStepping/localTimeStep/localTimeStep.dep\
+timeStepping/backwardDualDdtScheme/backwardDualDdtSchemes.dep\
+timeStepping/EulerLocalDdtScheme/EulerLocalDdtSchemes.dep
