@@ -7,12 +7,17 @@
     const scalar Tper = 2;
     const scalar pii = Foam::mathematicalConstant::pi;
 
+// Get Jw
+    scalar jw = ( 1 + pii/5*Foam::cos(pii*x/10)*Foam::sin(2*pii*y/15)*Foam::sin(2*pii*t/Tper)  ) * \
+      ( 1 + pii/5*Foam::sin(pii*x/10)*Foam::cos(2*pii*y/15)*Foam::sin(4*pii*t/Tper)  )              - \
+      ( 3*pii/20*Foam::cos(pii*x/10)*Foam::sin(2*pii*y/15)*Foam::sin(4*pii*t/Tper)   )              * \
+      ( 4*pii/15*Foam::sin(pii*x/10)*Foam::cos(2*pii*y/15)*Foam::sin(2*pii*t/Tper)   )              ;
 
-    scalar detfw = ( 1 + pii/5*Foam::cos(pii*x/10)*Foam::sin(2*pii*y/15)*Foam::sin(2*pii*t/Tper)  );
+// Get Lambdaw
+    scalar lambdaw = magSf / magSfOld;
 
-    scalar lambdaw = 1;
-    scalar jw      = detfw;
-    scalar cchi    = 0;
+// Get Cchi
+    scalar cchi    = Foam::dot( UTilde / jw , Sf / magSf);
     
     //Step 6c: modification of eigenvalues with coefficient of step 6b
     lambda1 = (lambdaw/jw) * (lambda1 - cchi);

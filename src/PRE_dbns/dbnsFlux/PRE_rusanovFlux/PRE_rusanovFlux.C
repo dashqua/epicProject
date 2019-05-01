@@ -45,7 +45,8 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     const vector& Sf,
     const scalar& magSf,
     scalarList& xyz,
-    const double& t
+    const double& t,
+    const scalar& magSfOld
 ) const
 {
   // Step 1: decode rho left and right:
@@ -143,10 +144,10 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     scalar lambda2 = mag(contrVTilde);
     scalar lambda3 = mag(contrVTilde + cTilde);
 
-    scalar lambdaMax = max(max(lambda1,lambda2),lambda3);
-
     // Step 6b: Shift with mapping coefficient
 #   include "mappingShift.H"
+
+    scalar lambdaMax = max(max(lambda1,lambda2),lambda3);
 
     // Step 7: Compute flux differences
 

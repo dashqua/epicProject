@@ -92,6 +92,7 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux()
     const unallocLabelList& neighbour = this->mesh().neighbour();
 
     // Get the face area vector
+    const surfaceScalarField& magSfOld = this->mesh().magSf().oldTime();
     const surfaceVectorField& Sf = this->mesh().Sf();
     const surfaceScalarField& magSf = this->mesh().magSf();
 
@@ -155,12 +156,11 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux()
         const vector deltaRLeft = faceCentre[faceI] - cellCentre[own];
         const vector deltaRRight = faceCentre[faceI] - cellCentre[nei];
 
+	// get coordinates of cell center 
 	xyz[0] = Cf[faceI].x();
 	xyz[1] = Cf[faceI].y();
 	xyz[2] = Cf[faceI].z();
 
-	Info << xyz << endl;
-	
         // calculate fluxes with reconstructed primitive variables at faces
         Flux::evaluateFlux
         (
@@ -180,7 +180,8 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux()
             Sf[faceI],
             magSf[faceI],
 	    xyz,
-	    t
+	    t,
+	    magSfOld[faceI]
         );
     }
 
@@ -215,7 +216,8 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux()
         // Face areas
         const fvsPatchVectorField& pSf = Sf.boundaryField()[patchi];
         const fvsPatchScalarField& pMagSf = magSf.boundaryField()[patchi];
-
+	const fvsPatchScalarField& pMagSfOld = magSfOld.boundaryField()[patchi];
+	
         if (pp.coupled())
         {
             // Coupled patch
@@ -310,7 +312,8 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux()
                     pSf[facei],
                     pMagSf[facei],
 		    xyz,
-		    t
+		    t,
+		    pMagSfOld[facei]
                 );
             }
         }
@@ -337,7 +340,8 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux()
                     pSf[facei],
                     pMagSf[facei],
 		    xyz,
-		    t
+		    t,
+		    pMagSfOld[facei]		    
                 );
             }
         }

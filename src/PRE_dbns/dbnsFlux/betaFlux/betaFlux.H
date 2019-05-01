@@ -86,7 +86,8 @@ public:
             const vector& Sf,
             const scalar& magSf,
 	    scalarList& xyz,
-	    const double& t
+	    const double& t,
+	    const scalar& magSfOld
         ) const;
 };
 
