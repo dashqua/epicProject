@@ -1,6 +1,5 @@
     // the mapping is arbitrary chosen beforehand and the following are
     // everything that composes the coefficient that shifts eigenvalues
-
     const scalar x = xyz[0];
     const scalar y = xyz[1];
     const scalar z = xyz[2];

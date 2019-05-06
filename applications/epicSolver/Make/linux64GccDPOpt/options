@@ -62,4 +62,4 @@ EXE_INC =     -I$(EPIC_PROJECT_DIR)/src/PRE_dbns/lnInclude     -I$(LIB_SRC)/dbns
 
 
 
-EXE_LIBS =     -lfiniteVolume     -lbasicThermophysicalModels     -lspecie     -L$(FOAM_USER_LIBBIN)     -lPRE_dbns
+EXE_LIBS =     -lfiniteVolume     -lbasicThermophysicalModels     -lspecie     -L$(FOAM_USER_LIBBIN)     -lPRE_dbns 

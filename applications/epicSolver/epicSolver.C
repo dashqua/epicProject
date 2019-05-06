@@ -1,4 +1,4 @@
-/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------* \
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
    \\    /   O peration     | Version:     4.0
@@ -46,6 +46,11 @@ Author
 #include "BarthJespersenLimiter.H"
 #include "VenkatakrishnanLimiter.H"
 #include "numericFlux.H"
+
+#include "pointFields.H"
+#include "GeometricField.H"
+#include "volPointInterpolation.H"
+//#include "interpolationSchemes.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -109,6 +114,8 @@ int main(int argc, char *argv[])
 
 #           include "updateFields.H"
         }
+
+	# include "updateMeshDisplacement.H"	
 
         runTime.write();
 

@@ -4,3 +4,5 @@
 0.*
 .git-credentials
 *.OpenFOAM
+*log
+log*

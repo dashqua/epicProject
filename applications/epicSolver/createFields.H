@@ -39,6 +39,48 @@
         mesh
     );
 
+    // Material (cell centered) x
+    const volVectorField& C = mesh.C();
+    volVectorField x
+    (
+        IOobject("x", mesh),
+	C
+     );
+
+    // Nodal displacements
+    pointMesh pMesh(mesh);
+    pointVectorField xN
+    (
+        IOobject("xN", mesh),
+	pMesh,
+	dimensionedVector("xN", dimensionSet(0,1,0,0,0,0,0), vector::zero)
+    );
+    xN.internalField() = mesh.points();
+    pointVectorField XN = xN;
+    pointVectorField uN
+    (
+        IOobject
+        (
+	    "uN",
+	    runTime.timeName(),
+	    mesh,
+	    IOobject::NO_READ,
+	    IOobject::AUTO_WRITE
+	),
+	pMesh,
+	dimensionedVector("uN", dimLength, vector::zero)
+    );
+    uN.write();
+
+    // Normals
+    const surfaceVectorField& Sf = mesh.Sf();
+    //const surfaceScalarField& magSf = mesh.magSf();
+    const surfaceVectorField N = Sf/mesh.magSf();
+    surfaceVectorField n
+    (
+        IOobject("n", mesh),
+	N
+    );
 
     // Conservative variables
 
@@ -54,6 +96,37 @@
         ),
         rho*U
     );
+
+    volPointInterpolation interpolateVolPoint(mesh);
+    pointVectorField UN = interpolateVolPoint.interpolate(U);
+/*
+    pointVectorField rhoUN
+    (
+        IOobject
+        (
+            "rhoUN",
+            runTime.timeName(),
+            pMesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+	rho*UN
+    );
+*/
+/*
+    pointVectorField UN
+    (
+        IOobject
+        (
+            "UN",
+            runTime.timeName(),
+            pMesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        pMesh
+    );
+*/
 
     volScalarField rhoE
     (
@@ -81,3 +154,26 @@
 
     // Create mass flux alias for easier coupling with other code components
     const surfaceScalarField& phi = dbnsFlux.rhoFlux();
+
+    // delta T
+    dimensionedScalar deltaT("deltaT", dimTime, runTime.deltaTValue());
+
+    // interpolation schemes
+    //interpolationSchemes interpolate(mesh);
+//fvc::interpolate.volToPoint(rhoU, rhoUGrad, rhoUN)
+
+    // mesh displacement vector
+    pointVectorField MDN
+    (
+        IOobject
+        (
+	    "MDN",
+	    runTime.timeName(),
+	    mesh,
+	    IOobject::NO_READ,
+	    IOobject::AUTO_WRITE
+	),
+	pMesh,
+	dimensionedVector("MDN", dimLength, vector::zero)
+    );
+    MDN.write();
