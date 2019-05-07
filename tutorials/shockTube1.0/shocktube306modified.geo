@@ -60,18 +60,6 @@ Line Loop(6) = {3, 4, 1, 2};
 //+
 Plane Surface(6) = {6};
 //+
-Physical Surface("top") = {1};
-//+
-Physical Surface("bottom") = {3};
-//+
-Physical Surface("inlet") = {2};
-//+
-Physical Surface("oulet") = {4};
-//+
-Physical Surface("above") = {5};
-//+
-Physical Surface("below") = {6};
-//+
 Surface Loop(1) = {5, 1, 6, 2, 3, 4};
 //+
 Volume(1) = {1};
@@ -89,3 +77,9 @@ Transfinite Surface {1};
 Transfinite Surface {4};
 //+
 Transfinite Surface {3};
+//+
+Physical Surface("fixedWall") = {6, 5, 1, 3};
+//+
+Physical Surface("inlet") = {2};
+//+
+Physical Surface("outlet") = {4};

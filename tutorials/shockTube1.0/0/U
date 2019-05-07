@@ -25,27 +25,14 @@ boundaryField
     {
         type            slip;
     }
-    oulet
+    outlet
     {
         type            slip;
     }
-    bottom
+    fixedWall
     {
         type            symmetryPlane;
     }
-    top
-    {
-        type            symmetryPlane;
-    }
-    above
-    {
-        type            symmetryPlane;
-    }
-    below
-    {
-        type            symmetryPlane;
-    }
-
     defaultFaces
     {
         type            empty;
