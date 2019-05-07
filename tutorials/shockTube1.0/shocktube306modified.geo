@@ -36,27 +36,27 @@ Line(11) = {2, 6};
 //+
 Line(12) = {3, 7};
 //+
-Curve Loop(1) = {3, 9, -8, -12};
+Line Loop(1) = {3, 9, -8, -12};
 //+
 Plane Surface(1) = {1};
 //+
-Curve Loop(2) = {9, 5, -10, -4};
+Line Loop(2) = {9, 5, -10, -4};
 //+
 Plane Surface(2) = {2};
 //+
-Curve Loop(3) = {1, 11, -6, -10};
+Line Loop(3) = {1, 11, -6, -10};
 //+
 Plane Surface(3) = {3};
 //+
-Curve Loop(4) = {11, 7, -12, -2};
+Line Loop(4) = {11, 7, -12, -2};
 //+
 Plane Surface(4) = {4};
 //+
-Curve Loop(5) = {8, 5, 6, 7};
+Line Loop(5) = {8, 5, 6, 7};
 //+
 Plane Surface(5) = {5};
 //+
-Curve Loop(6) = {3, 4, 1, 2};
+Line Loop(6) = {3, 4, 1, 2};
 //+
 Plane Surface(6) = {6};
 //+
