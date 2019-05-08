@@ -2,7 +2,7 @@ lc = 0.1;
 
 x = 1;
 y = 1;
-z = 0.1;
+z = 0.5;
 
 Point(1) = {-x, -y,   0, lc};
 Point(2) = { x, -y,   0, lc};
@@ -62,10 +62,6 @@ Line Loop(6) = {11, 12, 9, 10};
 //+
 Plane Surface(6) = {6};
 //+
-Surface Loop(1) = {6, 3, 1, 4, 2, 5};
-//+
-Volume(1) = {1};
-//+
 
 //+
 Transfinite Line {4, 1, 3, 2} = 2 Using Progression 1;
@@ -89,3 +85,12 @@ Physical Surface("fixedWall") = {5, 6, 3, 4};
 Physical Surface("inlet") = {1};
 //+
 Physical Surface("outlet") = {2};
+//+
+//+
+Surface Loop(1) = {6, 3, 1, 4, 2, 5};
+//+
+Volume(1) = {1};
+//+
+Physical Volume("box") = {1};
+//+
+Transfinite Surface {3};
