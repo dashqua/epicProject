@@ -24,7 +24,7 @@ boundaryField
 {
     inlet
     {
-        type            slip;
+        #include "init/boundaryUinlet"
     }
     outlet
     {

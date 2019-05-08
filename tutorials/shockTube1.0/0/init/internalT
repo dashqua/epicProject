@@ -1,4 +1,5 @@
-// internal Field uniform 273.15;  
+internalField uniform 273.15;  
+/*
 internalField nonuniform List<scalar> 
 12288                                    
 {                                     
@@ -12292,3 +12293,4 @@ internalField nonuniform List<scalar>
 273.15                                    
 }                                     
 ;
+*/

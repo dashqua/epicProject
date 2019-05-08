@@ -15,8 +15,8 @@ forAll(meshpoints, ptI)
      ptY + 3/2 * Foam::sin(pii*ptX/10) * Foam::sin(2*pii*ptY/15) * Foam::sin(4*pii*t/Tper), \
      0                                                                                      \
   );
-  Info << "MDN[151]= " << MDN[151] << endl;
-  Info << "meshpoints[ptI}: " << meshpoints[ptI] << endl << endl;
+  //Info << "MDN[151]= " << MDN[151] << endl;
+  //Info << "meshpoints[ptI}: " << meshpoints[ptI] << endl << endl;
 }
 
 // Info << meshpoints[0].x() << endl;

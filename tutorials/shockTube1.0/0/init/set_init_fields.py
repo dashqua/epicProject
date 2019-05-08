@@ -15,7 +15,7 @@ for z in range(nbeq):
     for i in range(nbeqq2):
         strval+="350"
         for j in range(nbeqq2 -1):
-            strval+="\n273.15"
+            strval+="\n273"
 
 content ="// internal Field uniform 273.15;  \n\
 internalField nonuniform List<scalar> \n\
