@@ -5,3 +5,7 @@
 
 cleanCase
 rm -rf perf*
+
+rm -rf constant/polyMesh
+cp -rf constant/polyMesh.backup constant/polyMesh
+python3 0/init/set_init_fields.py 12288

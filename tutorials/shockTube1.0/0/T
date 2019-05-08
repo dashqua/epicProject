@@ -17,7 +17,9 @@ FoamFile
 
 dimensions      [0 0 0 1 0 0 0];
 
-internalField   uniform 273.15;
+// internalField   uniform 273.15;
+#include "init/internalT"
+
 
 boundaryField
 {

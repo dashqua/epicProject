@@ -15,37 +15,28 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-5
+3
 (
+    fixedWall
+    {
+        type            wall;
+	physicalType    wall;
+        nFaces          1536;
+        startFace       23552;
+    }
     inlet
     {
         type            patch;
-        nFaces          1;
-        startFace       99;
+	physicalType    patch;
+        nFaces          256;
+        startFace       25088;
     }
     outlet
     {
-        type            patch;
-        nFaces          1;
-        startFace       100;
-    }
-    bottom
-    {
-        type            symmetryPlane;
-        nFaces          100;
-        startFace       101;
-    }
-    top
-    {
-        type            symmetryPlane;
-        nFaces          100;
-        startFace       201;
-    }
-    defaultFaces
-    {
-        type            empty;
-        nFaces          200;
-        startFace       301;
+        type            wall;
+	physicalType    wall;
+        nFaces          256;
+        startFace       25344;
     }
 )
 

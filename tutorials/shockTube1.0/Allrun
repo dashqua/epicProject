@@ -6,5 +6,5 @@
 application="epicSolver"
 
 runApplication blockMesh
-runApplication $application # | sudo perf record
 runApplication paraFoam -touch
+runApplication $application # | sudo perf record
