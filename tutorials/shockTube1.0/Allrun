@@ -5,6 +5,6 @@
 # Get application name
 application="epicSolver"
 
-runApplication blockMesh
+# runApplication blockMesh
 runApplication paraFoam -touch
 runApplication $application # | sudo perf record
