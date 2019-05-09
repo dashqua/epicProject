@@ -16,7 +16,7 @@
     scalar lambdaw = magSf / magSfOld;
 
 // Get Cchi
-    scalar cchi    = Foam::dot( UTilde / jw , Sf / magSf);
+    scalar cchi    = Foam::dot( UTilde / jw , Sf / magSf) / jw;
     
     //Step 6c: modification of eigenvalues with coefficient of step 6b
     lambda1 = (lambdaw/jw) * (lambda1 - cchi);

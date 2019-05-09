@@ -33,11 +33,18 @@
             "U",
             runTime.timeName(),
             mesh,
-            IOobject::MUST_READ,
+            IOobject::NO_READ, // MUST_READ,
             IOobject::AUTO_WRITE
         ),
-        mesh
-    );
+        mesh,
+	dimensionedVector
+	(
+	    "U",         
+	    dimensionSet(0,1,-1,0,0,0,0),// Foam::sin(PI*C.component(1)/(2*height));
+	    Foam::vector(1 * Foam::cos(26.56), 1 * Foam::sin(26.56), 0)
+	)
+     );        //  	dimensionedVector("xN", dimensionSet(0,1,0,0,0,0,0), vector::zero)
+
 
     // Material (cell centered) x
     const volVectorField& C = mesh.C();

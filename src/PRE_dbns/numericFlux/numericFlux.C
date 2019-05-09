@@ -146,6 +146,26 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux()
     scalarList xyztmp(3);
     scalarList& xyz = xyztmp;
     const double& t = mesh.time().value();
+
+    // Get mesh velocity object
+    const objectRegistry& db = gradT.db();
+    //    const pointVectorField& MDN_ = db.lookupObject<pointVectorField>("MDN");
+    //    Info << MDN_[0] << endl;
+    /* 
+    const pointVectorField& MDN_ =
+                const_cast<pointVectorField&>
+                (
+                    pMesh.objectRegistry::
+                    lookupObject<pointVectorField>
+                    (
+                        "MDN"
+                    )
+                );
+
+		/* */
+    
+
+
     
     // Calculate fluxes at internal faces
     forAll (owner, faceI)
