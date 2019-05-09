@@ -149,6 +149,8 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux()
 
     // Get database to send to flux functions
     const objectRegistry& db = gradT.db();
+    //pointMesh pMesh_(mesh);
+      
     
     // Calculate fluxes at internal faces
     forAll (owner, faceI)
