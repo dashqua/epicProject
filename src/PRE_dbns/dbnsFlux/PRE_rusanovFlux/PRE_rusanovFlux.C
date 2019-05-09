@@ -46,7 +46,8 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     const scalar& magSf,
     scalarList& xyz,
     const double& t,
-    const scalar& magSfOld
+    const scalar& magSfOld,
+    const objectRegistry& db
 ) const
 {
   // Step 1: decode rho left and right:
@@ -145,6 +146,7 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     scalar lambda3 = mag(contrVTilde + cTilde);
 
     // Step 6b: Shift with mapping coefficient
+#   include "createShiftFields.H"
 #   include "mappingShift.H"
 
     scalar lambdaMax = max(max(lambda1,lambda2),lambda3);

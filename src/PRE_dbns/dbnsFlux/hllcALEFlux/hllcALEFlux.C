@@ -47,7 +47,8 @@ void Foam::hllcALEFlux::evaluateFlux
     const vector& dotX,
     scalarList& xyz,
     const double& t,
-    const scalar& magSfOld
+    const scalar& magSfOld,
+    const objectRegistry& db
 ) const
 {
     // Step 1: decode left and right:

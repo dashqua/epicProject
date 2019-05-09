@@ -89,7 +89,8 @@ public:
             const scalar& magSf,
 	    scalarList& xyz,
 	    const double& t,
-	    const scalar& magSfOld
+	    const scalar& magSfOld,
+	    const objectRegistry& db
         ) const;
 };
 
