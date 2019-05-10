@@ -47,7 +47,8 @@ void Foam::roeFlux::evaluateFlux
     scalarList& xyz,
     const double& t,
     const scalar& magSfOld,
-    const objectRegistry& db
+    const objectRegistry& db,
+    arbMesh& amsh
 ) const
 {
     // Step 1: decode rho left and right:

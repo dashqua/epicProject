@@ -64,8 +64,9 @@ int main(int argc, char *argv[])
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-  arbMesh jacky;
-  jacky.hello();
+  arbMesh arbitraryMesh;
+  arbMesh& aMsh = arbitraryMesh; 
+  aMsh.hello();
   
     Info<< "\nStarting time loop\n" << endl;
 

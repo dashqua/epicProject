@@ -43,6 +43,7 @@ SourceFiles
 #include "volFields.H"
 #include "runTimeSelectionTables.H"
 #include "basicThermo.H"
+#include "arbMesh.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -152,7 +153,7 @@ public:
         // Update fluxes based on current state
 
             //- Compute flux
-            virtual void computeFlux() = 0;
+            virtual void computeFlux(arbMesh& amsh) = 0;
 };
 
 

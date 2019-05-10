@@ -41,6 +41,7 @@ SourceFiles
 #define roeFlux_H
 
 #include "fvCFD.H"
+#include "arbMesh.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -88,7 +89,8 @@ public:
 	    scalarList& xyz,
 	    const double& t,
 	    const scalar& magSfOld,
-	    const objectRegistry& db
+	    const objectRegistry& db,
+	    arbMesh& amsh
         ) const;
 };
 

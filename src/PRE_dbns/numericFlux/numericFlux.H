@@ -211,7 +211,7 @@ public:
         // Update fluxes based on current state
 
             //- Compute flux
-            virtual void computeFlux();
+            virtual void computeFlux(arbMesh& amsh);
 };
 
 

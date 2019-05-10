@@ -47,7 +47,8 @@ void Foam::hllcFlux::evaluateFlux
     scalarList& xyz,
     const double& t,
     const scalar& magSfOld,
-    const objectRegistry& db
+    const objectRegistry& db,
+    arbMesh& amsh
 ) const
 {
     // Step 1: decode left and right:

@@ -80,15 +80,13 @@ Foam::numericFlux<Flux, Limiter>::numericFlux
         ),
         rhoFlux_*linearInterpolate(thermo.Cv()*T_ + 0.5*magSqr(U_))
     )
-{
-  
-}
+{}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 template<class Flux, class Limiter>
-void Foam::numericFlux<Flux, Limiter>::computeFlux()
+void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
 {
     // Get face-to-cell addressing: face area point from owner to neighbour
     const unallocLabelList& owner = this->mesh().owner();
@@ -152,9 +150,7 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux()
 
     // Get database to send to flux functions
     const objectRegistry& db = gradT.db();
-    //pointMesh pMesh_(mesh);
-      
-    
+          
     // Calculate fluxes at internal faces
     forAll (owner, faceI)
     {
@@ -169,6 +165,7 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux()
 	xyz[1] = Cf[faceI].y();
 	xyz[2] = Cf[faceI].z();
 
+	
         // calculate fluxes with reconstructed primitive variables at faces
         Flux::evaluateFlux
         (
@@ -190,7 +187,8 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux()
 	    xyz,
 	    t,
 	    magSfOld[faceI],
-	    db
+	    db,
+	    amsh
         );
     }
 
@@ -323,7 +321,8 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux()
 		    xyz,
 		    t,
 		    pMagSfOld[facei],
-		    db
+		    db,
+		    amsh
                 );
             }
         }
@@ -352,7 +351,8 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux()
 		    xyz,
 		    t,
 		    pMagSfOld[facei],
-		    db
+		    db,
+		    amsh
                 );
             }
         }
