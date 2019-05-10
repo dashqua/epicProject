@@ -21,5 +21,4 @@ timeStepping/localTimeStep/localTimeStep.C
 timeStepping/backwardDualDdtScheme/backwardDualDdtSchemes.C
 timeStepping/EulerLocalDdtScheme/EulerLocalDdtSchemes.C
 
-
 LIB = $(FOAM_USER_LIBBIN)/libPRE_dbns

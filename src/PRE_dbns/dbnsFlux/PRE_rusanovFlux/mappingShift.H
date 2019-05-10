@@ -2,7 +2,7 @@
     // everything that composes the coefficient that shifts eigenvalues
     const scalar x = xyz[0];
     const scalar y = xyz[1];
-    const scalar z = xyz[2];
+//const scalar z = xyz[2];
     const scalar Tper = 2;
     const scalar pii = Foam::mathematicalConstant::pi;
 

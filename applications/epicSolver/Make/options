@@ -1,5 +1,6 @@
 EXE_INC = \
     -I$(EPIC_PROJECT_DIR)/src/PRE_dbns/lnInclude \
+    -I$(EPIC_PROJECT_DIR)/applications/utilities/arbMesh/lnInclude \
     -I$(LIB_SRC)/dbns/lnInclude \
     -I$(LIB_SRC)/finiteVolume/lnInclude \
     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
@@ -11,4 +12,5 @@ EXE_LIBS = \
     -lbasicThermophysicalModels \
     -lspecie \
     -L$(FOAM_USER_LIBBIN) \
-    -lPRE_dbns 
+    -lPRE_dbns \
+    -larbMesh

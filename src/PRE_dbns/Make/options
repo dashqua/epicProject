@@ -1,21 +1,6 @@
-#if defined(mingw)
-
 EXE_INC = \
     -I$(LIB_SRC)/finiteVolume/lnInclude \
-    -I$(LIB_SRC)/meshTools/lnInclude \
-    -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
-    -I$(LIB_SRC)/turbulenceModels/compressible/turbulenceModel \
-    -I$(PARMGRIDGEN_INCLUDE_DIR)
-
-LIB_LIBS = \
-    -lfiniteVolume \
-    -lmeshTools \
-    -L$(PARMGRIDGEN_LIB_DIR) -lIMlib -lmgrid
-
-#else
-
-EXE_INC = \
-    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(EPIC_PROJECT_DIR)/applications/utilities/arbMesh/lnInclude \
     -I$(LIB_SRC)/meshTools/lnInclude \
     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
     -I$(LIB_SRC)/turbulenceModels/compressible/turbulenceModel \
@@ -25,7 +10,7 @@ EXE_INC = \
 LIB_LIBS = \
     -lfiniteVolume \
     -lmeshTools \
-    -L$(PARMGRIDGEN_LIB_DIR) -lIMlib -lMGridGen
+    -L$(PARMGRIDGEN_LIB_DIR)-lIMlib -lMGridGen \
+    -L$(FOAM_USER_LIBBIN) -larbMesh
 
-#endif
 

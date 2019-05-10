@@ -1,0 +1,12 @@
+File Edit Options Buffers Tools Help                                                                                  
+EXE_INC = \
+    -I$(LIB_SRC)/triSurface/lnInclude \
+    -I$(LIB_SRC)/meshTools/lnInclude \
+
+LIB_LIBS = \
+    -lOpenFOAM \
+    -ltriSurface \
+    -lmeshTools
+
+
+

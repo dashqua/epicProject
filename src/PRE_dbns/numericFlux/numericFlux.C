@@ -25,6 +25,7 @@ License
 
 #include "numericFlux.H"
 #include "MDLimiter.H"
+#include "arbMesh.H"
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -79,7 +80,9 @@ Foam::numericFlux<Flux, Limiter>::numericFlux
         ),
         rhoFlux_*linearInterpolate(thermo.Cv()*T_ + 0.5*magSqr(U_))
     )
-{}
+{
+  
+}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
