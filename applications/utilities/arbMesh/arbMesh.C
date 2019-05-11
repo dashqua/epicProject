@@ -45,15 +45,50 @@ void Foam::arbMesh::createFields(pointVectorField MDN_)
 {
   Info << endl;
 }
-/*
-pointVectorField Foam::arbMesh::MDN__()
+
+void Foam::arbMesh::updateMeshDisplacement(const scalar t)
 {
-  return MDN_();
+  Info << endl;
+  const scalar Tper = 2;
+  const scalar pii = Foam::mathematicalConstant::pi;
+  const pointField& meshpoints = mesh_.points();
+  forAll(meshpoints,ptI)
+  {
+    scalar ptX = meshpoints[ptI].x();
+    scalar ptY = meshpoints[ptI].y();
+    MDN_[ptI] = vector(							\
+       ptX + 2 * Foam::sin(pii*ptX/10) * Foam::sin(2*pii*ptY/15) * Foam::sin(2*pii*t/Tper),   \
+       ptY + 3/2 * Foam::sin(pii*ptX/10) * Foam::sin(2*pii*ptY/15) * Foam::sin(4*pii*t/Tper), \
+       0                                                                                      \
+    );
+
+  }
 }
-*/
 
-//const dataType Foam::arbMesh::staticData();
+pointVectorField Foam::arbMesh::MDN()
+{
+  return MDN_;
+}
 
+scalar Foam::arbMesh::jw(scalar x, scalar y)
+{
+    // Get Jw
+    scalar pii = Foam::mathematicalConstant::pi;
+    scalar Tper = 2;
+    scalar t = mesh_.time().value();
+    
+    scalar jw = ( 1 + pii/5*Foam::cos(pii*x/10)*Foam::sin(2*pii*y/15)*Foam::sin(2*pii*t/Tper)  ) * \
+      ( 1 + pii/5*Foam::sin(pii*x/10)*Foam::cos(2*pii*y/15)*Foam::sin(4*pii*t/Tper)  )              - \
+      ( 3*pii/20*Foam::cos(pii*x/10)*Foam::sin(2*pii*y/15)*Foam::sin(4*pii*t/Tper)   )              * \
+      ( 4*pii/15*Foam::sin(pii*x/10)*Foam::cos(2*pii*y/15)*Foam::sin(2*pii*t/Tper)   )              ;
+    return jw;
+}
+
+scalar Foam::arbMesh::deltaw(scalar x, scalar y)
+{}
+
+scalar Foam::arbMesh::Uwn(scalar x, scalar y) //previous cchi
+{}
 
 // * * * * * * * * * * * * * Static Member Functions * * * * * * * * * * * * //
 

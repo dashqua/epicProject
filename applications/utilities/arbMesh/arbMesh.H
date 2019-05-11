@@ -63,63 +63,35 @@ class arbMesh
 private:
   pointVectorField& MDN_;
   const pointMesh& pMesh_;
-  //const pointMesh pMesh_;
-  //const fvMesh& mesh_;
-  //pointMesh& pMesh;
-  //pointVectorField MDN_;
-  
+  const fvMesh& mesh_;
     // Private data
-
         //- Description of data_
         //scalar data_;
-
-
     // Private Member Functions
-
         //- Disallow default bitwise copy construct
         //arbMesh(const arbMesh&);
-
         //- Disallow default bitwise assignment
         //void operator=(const arbMesh&);
-
-
 public:
 
   // Static data members
   //- Static data staticData
   //static const dataType staticData;
-
-
-    void hello();
-    void createFields(pointVectorField MDN);
-
-    // Constructors
-  
         //- Construct from Field
-        explicit arbMesh(pointVectorField& MDN, const Time& runTime)
+        explicit arbMesh(pointVectorField& MDN, const fvMesh& mesh, const Time& runTime)
 	:
 	  MDN_(MDN),
-	  pMesh_(MDN.mesh())
-        {
-	  /*
-	  pointMesh pMesh_(mesh_);
-	  pointVectorField MDN_bis
-	  (
-	     IOobject
-	     (
-	        "MDN_",
-	        runTime.timeName(),
-	        mesh_,
-	        IOobject::NO_READ,
-	        IOobject::AUTO_WRITE
-	     ),
-	     pMesh_,
-	     dimensionedVector("MDN_", dimLength, vector::zero)
-	   );
-	  //MDN_() = MDN_bis;
-	  */
-	}
+	  pMesh_(MDN.mesh()),
+	  mesh_(mesh)
+        {	}
 
+        void hello();
+        void createFields(pointVectorField MDN);
+        void updateMeshDisplacement(const scalar t); 
+        pointVectorField MDN();
+        scalar jw(scalar x, scalar y);
+        scalar deltaw(scalar x, scalar y);
+        scalar Uwn(scalar x, scalar y);
         //- Construct from components
         //arbMesh(const scalar& data);
 

@@ -64,8 +64,8 @@ int main(int argc, char *argv[])
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-  volScalarField& MDN_ = MDN;
-  arbMesh arbitraryMesh(MDN_,runTime);
+  pointVectorField& MDN_ = MDN;
+  arbMesh arbitraryMesh(MDN_, mesh, runTime);
   arbMesh& aMsh = arbitraryMesh;
   //aMsh.createFields(mesh);
   //aMsh.hello();
@@ -121,7 +121,8 @@ int main(int argc, char *argv[])
 #           include "updateFields.H"
         }
 
-	# include "updateMeshDisplacement.H"	
+	//# include "updateMeshDisplacement.H"	
+        aMsh.updateMeshDisplacement(runTime.value());
 
         runTime.write();
 
