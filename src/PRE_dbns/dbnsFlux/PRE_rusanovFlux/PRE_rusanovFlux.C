@@ -145,7 +145,7 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     scalar lambda1 = mag(contrVTilde - cTilde);
     scalar lambda2 = mag(contrVTilde);
     scalar lambda3 = mag(contrVTilde + cTilde);
-
+    
     // Step 6b: Shift with mapping coefficient
 #   include "createShiftFields.H"
 #   include "mappingShift.H"

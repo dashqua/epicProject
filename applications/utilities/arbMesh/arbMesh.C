@@ -28,16 +28,29 @@ License
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
 /*
-Foam::arbMesh Foam::arbMesh()
+Foam::arbMesh Foam::arbMesh(const fvMesh& mesh)
 {
   Info << "hello arbMesh" << endl;
-  }*/
+}
+*/
+
 
 
 void Foam::arbMesh::hello()
 {
   Info << "hello" << endl;
 }
+
+void Foam::arbMesh::createFields(pointVectorField MDN_)
+{
+  Info << endl;
+}
+/*
+pointVectorField Foam::arbMesh::MDN__()
+{
+  return MDN_();
+}
+*/
 
 //const dataType Foam::arbMesh::staticData();
 

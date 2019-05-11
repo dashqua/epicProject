@@ -40,6 +40,10 @@ SourceFiles
 #include "fvSchemes.H"
 #include "fvSolution.H"
 #include "fvCFD.H"
+#include "pointMesh.H"
+#include "GeometricField.H"
+#include "pointFields.H"
+#include "volPointInterpolation.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -56,6 +60,14 @@ class arbMesh
 //:
 //    public polyMesh
 {
+private:
+  pointVectorField& MDN_;
+  const pointMesh& pMesh_;
+  //const pointMesh pMesh_;
+  //const fvMesh& mesh_;
+  //pointMesh& pMesh;
+  //pointVectorField MDN_;
+  
     // Private data
 
         //- Description of data_
@@ -79,10 +91,34 @@ public:
 
 
     void hello();
-    // Constructors
+    void createFields(pointVectorField MDN);
 
-        //- Construct null
-        //arbMesh();
+    // Constructors
+  
+        //- Construct from Field
+        explicit arbMesh(pointVectorField& MDN, const Time& runTime)
+	:
+	  MDN_(MDN),
+	  pMesh_(MDN.mesh())
+        {
+	  /*
+	  pointMesh pMesh_(mesh_);
+	  pointVectorField MDN_bis
+	  (
+	     IOobject
+	     (
+	        "MDN_",
+	        runTime.timeName(),
+	        mesh_,
+	        IOobject::NO_READ,
+	        IOobject::AUTO_WRITE
+	     ),
+	     pMesh_,
+	     dimensionedVector("MDN_", dimLength, vector::zero)
+	   );
+	  //MDN_() = MDN_bis;
+	  */
+	}
 
         //- Construct from components
         //arbMesh(const scalar& data);
@@ -93,6 +129,14 @@ public:
         //- Construct as copy
         //arbMesh(const arbMesh&);
 
+	  /*
+	  pointVectorField xN_
+	  (
+	     IOobject("xN_", mesh_),
+	     pMesh_,
+	     dimensionedVector("xN_", dimensionSet(0,1,0,0,0,0,0), vector::zero)
+	  );
+	  */
 
     // Selectors
 

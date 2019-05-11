@@ -64,9 +64,11 @@ int main(int argc, char *argv[])
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-  arbMesh arbitraryMesh;
-  arbMesh& aMsh = arbitraryMesh; 
-  aMsh.hello();
+  volScalarField& MDN_ = MDN;
+  arbMesh arbitraryMesh(MDN_,runTime);
+  arbMesh& aMsh = arbitraryMesh;
+  //aMsh.createFields(mesh);
+  //aMsh.hello();
   
     Info<< "\nStarting time loop\n" << endl;
 
@@ -95,7 +97,7 @@ int main(int argc, char *argv[])
         forAll (beta, i)
         {
             // Solve the approximate Riemann problem for this time step
-            dbnsFlux.computeFlux();
+            dbnsFlux.computeFlux(aMsh);
 
             // Time integration
             solve
