@@ -90,6 +90,12 @@ scalar Foam::arbMesh::deltaw(scalar x, scalar y)
 scalar Foam::arbMesh::Uwn(scalar x, scalar y) //previous cchi
 {}
 
+scalar Foam::arbMesh::Shift(scalar lambda,scalar x, scalar y)
+{
+  //    return (lambdaw/jw) * (lambda - cchi);
+  return ( this->deltaw(x, y)/this->jw(x, y) ) * (lambda - this->Uwn(x, y)) ;
+}
+
 // * * * * * * * * * * * * * Static Member Functions * * * * * * * * * * * * //
 
 

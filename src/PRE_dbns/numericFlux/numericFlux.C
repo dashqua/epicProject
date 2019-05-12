@@ -144,8 +144,9 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
     //Get mesh information
     const fvMesh& mesh = this->mesh();
     const surfaceVectorField& Cf = mesh.Cf();
-    scalarList xyztmp(3);
-    scalarList& xyz = xyztmp;
+    scalarList xyztmp(3), xyztmp2(3);
+    scalarList& xyzOwn = xyztmp;
+    scalarList& xyzNei = xyztmp2;
     const double& t = mesh.time().value();
 
     // Get database to send to flux functions
@@ -160,11 +161,14 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
         const vector deltaRLeft = faceCentre[faceI] - cellCentre[own];
         const vector deltaRRight = faceCentre[faceI] - cellCentre[nei];
 
-	// get coordinates of cell center 
-	xyz[0] = Cf[faceI].x();
-	xyz[1] = Cf[faceI].y();
-	xyz[2] = Cf[faceI].z();
-
+	// MODIFICATIONS HERE
+	// get coordinates of cell center for own and nei
+	xyzOwn[0] = Cf[own].x();
+	xyzOwn[1] = Cf[own].y();
+	xyzOwn[2] = Cf[own].z();
+	xyzNei[0] = Cf[nei].x();
+	xyzNei[1] = Cf[nei].y();
+	xyzNei[2] = Cf[nei].z();
 	
         // calculate fluxes with reconstructed primitive variables at faces
         Flux::evaluateFlux
@@ -184,7 +188,7 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
             Cv[nei],
             Sf[faceI],
             magSf[faceI],
-	    xyz,
+	    xyzOwn,
 	    t,
 	    magSfOld[faceI],
 	    db,
@@ -318,7 +322,7 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
                     pCv[facei],
                     pSf[facei],
                     pMagSf[facei],
-		    xyz,
+		    xyzOwn,
 		    t,
 		    pMagSfOld[facei],
 		    db,
@@ -348,7 +352,7 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
                     pCv[facei],
                     pSf[facei],
                     pMagSf[facei],
-		    xyz,
+		    xyzOwn,
 		    t,
 		    pMagSfOld[facei],
 		    db,
