@@ -90,9 +90,12 @@ scalar Foam::arbMesh::deltaw(scalar x, scalar y)
 scalar Foam::arbMesh::Uwn(scalar x, scalar y) //previous cchi
 {}
 
-scalar Foam::arbMesh::Shift(scalar lambda,scalar x, scalar y)
+scalar Foam::arbMesh::Shift(scalar lambda, scalarList& xyzOwn, scalarList& xyzNei)
 {
   //    return (lambdaw/jw) * (lambda - cchi);
+  // TEMPORARY
+  scalar x = xyzOwn[0];
+  scalar y = xyzOwn[1];    
   return ( this->deltaw(x, y)/this->jw(x, y) ) * (lambda - this->Uwn(x, y)) ;
 }
 

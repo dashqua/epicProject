@@ -92,7 +92,7 @@ public:
         scalar jw(scalar x, scalar y);
         scalar deltaw(scalar x, scalar y);
         scalar Uwn(scalar x, scalar y);
-        scalar Shift(scalar lamda, scalar x, scalar y);
+        scalar Shift(scalar lamda, scalarList& xyzOwn, scalarList& xyzNei);
         //- Construct from components
         //arbMesh(const scalar& data);
 

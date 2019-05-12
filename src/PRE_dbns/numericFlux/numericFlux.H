@@ -43,6 +43,7 @@ SourceFiles
 #include "numericFluxBase.H"
 #include "basicThermo.H"
 #include "fvc.H"
+#include "arbMesh.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

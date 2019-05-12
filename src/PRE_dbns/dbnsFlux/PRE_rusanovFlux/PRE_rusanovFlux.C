@@ -44,7 +44,8 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     const scalar& CvRight,
     const vector& Sf,
     const scalar& magSf,
-    scalarList& xyz,
+    scalarList& xyzOwn,
+    scalarList& xyzNei,
     const double& t,
     const scalar& magSfOld,
     const objectRegistry& db,
@@ -147,9 +148,12 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     scalar lambda3 = mag(contrVTilde + cTilde);
     
     // Step 6b: Shift with mapping coefficient
-#   include "createShiftFields.H"
-#   include "mappingShift.H"
-
+    //#   include "createShiftFields.H"
+    //#   include "mappingShift.H"
+    amsh.Shift(lambda1, xyzOwn, xyzNei);
+    amsh.Shift(lambda1, xyzOwn, xyzNei);
+    amsh.Shift(lambda1, xyzOwn, xyzNei);
+    
     scalar lambdaMax = max(max(lambda1,lambda2),lambda3);
 
     // Step 7: Compute flux differences
