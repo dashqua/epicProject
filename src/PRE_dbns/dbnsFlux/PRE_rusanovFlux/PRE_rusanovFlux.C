@@ -29,19 +29,19 @@ License
 
 void Foam::PRE_rusanovFlux::evaluateFlux
 (
-    scalar& rhoFlux,
-    vector& rhoUFlux,
-    scalar& rhoEFlux,
-    const scalar& pLeft,
-    const scalar& pRight,
-    const vector& ULeft,
-    const vector& URight,
-    const scalar& TLeft,
-    const scalar& TRight,
-    const scalar& RLeft,
-    const scalar& RRight,
-    const scalar& CvLeft,
-    const scalar& CvRight,
+    scalar& rhoFlux_TALE,
+    vector& rhoUFlux_TALE,
+    scalar& rhoEFlux_TALE,
+    const scalar& pLeft_TALE,
+    const scalar& pRight_TALE,
+    const vector& ULeft_TALE,
+    const vector& URight_TALE,
+    const scalar& TLeft_TALE,
+    const scalar& TRight_TALE,
+    const scalar& RLeft_TALE,
+    const scalar& RRight_TALE,
+    const scalar& CvLeft_TALE,
+    const scalar& CvRight_TALE,
     const vector& Sf,
     const scalar& magSf,
     scalarList& xyzOwn,
@@ -52,6 +52,30 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     arbMesh& amsh
 ) const
 {
+  // Step 0: Conversion from U_TALE to U_E
+  // Note : Own <=> Left ; Nei <=> Right
+  // /!\ Flux are interpolated before in numerifFlux
+  scalar xLeft = xyzOwn[0];
+  scalar yLeft = xyzOwn[1];
+  scalar xRight = xyzNei[0];
+  scalar yRight = xyzNei[1];
+  scalar jwLeft = amsh.jw(xLeft, yLeft);
+  scalar jwRight = amsh.jw(xRight, yRight);
+  
+  //scalar& rhoFlux = rhoFlux_TALE / jw;
+  //vector& rhoUFlux_TALE;
+  //scalar& rhoEFlux_TALE;
+  const scalar& pLeft = pLeft_TALE / jwLeft;
+  const scalar& pRight = pRight_TALE / jwRight;
+  const vector& ULeft = ULeft_TALE / jwLeft;
+  const vector& URight = URight_TALE / jwRight;
+  const scalar& TLeft = TLeft_TALE/ jwLeft;
+  const scalar& TRight = TRight_TALE / jwRight;
+  const scalar& RLeft = RLeft_TALE / jwLeft;
+  const scalar& RRight = RRight_TALE / jwRight;
+  const scalar& CvLeft = CvLeft_TALE / jwLeft;
+  const scalar& CvRight = CvRight_TALE / jwRight;
+  
   // Step 1: decode rho left and right:
     scalar rhoLeft = pLeft/(RLeft*TLeft);
     scalar rhoRight = pRight/(RRight*TRight);
@@ -194,6 +218,7 @@ void Foam::PRE_rusanovFlux::evaluateFlux
         0.5*(fluxLeft15 + fluxRight15 - (diffF15 + diffF25 + diffF35));
 
     // Compute private data
+    // NOTE : this is F_E
     rhoFlux  = flux1*magSf;
     rhoUFlux = flux24*magSf;
     rhoEFlux = flux5*magSf;
