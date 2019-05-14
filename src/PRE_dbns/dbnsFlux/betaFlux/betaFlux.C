@@ -49,7 +49,8 @@ void Foam::betaFlux::evaluateFlux
     const double& t,
     const scalar& magSfOld,
     const objectRegistry& db,
-    arbMesh& amsh
+    arbMesh& amsh,
+    label& faceI
 ) const
 {
     // Step 1: decode rho left and right:

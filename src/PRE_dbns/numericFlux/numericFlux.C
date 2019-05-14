@@ -193,7 +193,8 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
 	    t,
 	    magSfOld[faceI],
 	    db,
-	    amsh
+	    amsh,
+	    faceI
         );
 	//Info <<  "points: " << mesh.faces()[faceI].points << endl;
     }
@@ -329,7 +330,8 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
 		    t,
 		    pMagSfOld[facei],
 		    db,
-		    amsh
+		    amsh,
+		    facei
                 );
             }
         }
@@ -360,7 +362,8 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
 		    t,
 		    pMagSfOld[facei],
 		    db,
-		    amsh
+		    amsh,
+		    facei
                 );
             }
         }

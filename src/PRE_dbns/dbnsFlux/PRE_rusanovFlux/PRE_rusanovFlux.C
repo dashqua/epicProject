@@ -49,7 +49,8 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     const double& t,
     const scalar& magSfOld,
     const objectRegistry& db,
-    arbMesh& amsh
+    arbMesh& amsh,
+    label& faceI
 ) const
 {
   // Step 0: Conversion from U_TALE to U_E

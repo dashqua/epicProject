@@ -79,7 +79,7 @@ scalar Foam::arbMesh::jw(scalarList& xyz)
     scalar x = xyz[0];
     scalar y = xyz[1];
     scalar z = xyz[2];    
-    scalar jw = ( 1 + pii/5*Foam::cos(pii*x/10)*Foam::sin(2*pii*y/15)*Foam::sin(2*pii*t/Tper)  ) * \
+    scalar jw = ( 1 + pii/5*Foam::cos(pii*x/10)*Foam::sin(2*pii*y/15)*Foam::sin(2*pii*t/Tper)  )    * \
       ( 1 + pii/5*Foam::sin(pii*x/10)*Foam::cos(2*pii*y/15)*Foam::sin(4*pii*t/Tper)  )              - \
       ( 3*pii/20*Foam::cos(pii*x/10)*Foam::sin(2*pii*y/15)*Foam::sin(4*pii*t/Tper)   )              * \
       ( 4*pii/15*Foam::sin(pii*x/10)*Foam::cos(2*pii*y/15)*Foam::sin(2*pii*t/Tper)   )              ;
@@ -93,7 +93,8 @@ scalar Foam::arbMesh::deltaw(scalarList& xyz)
   scalar z = xyz[2];
   scalar id = mesh_.findCell(point(x,y,z));
   scalar dA = mesh_.magSf()[id];
-  
+  scalar da = dA;
+  return da/dA;
 }
 
 scalar Foam::arbMesh::Uwn(scalarList& xyz) //previous cchi
