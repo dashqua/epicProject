@@ -229,16 +229,16 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     //rhoUFlux = rhoUFlux_E;
     //rhoEFlux = RhoEFlux_E;
     rhoFlux_TALE = \
-      ( amsh.deltaw(xyzNei) * (rhoFlux_E - amsh.Uwn(xyzNei) * rhoRight) + \
-        amsh.deltaw(xyzOwn) * (rhoFlux_E - amsh.Uwn(xyzOwn) * rhoRight) ) /2;
+      ( amsh.deltaw(xyzNei, faceI) * (rhoFlux_E - amsh.Uwn(xyzNei) * rhoRight) + \
+        amsh.deltaw(xyzOwn, faceI) * (rhoFlux_E - amsh.Uwn(xyzOwn) * rhoRight) ) /2;
     //
     rhoUFlux_TALE = \
-      ( amsh.deltaw(xyzNei) * (rhoUFlux_E - amsh.Uwn(xyzNei) * URight) + \
-        amsh.deltaw(xyzOwn) * (rhoUFlux_E - amsh.Uwn(xyzOwn) * ULeft) ) /2;
+      ( amsh.deltaw(xyzNei, faceI) * (rhoUFlux_E - amsh.Uwn(xyzNei) * URight) + \
+        amsh.deltaw(xyzOwn, faceI) * (rhoUFlux_E - amsh.Uwn(xyzOwn) * ULeft) ) /2;
     //
     rhoEFlux_TALE = \
-      ( amsh.deltaw(xyzNei) * (rhoEFlux_E - amsh.Uwn(xyzNei) * rhoRight*eRight) + \
-        amsh.deltaw(xyzOwn) * (rhoEFlux_E - amsh.Uwn(xyzOwn) * rhoLeft*eLeft) ) /2;
+      ( amsh.deltaw(xyzNei, faceI) * (rhoEFlux_E - amsh.Uwn(xyzNei) * rhoRight*eRight) + \
+        amsh.deltaw(xyzOwn, faceI) * (rhoEFlux_E - amsh.Uwn(xyzOwn) * rhoLeft*eLeft) ) /2;
 }
 
 // ************************************************************************* //

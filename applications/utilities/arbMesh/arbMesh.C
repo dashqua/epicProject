@@ -86,14 +86,28 @@ scalar Foam::arbMesh::jw(scalarList& xyz)
     return jw;
 }
 
-scalar Foam::arbMesh::deltaw(scalarList& xyz)
+scalar Foam::arbMesh::deltaw(scalarList& xyz, label& face)
 {
   scalar x = xyz[0];
   scalar y = xyz[1];
   scalar z = xyz[2];
   scalar id = mesh_.findCell(point(x,y,z));
   scalar dA = mesh_.magSf()[id];
-  scalar da = dA;
+
+  //forAll(mesh_.faces(), face)
+  //{
+  const label& node0 = mesh_.faces()[face][0];
+  const label& node1 = mesh_.faces()[face][1];
+  const label& node2 = mesh_.faces()[face][2];
+  const label& node3 = mesh_.faces()[face][3];
+  const vector& coord0 = mesh_.points()[node0];
+  const vector& coord1 = mesh_.points()[node1];
+  const vector& coord2 = mesh_.points()[node2];
+  const vector& coord3 = mesh_.points()[node3];
+  vectorList coords(4);
+  coords[0] = coord0; coords[1] = coord1; coords[2] = coord2; coords[3] = coord3;//[coord0, coord1, coord2, coord3];
+  //}
+  scalar da = this->getMagSf(coords);  
   return da/dA;
 }
 
@@ -111,22 +125,30 @@ scalar Foam::arbMesh::Shift(scalar lambda, scalarList& xyzOwn, scalarList& xyzNe
   //return ( this->deltaw(x, y)/this->jw(x, y) ) * (lambda - this->Uwn(x, y)) ;
 }
 
-scalar Foam::arbMesh::getMagSf(scalarList& A, scalarList& B, scalarList& C)
-{
-  scalarList Sf = this->getSf(A, B, C);
-  return Foam::sqrt(Sf[0]*Sf[0] + Sf[1]*Sf[1] + Sf[2]*Sf[2]);
-}
-
-scalarList Foam::arbMesh::getSf(scalarList& A, scalarList& B, scalarList& C)
-{
-  scalarList BA(3), CA(3);
-  BA[0] = B[0] - A[0];
-  BA[1] = B[1] - A[1];
-  BA[2] = B[2] - A[2];
-  CA[0] = C[0] - A[0];
-  CA[1] = C[1] - A[1];
-  CA[2] = C[2] - A[2];
-  return this->cross(BA, CA);
+scalar Foam::arbMesh::getMagSf(vectorList x)
+{ 
+  vectorList iso(x.size());
+  vector tanVecZeta = vector::zero;
+  vector tanVecEta = vector::zero;
+  scalar eta_GP = 0.0;
+  scalar zeta_GP = 0.0;
+  scalar a = 0;
+  if (x.size()==4)
+    {
+      iso[0] = vector(-1,-1,0);
+      iso[1] = vector(1,-1,0);
+      iso[2] = vector(1,1,0);
+      iso[3] = vector(-1,1,0);
+    
+      for (int i =0; i<4; i++)
+	{
+	  tanVecZeta += x[i] * (iso[i].x() * (1.0+eta_GP*iso[i].y()) /4.0);
+	  tanVecEta += x[i] * (iso[i].y() * (1.0+zeta_GP*iso[i].x()) /4.0);
+	}
+      vector n = (tanVecZeta ^ tanVecEta)/mag(tanVecZeta ^ tanVecEta); //Sf
+      a = 4.0*mag(tanVecZeta ^ tanVecEta); //magSf
+    }
+  return a;
 }
 
 scalarList Foam::arbMesh::cross(scalarList A, scalarList B)

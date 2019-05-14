@@ -45,6 +45,8 @@ SourceFiles
 #include "pointFields.H"
 #include "volPointInterpolation.H"
 #include "fvMesh.H"
+#include "vectorList.H"
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
@@ -64,6 +66,7 @@ private:
   pointVectorField& MDN_;
   const pointMesh& pMesh_;
   const fvMesh& mesh_;
+  //const label& face_;
     // Private data
         //- Description of data_
         //scalar data_;
@@ -93,11 +96,10 @@ public:
         void updateMeshDisplacement(const scalar t); 
         pointVectorField MDN();
         scalar jw(scalarList& xyz);
-        scalar deltaw(scalarList&  xyz);
+        scalar deltaw(scalarList&  xyz, label& face);
         scalar Uwn(scalarList& xyz);
         scalar Shift(scalar lambda, scalarList& xyzOwn, scalarList& xyzNei);
-        scalar getMagSf(scalarList& A, scalarList& B, scalarList& C);
-        scalarList getSf(scalarList& A, scalarList& B, scalarList& C);
+        scalar getMagSf(vectorList x);
         scalarList cross(scalarList A, scalarList B);
         //- Construct from components
         //arbMesh(const scalar& data);
