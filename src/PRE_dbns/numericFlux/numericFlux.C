@@ -195,6 +195,7 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
 	    db,
 	    amsh
         );
+	//Info <<  "points: " << mesh.faces()[faceI].points << endl;
     }
 
     // Update boundary field and values

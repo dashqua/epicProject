@@ -44,7 +44,7 @@ SourceFiles
 #include "GeometricField.H"
 #include "pointFields.H"
 #include "volPointInterpolation.H"
-
+#include "fvMesh.H"
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
@@ -83,16 +83,22 @@ public:
 	  MDN_(MDN),
 	  pMesh_(MDN.mesh()),
 	  mesh_(mesh)
-        {	}
+        {
+	  // for deltaw and Uwn, it is necessary to keep initial areas
+	  
+	}
 
         void hello();
         void createFields(pointVectorField MDN);
         void updateMeshDisplacement(const scalar t); 
         pointVectorField MDN();
-        scalar jw(scalar x, scalar y);
-        scalar deltaw(scalar x, scalar y);
-        scalar Uwn(scalar x, scalar y);
-        scalar Shift(scalar lamda, scalarList& xyzOwn, scalarList& xyzNei);
+        scalar jw(scalarList& xyz);
+        scalar deltaw(scalarList&  xyz);
+        scalar Uwn(scalarList& xyz);
+        scalar Shift(scalar lambda, scalarList& xyzOwn, scalarList& xyzNei);
+        scalar getMagSf(scalarList& A, scalarList& B, scalarList& C);
+        scalarList getSf(scalarList& A, scalarList& B, scalarList& C);
+        scalarList cross(scalarList A, scalarList B);
         //- Construct from components
         //arbMesh(const scalar& data);
 

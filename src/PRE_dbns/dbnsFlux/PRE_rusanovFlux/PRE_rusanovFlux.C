@@ -59,8 +59,8 @@ void Foam::PRE_rusanovFlux::evaluateFlux
   scalar yLeft = xyzOwn[1];
   scalar xRight = xyzNei[0];
   scalar yRight = xyzNei[1];
-  scalar jwLeft = amsh.jw(xLeft, yLeft);
-  scalar jwRight = amsh.jw(xRight, yRight);
+  scalar jwLeft = amsh.jw(xyzOwn);
+  scalar jwRight = amsh.jw(xyzNei);
   
   //scalar& rhoFlux = rhoFlux_TALE / jw;
   //vector& rhoUFlux_TALE;
@@ -219,9 +219,25 @@ void Foam::PRE_rusanovFlux::evaluateFlux
 
     // Compute private data
     // NOTE : this is F_E
-    rhoFlux  = flux1*magSf;
-    rhoUFlux = flux24*magSf;
-    rhoEFlux = flux5*magSf;
+    scalar rhoFlux_E  = flux1*magSf;
+    vector rhoUFlux_E = flux24*magSf;
+    scalar rhoEFlux_E = flux5*magSf;
+
+    // Conversion back to F_TALE
+    //rhoFlux = (amsh.deltaw(xRight,yRight)+amsh.deltaw(xLeft,yLeft))/2 * ( rhoFlux_E - (amsh.Uwn(xRight,yRight)+amsh.Uwn(xLeft,yLeft))/2 *   U );
+    //rhoUFlux = rhoUFlux_E;
+    //rhoEFlux = RhoEFlux_E;
+    rhoFlux_TALE = \
+      ( amsh.deltaw(xyzNei) * (rhoFlux_E - amsh.Uwn(xyzNei) * rhoRight) + \
+        amsh.deltaw(xyzOwn) * (rhoFlux_E - amsh.Uwn(xyzOwn) * rhoRight) ) /2;
+    //
+    rhoUFlux_TALE = \
+      ( amsh.deltaw(xyzNei) * (rhoUFlux_E - amsh.Uwn(xyzNei) * URight) + \
+        amsh.deltaw(xyzOwn) * (rhoUFlux_E - amsh.Uwn(xyzOwn) * ULeft) ) /2;
+    //
+    rhoEFlux_TALE = \
+      ( amsh.deltaw(xyzNei) * (rhoEFlux_E - amsh.Uwn(xyzNei) * rhoRight*eRight) + \
+        amsh.deltaw(xyzOwn) * (rhoEFlux_E - amsh.Uwn(xyzOwn) * rhoLeft*eLeft) ) /2;
 }
 
 // ************************************************************************* //
