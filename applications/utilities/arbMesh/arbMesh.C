@@ -93,9 +93,9 @@ scalar Foam::arbMesh::deltaw(vector& xyz, label& face)
   scalar z = xyz[2];
   scalar id = mesh_.findCell(point(x,y,z));
   scalar dA = mesh_.magSf()[id];
-
   //forAll(mesh_.faces(), face)
   //{
+  Info << "before coords" << endl;
   const label& node0 = mesh_.faces()[face][0];
   const label& node1 = mesh_.faces()[face][1];
   const label& node2 = mesh_.faces()[face][2];
@@ -104,10 +104,10 @@ scalar Foam::arbMesh::deltaw(vector& xyz, label& face)
   const vector& coord1 = mesh_.points()[node1];
   const vector& coord2 = mesh_.points()[node2];
   const vector& coord3 = mesh_.points()[node3];
-  vectorList coords(4);
-  coords[0] = coord0; coords[1] = coord1; coords[2] = coord2; coords[3] = coord3;//[coord0, coord1, coord2, coord3];
-  //}
+  vectorList coords = vectorList(coord0, coord1, coord2, coord3);
+  Info << "before getMagSf" << endl;
   scalar da = this->getMagSf(coords);
+  Info << "after getMagSf" <<endl;
   Info << da << "   " << dA <<endl;
   return da/dA;
 }
@@ -124,8 +124,17 @@ scalar Foam::arbMesh::Shift(scalar lambda, vector& xyzOwn, vector& xyzNei, label
   // following remark is initially for flux::::
   // the physical flux is sum of the left and right numerical fluxes
   // in addition to a correction term (stabilization)
-  scalar lambdaLeft = (this->deltaw(xyzOwn, face)/this->jw(xyzOwn)) * (lambda - this->Uwn(xyzOwn, n));
-  scalar lambdaRight = (this->deltaw(xyzNei, face)/this->jw(xyzNei)) * (lambda - this->Uwn(xyzNei, n));
+  scalar deltaw = 0, jw = 0, Uwn = 0;
+  Info << "before lambdaLeft Shift" << endl;
+  deltaw = this->deltaw(xyzOwn, face); Info << "after deltaw" << endl;
+  jw = this->jw(xyzOwn);               Info << "after jw"     << endl;
+  Uwn = this->Uwn(xyzOwn, n);          Info << "Uwn"          << endl;
+  scalar lambdaLeft = (deltaw/jw) * (lambda - Uwn);
+  Info << "before lambdaRight Shift" << endl;
+  deltaw = this->deltaw(xyzNei, face);
+  jw = this->jw(xyzNei);
+  Uwn = this->Uwn(xyzNei, n);
+  scalar lambdaRight = (deltaw/jw) * (lambda - Uwn);
   scalar lambdaStab = 0;
   return (lambdaLeft + lambdaRight)/2 + lambdaStab;
 }

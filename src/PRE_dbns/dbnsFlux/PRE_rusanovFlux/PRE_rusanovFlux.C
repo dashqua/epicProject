@@ -175,10 +175,12 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     // Step 6b: Shift with mapping coefficient
     //#   include "createShiftFields.H"
     //#   include "mappingShift.H"
-    amsh.Shift(lambda1, xyzOwn, xyzNei, faceI, Sf/magSf);
-    amsh.Shift(lambda1, xyzOwn, xyzNei, faceI, Sf/magSf);
-    amsh.Shift(lambda1, xyzOwn, xyzNei, faceI, Sf/magSf);
-    
+    Info << "before Lambda Shift" << endl;
+    lambda1 = amsh.Shift(lambda1, xyzOwn, xyzNei, faceI, Sf/magSf);
+    lambda2 = amsh.Shift(lambda2, xyzOwn, xyzNei, faceI, Sf/magSf);
+    lambda3 = amsh.Shift(lambda3, xyzOwn, xyzNei, faceI, Sf/magSf);
+    Info << "after Lambda Shift" << endl;
+      
     scalar lambdaMax = max(max(lambda1,lambda2),lambda3);
 
     // Step 7: Compute flux differences

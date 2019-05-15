@@ -95,9 +95,11 @@ int main(int argc, char *argv[])
         forAll (beta, i)
         {
             // Solve the approximate Riemann problem for this time step
+            Info << "before computeFlux" << endl;
             dbnsFlux.computeFlux(aMsh);
+	    Info << "before computeFlux" << endl;
 
-            // Time integration
+	    // Time integration
             solve
             (
                 1.0/beta[i]*fvm::ddt(rho)

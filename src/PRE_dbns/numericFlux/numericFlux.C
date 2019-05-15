@@ -171,6 +171,7 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
 	xyzNei[2] = Cf[nei].z();
 	
         // calculate fluxes with reconstructed primitive variables at faces
+	Info << "before evaluateFlux" << endl;
         Flux::evaluateFlux
         (
             rhoFlux_[faceI],
@@ -196,7 +197,7 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
 	    amsh,
 	    faceI
         );
-	//Info <<  "points: " << mesh.faces()[faceI].points << endl;
+	Info << "before evaluateFlux" << endl;
     }
 
     // Update boundary field and values
