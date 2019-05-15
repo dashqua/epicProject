@@ -95,12 +95,13 @@ public:
         void createFields(pointVectorField MDN);
         void updateMeshDisplacement(const scalar t); 
         pointVectorField MDN();
-        scalar jw(scalarList& xyz);
-        scalar deltaw(scalarList&  xyz, label& face);
-        scalar Uwn(scalarList& xyz);
-        scalar Shift(scalar lambda, scalarList& xyzOwn, scalarList& xyzNei);
+        scalar jw(vector& xyz);
+        scalar deltaw(vector&  xyz, label& face);
+        scalar Uwn(vector& xyz, vector& n);
+        scalar Shift(scalar lambda, vector& xyzOwn, vector& xyzNei);
         scalar getMagSf(vectorList x);
         scalarList cross(scalarList A, scalarList B);
+        vector vw(vector& xyz);
         //- Construct from components
         //arbMesh(const scalar& data);
 

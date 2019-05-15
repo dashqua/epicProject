@@ -70,7 +70,7 @@ pointVectorField Foam::arbMesh::MDN()
   return MDN_;
 }
 
-scalar Foam::arbMesh::jw(scalarList& xyz)
+scalar Foam::arbMesh::jw(vector& xyz)
 {
     // Get Jw
     scalar pii = Foam::mathematicalConstant::pi;
@@ -86,7 +86,7 @@ scalar Foam::arbMesh::jw(scalarList& xyz)
     return jw;
 }
 
-scalar Foam::arbMesh::deltaw(scalarList& xyz, label& face)
+scalar Foam::arbMesh::deltaw(vector& xyz, label& face)
 {
   scalar x = xyz[0];
   scalar y = xyz[1];
@@ -107,22 +107,25 @@ scalar Foam::arbMesh::deltaw(scalarList& xyz, label& face)
   vectorList coords(4);
   coords[0] = coord0; coords[1] = coord1; coords[2] = coord2; coords[3] = coord3;//[coord0, coord1, coord2, coord3];
   //}
-  scalar da = this->getMagSf(coords);  
+  scalar da = this->getMagSf(coords);
+  Info << da << "   " << dA <<endl;
   return da/dA;
 }
 
-scalar Foam::arbMesh::Uwn(scalarList& xyz) //previous cchi
+scalar Foam::arbMesh::Uwn(vector& xyz, vector& n) //previous cchi
 {
-
+  vector vw = this->vw(xyz);
+  return Foam::dot( vw , n );
 }
 
-scalar Foam::arbMesh::Shift(scalar lambda, scalarList& xyzOwn, scalarList& xyzNei)
+scalar Foam::arbMesh::Shift(scalar lambda, vector& xyzOwn, vector& xyzNei)
 {
   //    return (lambdaw/jw) * (lambda - cchi);
   // TEMPORARY
   scalar x = xyzOwn[0];
-  scalar y = xyzOwn[1];    
+  scalar y = xyzOwn[1];
   //return ( this->deltaw(x, y)/this->jw(x, y) ) * (lambda - this->Uwn(x, y)) ;
+  return 0;
 }
 
 scalar Foam::arbMesh::getMagSf(vectorList x)
@@ -145,7 +148,7 @@ scalar Foam::arbMesh::getMagSf(vectorList x)
 	  tanVecZeta += x[i] * (iso[i].x() * (1.0+eta_GP*iso[i].y()) /4.0);
 	  tanVecEta += x[i] * (iso[i].y() * (1.0+zeta_GP*iso[i].x()) /4.0);
 	}
-      vector n = (tanVecZeta ^ tanVecEta)/mag(tanVecZeta ^ tanVecEta); //Sf
+      //vector n = (tanVecZeta ^ tanVecEta)/mag(tanVecZeta ^ tanVecEta); //Sf
       a = 4.0*mag(tanVecZeta ^ tanVecEta); //magSf
     }
   return a;
@@ -158,6 +161,19 @@ scalarList Foam::arbMesh::cross(scalarList A, scalarList B)
   res[1] = (A[2]*B[0] - A[0]*B[2]);
   res[2] = (A[0]*B[1] - A[1]*B[0]);
   return res;
+}
+
+vector Foam::arbMesh::vw(vector& xyz)
+{
+  scalar pii = Foam::mathematicalConstant::pi;
+  scalar Tper = 2;
+  scalar t = mesh_.time().value();
+  scalar x = xyz[0];
+  scalar y = xyz[1];
+  return vector( \
+    4*pii/Tper * Foam::sin(pii*x/10) * Foam::sin(2*pii*y/15) * Foam::cos(2*pii*t/Tper), \
+    6*pii/Tper * Foam::sin(pii*x/10) * Foam::sin(2*pii*y/15) * Foam::cos(4*pii*t/Tper), \
+    0);
 }
 
 // * * * * * * * * * * * * * Static Member Functions * * * * * * * * * * * * //

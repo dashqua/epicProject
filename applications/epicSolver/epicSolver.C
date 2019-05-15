@@ -67,8 +67,6 @@ int main(int argc, char *argv[])
   pointVectorField& MDN_ = MDN;
   arbMesh arbitraryMesh(MDN_, mesh, runTime);
   arbMesh& aMsh = arbitraryMesh;
-  //aMsh.createFields(mesh);
-  //aMsh.hello();
   
     Info<< "\nStarting time loop\n" << endl;
 
