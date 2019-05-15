@@ -175,9 +175,9 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     // Step 6b: Shift with mapping coefficient
     //#   include "createShiftFields.H"
     //#   include "mappingShift.H"
-    amsh.Shift(lambda1, xyzOwn, xyzNei);
-    amsh.Shift(lambda1, xyzOwn, xyzNei);
-    amsh.Shift(lambda1, xyzOwn, xyzNei);
+    amsh.Shift(lambda1, xyzOwn, xyzNei, faceI, Sf/magSf);
+    amsh.Shift(lambda1, xyzOwn, xyzNei, faceI, Sf/magSf);
+    amsh.Shift(lambda1, xyzOwn, xyzNei, faceI, Sf/magSf);
     
     scalar lambdaMax = max(max(lambda1,lambda2),lambda3);
 
@@ -228,6 +228,9 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     //rhoFlux = (amsh.deltaw(xRight,yRight)+amsh.deltaw(xLeft,yLeft))/2 * ( rhoFlux_E - (amsh.Uwn(xRight,yRight)+amsh.Uwn(xLeft,yLeft))/2 *   U );
     //rhoUFlux = rhoUFlux_E;
     //rhoEFlux = RhoEFlux_E;
+    
+    // the physical flux is sum of the left and right numerical fluxes
+    // in addition to a correction term (stabilization) 
     rhoFlux_TALE = \
       ( amsh.deltaw(xyzNei, faceI) * (rhoFlux_E - amsh.Uwn(xyzNei, Sf/magSf) * rhoRight) + \
         amsh.deltaw(xyzOwn, faceI) * (rhoFlux_E - amsh.Uwn(xyzOwn, Sf/magSf) * rhoRight) ) /2;
@@ -239,6 +242,8 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     rhoEFlux_TALE = \
       ( amsh.deltaw(xyzNei, faceI) * (rhoEFlux_E - amsh.Uwn(xyzNei, Sf/magSf) * rhoRight*eRight) + \
         amsh.deltaw(xyzOwn, faceI) * (rhoEFlux_E - amsh.Uwn(xyzOwn, Sf/magSf) * rhoLeft*eLeft) ) /2;
+    //stabilization here;;
+   
 }
 
 // ************************************************************************* //

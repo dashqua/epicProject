@@ -118,14 +118,16 @@ scalar Foam::arbMesh::Uwn(vector& xyz, vector n) //previous cchi
   return Foam::dot( vw , n );
 }
 
-scalar Foam::arbMesh::Shift(scalar lambda, vector& xyzOwn, vector& xyzNei)
+scalar Foam::arbMesh::Shift(scalar lambda, vector& xyzOwn, vector& xyzNei, label& face, vector n)
 {
   //    return (lambdaw/jw) * (lambda - cchi);
-  // TEMPORARY
-  scalar x = xyzOwn[0];
-  scalar y = xyzOwn[1];
-  //return ( this->deltaw(x, y)/this->jw(x, y) ) * (lambda - this->Uwn(x, y)) ;
-  return 0;
+  // following remark is initially for flux::::
+  // the physical flux is sum of the left and right numerical fluxes
+  // in addition to a correction term (stabilization)
+  scalar lambdaLeft = (this->deltaw(xyzOwn, face)/this->jw(xyzOwn)) * (lambda - this->Uwn(xyzOwn, n));
+  scalar lambdaRight = (this->deltaw(xyzNei, face)/this->jw(xyzNei)) * (lambda - this->Uwn(xyzNei, n));
+  scalar lambdaStab = 0;
+  return (lambdaLeft + lambdaRight)/2 + lambdaStab;
 }
 
 scalar Foam::arbMesh::getMagSf(vectorList x)

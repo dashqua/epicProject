@@ -98,7 +98,7 @@ public:
         scalar jw(vector& xyz);
         scalar deltaw(vector&  xyz, label& face);
         scalar Uwn(vector& xyz, vector n);
-        scalar Shift(scalar lambda, vector& xyzOwn, vector& xyzNei);
+        scalar Shift(scalar lambda, vector& xyzOwn, vector& xyzNei, label& face, vector n);
         scalar getMagSf(vectorList x);
         scalarList cross(scalarList A, scalarList B);
         vector vw(vector& xyz);

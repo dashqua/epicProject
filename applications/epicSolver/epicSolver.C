@@ -119,9 +119,11 @@ int main(int argc, char *argv[])
 #           include "updateFields.H"
         }
 
+	Info << "before updateMeshDisp" << endl;
 	//# include "updateMeshDisplacement.H"	
         aMsh.updateMeshDisplacement(runTime.value());
-
+	Info << "after updateMeshDisp" << endl;
+	
         runTime.write();
 
         Info<< "    ExecutionTime = "
