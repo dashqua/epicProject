@@ -97,7 +97,7 @@ public:
         pointVectorField MDN();
         scalar jw(vector& xyz);
         scalar deltaw(vector&  xyz, label& face);
-        scalar Uwn(vector& xyz, vector& n);
+        scalar Uwn(vector& xyz, vector n);
         scalar Shift(scalar lambda, vector& xyzOwn, vector& xyzNei);
         scalar getMagSf(vectorList x);
         scalarList cross(scalarList A, scalarList B);

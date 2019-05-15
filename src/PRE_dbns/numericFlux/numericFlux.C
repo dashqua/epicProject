@@ -144,7 +144,7 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
     //Get mesh information
     const fvMesh& mesh = this->mesh();
     const surfaceVectorField& Cf = mesh.Cf();
-    vector xyztmp(3), xyztmp2(3);
+    vector xyztmp = vector::zero, xyztmp2 = vector::zero;
     vector& xyzOwn = xyztmp;
     vector& xyzNei = xyztmp2;
     const double& t = mesh.time().value();

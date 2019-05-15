@@ -112,7 +112,7 @@ scalar Foam::arbMesh::deltaw(vector& xyz, label& face)
   return da/dA;
 }
 
-scalar Foam::arbMesh::Uwn(vector& xyz, vector& n) //previous cchi
+scalar Foam::arbMesh::Uwn(vector& xyz, vector n) //previous cchi
 {
   vector vw = this->vw(xyz);
   return Foam::dot( vw , n );
