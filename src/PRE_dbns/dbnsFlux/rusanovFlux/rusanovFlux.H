@@ -91,11 +91,12 @@ public:
 	    vector& xyzOwn,
 	    vector& xyzNei,
 	    const double& t,
-	    const scalar& magSfOld,
-	    const objectRegistry& db,
 	    arbMesh& amsh,
-	    label& faceI
-        ) const;
+	    label& faceI,
+	    const face& faceObj,
+	    const int& cellOwnerObj,
+	    const int& cellNeighbourObj
+	 ) const;
 };
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

@@ -96,10 +96,15 @@ public:
         void updateMeshDisplacement(const scalar t); 
         pointVectorField MDN();
         scalar jw(vector& xyz);
-        scalar deltaw(vector&  xyz, label& face);
+        scalar deltaw(scalar msgSf_, label& face);
+        vector apply_mapping(vector coord);
         scalar Uwn(vector& xyz, vector n);
         scalar Shift(scalar lambda, vector& xyzOwn, vector& xyzNei, label& face, vector n);
         scalar getMagSf(vectorList x);
+        scalar facto(scalar n);
+        scalar arccos(scalar x);
+        vector vec(vector A, vector B);
+        scalar len_vec(vector A, vector B);
         scalarList cross(scalarList A, scalarList B);
         vector vw(vector& xyz);
         //- Construct from components

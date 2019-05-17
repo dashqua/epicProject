@@ -93,7 +93,6 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
     const unallocLabelList& neighbour = this->mesh().neighbour();
 
     // Get the face area vector
-    const surfaceScalarField& magSfOld = this->mesh().magSf().oldTime();
     const surfaceVectorField& Sf = this->mesh().Sf();
     const surfaceScalarField& magSf = this->mesh().magSf();
 
@@ -149,9 +148,6 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
     vector& xyzNei = xyztmp2;
     const double& t = mesh.time().value();
 
-    // Get database to send to flux functions
-    const objectRegistry& db = gradT.db();
-          
     // Calculate fluxes at internal faces
     forAll (owner, faceI)
     {
@@ -171,8 +167,7 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
 	xyzNei[2] = Cf[nei].z();
 	
         // calculate fluxes with reconstructed primitive variables at faces
-	Info << "before evaluateFlux" << endl;
-        Flux::evaluateFlux
+	Flux::evaluateFlux
         (
             rhoFlux_[faceI],
             rhoUFlux_[faceI],
@@ -192,12 +187,12 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
 	    xyzOwn,
 	    xyzNei,
 	    t,
-	    magSfOld[faceI],
-	    db,
 	    amsh,
-	    faceI
+	    faceI,
+	    mesh.faces()[faceI],
+	    mesh.faceOwner()[faceI],
+	    mesh.faceNeighbour()[faceI]
         );
-	Info << "before evaluateFlux" << endl;
     }
 
     // Update boundary field and values
@@ -231,7 +226,6 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
         // Face areas
         const fvsPatchVectorField& pSf = Sf.boundaryField()[patchi];
         const fvsPatchScalarField& pMagSf = magSf.boundaryField()[patchi];
-	const fvsPatchScalarField& pMagSfOld = magSfOld.boundaryField()[patchi];
 	
         if (pp.coupled())
         {
@@ -329,10 +323,11 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
 		    xyzOwn,
 		    xyzNei,
 		    t,
-		    pMagSfOld[facei],
-		    db,
 		    amsh,
-		    facei
+		    facei,
+		    mesh.faces()[facei],
+		    mesh.faceOwner()[facei],
+		    mesh.faceNeighbour()[facei]
                 );
             }
         }
@@ -361,10 +356,11 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
 		    xyzOwn,
 		    xyzNei,
 		    t,
-		    pMagSfOld[facei],
-		    db,
 		    amsh,
-		    facei
+		    facei,
+		    mesh.faces()[facei],
+		    mesh.faceOwner()[facei],
+		    mesh.faceNeighbour()[facei]
                 );
             }
         }

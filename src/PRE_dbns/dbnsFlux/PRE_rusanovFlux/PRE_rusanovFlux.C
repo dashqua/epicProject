@@ -47,19 +47,20 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     vector& xyzOwn,
     vector& xyzNei,
     const double& t,
-    const scalar& magSfOld,
-    const objectRegistry& db,
     arbMesh& amsh,
-    label& faceI
+    label& faceI,
+    const face& faceObj,
+    const int& cellOwnerObj,
+    const int& cellNeighbourObj
 ) const
 {
   // Step 0: Conversion from U_TALE to U_E
   // Note : Own <=> Left ; Nei <=> Right
   // /!\ Flux are interpolated before in numerifFlux
-  scalar xLeft = xyzOwn[0];
-  scalar yLeft = xyzOwn[1];
-  scalar xRight = xyzNei[0];
-  scalar yRight = xyzNei[1];
+  //scalar xLeft = xyzOwn[0];
+  //scalar yLeft = xyzOwn[1];
+  //scalar xRight = xyzNei[0];
+  //scalar yRight = xyzNei[1];
   scalar jwLeft = amsh.jw(xyzOwn);
   scalar jwRight = amsh.jw(xyzNei);
   
@@ -175,11 +176,9 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     // Step 6b: Shift with mapping coefficient
     //#   include "createShiftFields.H"
     //#   include "mappingShift.H"
-    Info << "before Lambda Shift" << endl;
-    lambda1 = amsh.Shift(lambda1, xyzOwn, xyzNei, faceI, Sf/magSf);
-    lambda2 = amsh.Shift(lambda2, xyzOwn, xyzNei, faceI, Sf/magSf);
-    lambda3 = amsh.Shift(lambda3, xyzOwn, xyzNei, faceI, Sf/magSf);
-    Info << "after Lambda Shift" << endl;
+    lambda1 = amsh.Shift(lambda1, xyzOwn, xyzNei, faceI, Sf);
+    lambda2 = amsh.Shift(lambda2, xyzOwn, xyzNei, faceI, Sf);
+    lambda3 = amsh.Shift(lambda3, xyzOwn, xyzNei, faceI, Sf);
       
     scalar lambdaMax = max(max(lambda1,lambda2),lambda3);
 
@@ -232,18 +231,19 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     //rhoEFlux = RhoEFlux_E;
     
     // the physical flux is sum of the left and right numerical fluxes
-    // in addition to a correction term (stabilization) 
+    // in addition to a correction term (stabilization)
+    // /!\ DELTAW IS THE SAME FOR BOTH SIDES, IS RELATED TO FACE
     rhoFlux_TALE = \
-      ( amsh.deltaw(xyzNei, faceI) * (rhoFlux_E - amsh.Uwn(xyzNei, Sf/magSf) * rhoRight) + \
-        amsh.deltaw(xyzOwn, faceI) * (rhoFlux_E - amsh.Uwn(xyzOwn, Sf/magSf) * rhoRight) ) /2;
+      ( amsh.deltaw(magSf, faceI) * (rhoFlux_E - amsh.Uwn(xyzNei, Sf/magSf) * rhoRight) + \
+        amsh.deltaw(magSf, faceI) * (rhoFlux_E - amsh.Uwn(xyzOwn, Sf/magSf) * rhoRight) ) /2;
     //
     rhoUFlux_TALE = \
-      ( amsh.deltaw(xyzNei, faceI) * (rhoUFlux_E - amsh.Uwn(xyzNei, Sf/magSf) * URight) + \
-        amsh.deltaw(xyzOwn, faceI) * (rhoUFlux_E - amsh.Uwn(xyzOwn, Sf/magSf) * ULeft) ) /2;
+      ( amsh.deltaw(magSf, faceI) * (rhoUFlux_E - amsh.Uwn(xyzNei, Sf/magSf) * URight) + \
+        amsh.deltaw(magSf, faceI) * (rhoUFlux_E - amsh.Uwn(xyzOwn, Sf/magSf) * ULeft) ) /2;
     //
     rhoEFlux_TALE = \
-      ( amsh.deltaw(xyzNei, faceI) * (rhoEFlux_E - amsh.Uwn(xyzNei, Sf/magSf) * rhoRight*eRight) + \
-        amsh.deltaw(xyzOwn, faceI) * (rhoEFlux_E - amsh.Uwn(xyzOwn, Sf/magSf) * rhoLeft*eLeft) ) /2;
+      ( amsh.deltaw(magSf, faceI) * (rhoEFlux_E - amsh.Uwn(xyzNei, Sf/magSf) * rhoRight*eRight) + \
+        amsh.deltaw(magSf, faceI) * (rhoEFlux_E - amsh.Uwn(xyzOwn, Sf/magSf) * rhoLeft*eLeft) ) /2;
     //stabilization here;;
    
 }

@@ -95,9 +95,7 @@ int main(int argc, char *argv[])
         forAll (beta, i)
         {
             // Solve the approximate Riemann problem for this time step
-            Info << "before computeFlux" << endl;
             dbnsFlux.computeFlux(aMsh);
-	    Info << "before computeFlux" << endl;
 
 	    // Time integration
             solve
@@ -121,10 +119,8 @@ int main(int argc, char *argv[])
 #           include "updateFields.H"
         }
 
-	Info << "before updateMeshDisp" << endl;
 	//# include "updateMeshDisplacement.H"	
         aMsh.updateMeshDisplacement(runTime.value());
-	Info << "after updateMeshDisp" << endl;
 	
         runTime.write();
 

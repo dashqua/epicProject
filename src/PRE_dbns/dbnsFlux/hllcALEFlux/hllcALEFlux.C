@@ -48,10 +48,11 @@ void Foam::hllcALEFlux::evaluateFlux
     vector& xyzOwn,
     vector& xyzNei,
     const double& t,
-    const scalar& magSfOld,
-    const objectRegistry& db,
     arbMesh& amsh,
-    label& faceI
+    label& faceI,
+    const face& faceObj,
+    const int& cellOwnerObj,
+    const int& cellNeighbourObj
 ) const
 {
     // Step 1: decode left and right:
