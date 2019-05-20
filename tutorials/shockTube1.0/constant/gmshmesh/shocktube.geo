@@ -94,3 +94,12 @@ Volume(1) = {1};
 Physical Volume("box") = {1};
 //+
 Transfinite Surface {3};
+//+
+//+
+Recombine Surface{1,2,3,4,5,6};
+//+ UNCOMMENT THE FOLLOWING FOR QUADS
+//Mesh.Algorithm = 8;
+//Mesh.Algorithm3D = 6
+//Mesh.RecombineAll = 1;
+//Mesh.Recombine3DAll = 1;
+//Mesh.SubdivisionAlgorithm = 2;

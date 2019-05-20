@@ -89,8 +89,7 @@ scalar Foam::arbMesh::jw(vector& xyz)
 scalar Foam::arbMesh::deltaw(scalar magSf_, label& face)
 {
   //scalar id = mesh_.findCell(point(x,y,z));
-  scalar dA = 0;//mesh_.magSf()[id];
-  scalar da = 0;
+  scalar dA = 0, da = 0;//mesh_.magSf()[id];
   //forAll(mesh_.faces(), face)
   //{
   if (mesh_.faces()[face].size()==4)
@@ -99,44 +98,39 @@ scalar Foam::arbMesh::deltaw(scalar magSf_, label& face)
       const label& node1 = mesh_.faces()[face][1];
       const label& node2 = mesh_.faces()[face][2];
       const label& node3 = mesh_.faces()[face][3];
-      vector coord0 = mesh_.points()[node0];
-      vector coord1 = mesh_.points()[node1];
-      vector coord2 = mesh_.points()[node2];
-      vector coord3 = mesh_.points()[node3];
       vectorList coords(4);
-      coords[0] = coord0;
-      coords[1] = coord1;
-      coords[2] = coord2;
-      coords[3] = coord3;
+      coords[0] = mesh_.points()[node0]; // coord0;
+      coords[1] = mesh_.points()[node1]; // coord1;
+      coords[2] = mesh_.points()[node2]; //coord2;
+      coords[3] = mesh_.points()[node3]; //coord3;
       dA = this->getMagSf(coords);
-      coords[0] = this->apply_mapping(coord0);
-      coords[1] = this->apply_mapping(coord1);
-      coords[2] = this->apply_mapping(coord2);
-      coords[3] = this->apply_mapping(coord3);
-      da = this->getMagSf( coords );
-      Info << "size4:   " << da << "_______" << dA << "____________" << magSf_<<endl;
+      coords[0] = this->apply_mapping(coords[0]);
+      coords[1] = this->apply_mapping(coords[1]);
+      coords[2] = this->apply_mapping(coords[2]);
+      coords[3] = this->apply_mapping(coords[3]);
+      da = this->getMagSf(coords);
+      Info << "size4:\n da=" << da << "\ndA=" << dA << "\nmagSf_=" << magSf_<<endl;
       return da/dA;      
     }
-  else
+  else if (mesh_.faces()[face].size()==3)
     {
       const label& node0 = mesh_.faces()[face][0];
       const label& node1 = mesh_.faces()[face][1];
       const label& node2 = mesh_.faces()[face][2];
-      vector coord0 = mesh_.points()[node0];
-      vector coord1 = mesh_.points()[node1];
-      vector coord2 = mesh_.points()[node2];
       vectorList coords(3);
-      coords[0] = coord0; //this->apply_mapping(coord0);
-      coords[1] = coord1; //this->apply_mapping(coord1);
-      coords[2] = coord2; //this->apply_mapping(coord2);
+      coords[0] = mesh_.points()[node0]; //coord0; //this->apply_mapping(coord0);
+      coords[1] = mesh_.points()[node1]; //coord1; //this->apply_mapping(coord1);
+      coords[2] = mesh_.points()[node2]; // mesh_.points()[node0]; //coord2; //this->apply_mapping(coord2);
       dA = this->getMagSf( coords );
-      coords[0] = this->apply_mapping(coord0);
-      coords[1] = this->apply_mapping(coord1);
-      coords[2] = this->apply_mapping(coord2);
+      coords[0] = this->apply_mapping(coords[0]);
+      coords[1] = this->apply_mapping(coords[1]);
+      coords[2] = this->apply_mapping(coords[2]);
       da = this->getMagSf( coords );
       Info << "mesh.face:     " << mesh_.faces()[face] << endl;
-      Info << "size3:    " << da << "_______" << dA << "____________" << mesh_.magSf()[face]<<endl;
-
+      Info << "size3:\n da=" << da << "\n dA=" << dA
+	   << "\n mesh_.magSf()=" << mesh_.magSf()[face] << "\n magSf_=" << magSf_
+	   <<endl<<endl<<endl;
+      /*
       vectorList t_test(4);
       t_test[0] = vector(0,0,0);
       t_test[1] = vector(1,0,0);
@@ -144,8 +138,13 @@ scalar Foam::arbMesh::deltaw(scalar magSf_, label& face)
       t_test[3] = vector(0,1,0);
       scalar test = this->getMagSf( t_test );
       Info << "~~~~~  " << test << endl <<endl;
-
+      */
       return da/dA;
+    }
+  else
+    {
+      Info << "Problem in deltaw; area is null" << endl;
+      return 1; // 0;
     }
 }
 
@@ -179,14 +178,16 @@ scalar Foam::arbMesh::Shift(scalar lambda, vector& xyzOwn, vector& xyzNei, label
   scalar deltaw = 0, jw = 0, Uwn = 0;
   scalar magSf_ = mag(Sf);
   deltaw = this->deltaw(magSf_, face);
-  jw = this->jw(xyzOwn);
   vector n = Sf/magSf_;
+  //left
+  jw = this->jw(xyzOwn);
   Uwn = this->Uwn(xyzOwn, n);
-  scalar lambdaLeft = (deltaw/jw) * (lambda - Uwn);
-  //deltaw = this->deltaw(face);
+  scalar lambdaLeft = (deltaw/jw) * (lambda - Uwn); 
+  //right
   jw = this->jw(xyzNei);
   Uwn = this->Uwn(xyzNei, n);
   scalar lambdaRight = (deltaw/jw) * (lambda - Uwn);
+  //stab
   scalar lambdaStab = 0;
   return (lambdaLeft + lambdaRight)/2 + lambdaStab;
 }
@@ -214,29 +215,50 @@ scalar Foam::arbMesh::getMagSf(vectorList x)
     }
   if (x.size()==3)
     {
-      vector A = x[0];
-      vector B = x[1];
-      vector C = x[2];
-      vector K1_vec = this->vec(A, B);
-      vector K2_vec = this->vec(A, C);
-      scalar K1 = this->len_vec(A, B);
-      scalar K2 = this->len_vec(A, C);
-      scalar K12 = Foam::dot(K1_vec, K2_vec);
-      if (K1==0)   // security
-	{
-	  K1_vec = this->vec(B,C);
-	  K1     = this->len_vec(B,C);
-	}
-      if (K2==0)
-	{
-	  K2_vec = this->vec(B,C);
-	  K2     = this->len_vec(B,C);
-	}
-      const scalar tmp = K12/(K1*K2);
-      scalar theta = this->arccos( min(1.0, tmp )  );
-      a = K1 * K2 * Foam::sin(theta) / 2;
+      /*
+      vectorList vlist(3);
+      vlist[0] = x[0] - x[1];//x[0];
+      vlist[1] = x[1] - x[2];//x[1];
+      vlist[2] = x[2] - x[0];//x[2];
+      vectorList& vlist_ref = vlist;
+      Info << "before : " << vlist_ref << endl;
+      sortVlist(vlist_ref);
+      Info << "after : " << vlist_ref << endl;
+      scalar cc = mag(vlist_ref[2]), bb = mag(vlist_ref[1]), aa = mag(vlist_ref[0]);
+      Info << aa << endl << bb << endl << cc << endl;
+      Info << "square value : " << (aa+(bb+cc)) * (cc-(aa-bb)) * (cc+(aa-bb)) * (aa+(bb-cc)) << endl;
+      return Foam::sqrt( mag( (aa+(bb+cc)) * (cc-(aa-bb)) * (cc+(aa-bb)) * (aa+(bb-cc)) ) );
+      */
+      /*
+      Info << "C11:  " << ( (x[1].x()-x[0].x())*(x[2].y()-x[0].y()) - (x[2].x()-x[0].x())*(x[1].y()-x[0].y()) ) / 2
+	   << "  C22:" << ( (x[2].y()-x[0].y())*(x[1].x()-x[0].x()) - (x[1].y()-x[0].y())*(x[2].x()-x[0].x()) ) / 2
+	   << endl;
+      */
+      a =  ( (x[1].x()-x[0].x())*(x[2].y()-x[0].y()) - (x[2].x()-x[0].x())*(x[1].y()-x[0].y()) ) / 2;
     }
   return a;
+}
+
+void Foam::arbMesh::sortVlist(vectorList& vlist)
+{
+  if (mag(vlist[0]) > mag(vlist[1]))
+    {
+      vector& tmp = vlist[0];
+      vlist[0] = vlist[1];
+      vlist[1] = tmp;
+    }
+  if ( mag(vlist[0]) > mag(vlist[2]) ) 
+    {
+      vector& tmp = vlist[0];
+      vlist[0] = vlist[2];
+      vlist[2] = tmp;
+    }
+  if (    (mag(vlist[2]) < mag(vlist[1])) && (mag(vlist[2]) > mag(vlist[0]))  )
+    {
+      vector& tmp = vlist[1];
+      vlist[1] = vlist[2];
+      vlist[2] = tmp;
+    }
 }
 
 scalar arbMesh::facto(scalar n)

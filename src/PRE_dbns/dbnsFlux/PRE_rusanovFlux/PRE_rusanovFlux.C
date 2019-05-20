@@ -57,10 +57,6 @@ void Foam::PRE_rusanovFlux::evaluateFlux
   // Step 0: Conversion from U_TALE to U_E
   // Note : Own <=> Left ; Nei <=> Right
   // /!\ Flux are interpolated before in numerifFlux
-  //scalar xLeft = xyzOwn[0];
-  //scalar yLeft = xyzOwn[1];
-  //scalar xRight = xyzNei[0];
-  //scalar yRight = xyzNei[1];
   scalar jwLeft = amsh.jw(xyzOwn);
   scalar jwRight = amsh.jw(xyzNei);
   
