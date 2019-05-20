@@ -126,7 +126,7 @@ scalar Foam::arbMesh::deltaw(scalar magSf_, label& face)
       coords[1] = this->apply_mapping(coords[1]);
       coords[2] = this->apply_mapping(coords[2]);
       da = this->getMagSf( coords );
-      Info << "mesh.face:     " << mesh_.faces()[face] << endl;
+      Info << "mesh.face:     " << mesh_.faces()[face] << "\nface: " << face << endl;
       Info << "size3:\n da=" << da << "\n dA=" << dA
 	   << "\n mesh_.magSf()=" << mesh_.magSf()[face] << "\n magSf_=" << magSf_
 	   <<endl<<endl<<endl;

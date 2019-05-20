@@ -154,6 +154,17 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
         const label own = owner[faceI];
         const label nei = neighbour[faceI];
 
+	//test
+	const label& pta = mesh.faces()[faceI][0];
+	const label& ptb = mesh.faces()[faceI][1];
+	const label& ptc = mesh.faces()[faceI][2];
+	vectorList vlist(3);
+	vlist[0] = mesh.points()[pta];
+	vlist[1] = mesh.points()[ptb];
+	vlist[2] = mesh.points()[ptc];
+	Info << "good points:"  << amsh.getMagSf(vlist) << " versus MagSf():   " <<  mesh.magSf()[faceI]<< endl;
+	
+	
         const vector deltaRLeft = faceCentre[faceI] - cellCentre[own];
         const vector deltaRRight = faceCentre[faceI] - cellCentre[nei];
 
@@ -195,6 +206,8 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
         );
     }
 
+    Info << " Switches to boundary " << endl;
+    
     // Update boundary field and values
     forAll (rhoFlux_.boundaryField(), patchi)
     {
