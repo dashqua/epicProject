@@ -25,11 +25,11 @@ boundaryField
 {
     inlet
     {
-        type            slip;
+        type            cyclic;//slip;
     }
     outlet
     {
-        type            slip;
+        type            cyclic; //slip;
     }
     fixedWall
     {

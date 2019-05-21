@@ -24,11 +24,11 @@ boundaryField
 {
     inlet
     {
-        #include "init/boundaryUinlet"
+        tyoe cyclic;//#include "init/boundaryUinlet"
     }
     outlet
     {
-        type            slip;
+        type            cyclic;slip;
     }
     fixedWall
     {

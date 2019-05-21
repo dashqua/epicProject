@@ -171,7 +171,6 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
 	   << "\n\tBA: " << BA << "\t\nCA: "<< CA << endl 
 	   <<endl<<endl;
       */
-
 		   
         const label own = owner[faceI];
         const label nei = neighbour[faceI];
