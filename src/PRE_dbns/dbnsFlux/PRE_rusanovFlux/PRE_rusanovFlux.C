@@ -181,6 +181,9 @@ void Foam::PRE_rusanovFlux::evaluateFlux
 
     // Step 7: Compute flux differences
 
+    //MAJ: DO THE FOLLOWING (STAB) FOR TALE VARS
+    // SO IT WILL GIVE F_TALE
+    
     // Components of deltaF1
     const scalar diffF11 = lambdaMax*r1*l1rho;
     const vector diffF124 = lambdaMax*r1*l1U;
@@ -207,7 +210,7 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     const scalar fluxRight11 = rhoRight*contrVRight;
     const vector fluxRight124 = URight*fluxRight11 + normalVector*pRight;
     const scalar fluxRight15 = hRight*fluxRight11;
-
+    
     // Step 10: compute face flux 5-vector
     const scalar flux1 =
         0.5*(fluxLeft11 + fluxRight11 - (diffF11 + diffF21 + diffF31));
@@ -216,6 +219,8 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     const scalar flux5 =
         0.5*(fluxLeft15 + fluxRight15 - (diffF15 + diffF25 + diffF35));
 
+    //AVERAGE AND STAB IS MADE ABOVE
+    
     // Compute private data
     // NOTE : this is F_E
     scalar rhoFlux_E  = flux1*magSf;

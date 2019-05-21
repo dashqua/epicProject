@@ -175,6 +175,9 @@ scalar Foam::arbMesh::Shift(scalar lambda, vector& xyzOwn, vector& xyzNei, label
   // the physical flux is sum of the left and right numerical fluxes
   // in addition to a correction term (stabilization)
   // /!\ DELTAW IS THE SAME FOR THE TWO SIDES
+
+
+  // MAJ: APPLY EVERY METHODS TO AVERAGE OF XYZOWN AND XYZNEI
   scalar deltaw = 0, jw = 0, Uwn = 0;
   scalar magSf_ = mag(Sf);
   deltaw = this->deltaw(magSf_, face);
