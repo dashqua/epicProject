@@ -100,7 +100,7 @@ public:
         vector apply_mapping(vector coord);
         scalar Uwn(vector& xyz, vector n);
         scalar Shift(scalar lambda, vector& xyzOwn, vector& xyzNei, label& face, vector n);
-        scalar getMagSf(vectorList x);
+        vector getMagSf(vectorList x);
         void sortVlist(vectorList& vlist);
         scalar facto(scalar n);
         scalar arccos(scalar x);

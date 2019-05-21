@@ -103,12 +103,12 @@ scalar Foam::arbMesh::deltaw(scalar magSf_, label& face)
       coords[1] = mesh_.points()[node1]; // coord1;
       coords[2] = mesh_.points()[node2]; //coord2;
       coords[3] = mesh_.points()[node3]; //coord3;
-      dA = this->getMagSf(coords);
+      dA = mag(this->getMagSf(coords));
       coords[0] = this->apply_mapping(coords[0]);
       coords[1] = this->apply_mapping(coords[1]);
       coords[2] = this->apply_mapping(coords[2]);
       coords[3] = this->apply_mapping(coords[3]);
-      da = this->getMagSf(coords);
+      da = mag(this->getMagSf(coords));
       //Info << "size4:\n da=" << da << "\ndA=" << dA << "\nmagSf_=" << magSf_<<endl;
       return da/dA;      
     }
@@ -121,11 +121,11 @@ scalar Foam::arbMesh::deltaw(scalar magSf_, label& face)
       coords[0] = mesh_.points()[node0]; //coord0; //this->apply_mapping(coord0);
       coords[1] = mesh_.points()[node1]; //coord1; //this->apply_mapping(coord1);
       coords[2] = mesh_.points()[node2]; // mesh_.points()[node0]; //coord2; //this->apply_mapping(coord2);
-      dA = this->getMagSf( coords );
+      dA = mag(this->getMagSf( coords ));
       coords[0] = this->apply_mapping(coords[0]);
       coords[1] = this->apply_mapping(coords[1]);
       coords[2] = this->apply_mapping(coords[2]);
-      da = this->getMagSf( coords );
+      da = mag(this->getMagSf( coords ));
       //Info << "mesh.face:     " << mesh_.faces()[face] << "\nface: " << face << endl;
       //Info << "size3:\n da=" << da << "\n dA=" << dA
       //<< "\n mesh_.magSf()=" << mesh_.magSf()[face] << "\n magSf_=" << magSf_
@@ -195,12 +195,13 @@ scalar Foam::arbMesh::Shift(scalar lambda, vector& xyzOwn, vector& xyzNei, label
   return (lambdaLeft + lambdaRight)/2 + lambdaStab;
 }
 
-scalar Foam::arbMesh::getMagSf(vectorList x)
+vector Foam::arbMesh::getMagSf(vectorList x)
 { 
   vectorList iso(x.size());
   vector tanVecZeta = vector::zero;
   vector tanVecEta = vector::zero;
   scalar a = 0;
+  vector n = vector::zero;
   if (x.size()==4)
     {
       iso[0] = vector(-1,-1,0);
@@ -213,18 +214,23 @@ scalar Foam::arbMesh::getMagSf(vectorList x)
 	  tanVecZeta += x[i] * (iso[i].x() / 4.0);
 	  tanVecEta  += x[i] * (iso[i].y() / 4.0);
 	}
-      //vector n = (tanVecZeta ^ tanVecEta)/mag(tanVecZeta ^ tanVecEta); //Sf
-      a = 4.0*mag(tanVecZeta ^ tanVecEta); //magSf
+      n = (tanVecZeta ^ tanVecEta)/mag(tanVecZeta ^ tanVecEta); //Sf
+      //a = 4.0*mag(tanVecZeta ^ tanVecEta); //magSf
     }
   if (x.size()==3)
     {
+      /*
       vector A1 = x[1]-x[0], A2 = x[2]-x[0]; 
       a = Foam::sqrt( (A2.y()*A1.z()-A2.y()*A1.z()) * (A2.y()*A1.z()-A2.y()*A1.z()) +\
 		      (A1.x()*A2.z()-A2.x()*A1.z()) * (A1.x()*A2.z()-A2.x()*A1.z()) +\
 		      (A1.x()*A2.y()-A2.x()*A1.y()) * (A1.x()*A2.y()-A2.x()*A1.y()) \
 		      ) / 2 ;
+      */
+      vector BA = x[1] - x[0], CA = x[2] - x[0];
+      n = (BA ^ CA) / 2 ;
+      //a = mag(n);
     }
-  return a;
+  return n;
 }
 
 void Foam::arbMesh::sortVlist(vectorList& vlist)
