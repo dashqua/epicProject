@@ -48,7 +48,7 @@ void Foam::arbMesh::createFields(pointVectorField MDN_)
 
 void Foam::arbMesh::updateMeshDisplacement(const scalar t)
 {
-  Info << "mesh.face.size: " << mesh_.faces()[0].size() <<endl;
+  //Info << "mesh.face.size: " << mesh_.faces()[0].size() <<endl;
   const scalar Tper = 2;
   const scalar pii = Foam::mathematicalConstant::pi;
   const pointField& meshpoints = mesh_.points();
@@ -109,7 +109,7 @@ scalar Foam::arbMesh::deltaw(scalar magSf_, label& face)
       coords[2] = this->apply_mapping(coords[2]);
       coords[3] = this->apply_mapping(coords[3]);
       da = this->getMagSf(coords);
-      Info << "size4:\n da=" << da << "\ndA=" << dA << "\nmagSf_=" << magSf_<<endl;
+      //Info << "size4:\n da=" << da << "\ndA=" << dA << "\nmagSf_=" << magSf_<<endl;
       return da/dA;      
     }
   else if (mesh_.faces()[face].size()==3)
@@ -126,10 +126,10 @@ scalar Foam::arbMesh::deltaw(scalar magSf_, label& face)
       coords[1] = this->apply_mapping(coords[1]);
       coords[2] = this->apply_mapping(coords[2]);
       da = this->getMagSf( coords );
-      Info << "mesh.face:     " << mesh_.faces()[face] << "\nface: " << face << endl;
-      Info << "size3:\n da=" << da << "\n dA=" << dA
-	   << "\n mesh_.magSf()=" << mesh_.magSf()[face] << "\n magSf_=" << magSf_
-	   <<endl<<endl<<endl;
+      //Info << "mesh.face:     " << mesh_.faces()[face] << "\nface: " << face << endl;
+      //Info << "size3:\n da=" << da << "\n dA=" << dA
+      //<< "\n mesh_.magSf()=" << mesh_.magSf()[face] << "\n magSf_=" << magSf_
+      //  <<endl<<endl<<endl;
       /*
       vectorList t_test(4);
       t_test[0] = vector(0,0,0);
@@ -215,26 +215,11 @@ scalar Foam::arbMesh::getMagSf(vectorList x)
     }
   if (x.size()==3)
     {
-      /*
-      vectorList vlist(3);
-      vlist[0] = x[0] - x[1];//x[0];
-      vlist[1] = x[1] - x[2];//x[1];
-      vlist[2] = x[2] - x[0];//x[2];
-      vectorList& vlist_ref = vlist;
-      Info << "before : " << vlist_ref << endl;
-      sortVlist(vlist_ref);
-      Info << "after : " << vlist_ref << endl;
-      scalar cc = mag(vlist_ref[2]), bb = mag(vlist_ref[1]), aa = mag(vlist_ref[0]);
-      Info << aa << endl << bb << endl << cc << endl;
-      Info << "square value : " << (aa+(bb+cc)) * (cc-(aa-bb)) * (cc+(aa-bb)) * (aa+(bb-cc)) << endl;
-      return Foam::sqrt( mag( (aa+(bb+cc)) * (cc-(aa-bb)) * (cc+(aa-bb)) * (aa+(bb-cc)) ) );
-      */
-      /*
-      Info << "C11:  " << ( (x[1].x()-x[0].x())*(x[2].y()-x[0].y()) - (x[2].x()-x[0].x())*(x[1].y()-x[0].y()) ) / 2
-	   << "  C22:" << ( (x[2].y()-x[0].y())*(x[1].x()-x[0].x()) - (x[1].y()-x[0].y())*(x[2].x()-x[0].x()) ) / 2
-	   << endl;
-      */
-      a =  ( (x[1].x()-x[0].x())*(x[2].y()-x[0].y()) - (x[2].x()-x[0].x())*(x[1].y()-x[0].y()) ) / 2;
+      vector A1 = x[1]-x[0], A2 = x[2]-x[0]; 
+      a = Foam::sqrt( (A2.y()*A1.z()-A2.y()*A1.z()) * (A2.y()*A1.z()-A2.y()*A1.z()) +\
+		      (A1.x()*A2.z()-A2.x()*A1.z()) * (A1.x()*A2.z()-A2.x()*A1.z()) +\
+		      (A1.x()*A2.y()-A2.x()*A1.y()) * (A1.x()*A2.y()-A2.x()*A1.y()) \
+		      ) / 2 ;
     }
   return a;
 }
