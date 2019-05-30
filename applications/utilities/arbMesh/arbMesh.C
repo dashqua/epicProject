@@ -162,29 +162,37 @@ vector Foam::arbMesh::apply_mapping(vector coord)
   return res;
 }
 
-scalar Foam::arbMesh::Uwn(vector& xyz, vector n) //previous cchi
+scalar Foam::arbMesh::Uwn(vector& xyzOwn, vector& xyzNei, label& face) //previous cchi
 {
-  vector vw = this->vw(xyz);
+  // /!\ IMPLEMENTED ONLY FOR TRIANGLE ATM
+  const label& node0 = mesh_.faces()[face][0];
+  const label& node1 = mesh_.faces()[face][1];
+  const label& node2 = mesh_.faces()[face][2];
+  vectorList coords(3);
+  coords[0] = mesh_.points()[node0];
+  coords[1] = mesh_.points()[node1];
+  coords[2] = mesh_.points()[node2];
+  vector Sf = this->getMagSf( coords );
+  scalar magSf = mag(Sf);
+  vector n = Sf/magSf;
+
+  vector xyzAve = (xyzOwn + xyzNei) / 2 ;
+  vector vw = this->vw(xyzAve);
   return Foam::dot( vw , n );
 }
 
 scalar Foam::arbMesh::Shift(scalar lambda, vector& xyzOwn, vector& xyzNei, label& face, vector Sf)
 {
-  //    return (lambdaw/jw) * (lambda - cchi);
-  // following remark is initially for flux::::
-  // the physical flux is sum of the left and right numerical fluxes
-  // in addition to a correction term (stabilization)
-  // /!\ DELTAW IS THE SAME FOR THE TWO SIDES
-
-
   // MAJ: APPLY EVERY METHODS TO AVERAGE OF XYZOWN AND XYZNEI
-  scalar deltaw = 0, jw = 0, Uwn = 0;
+  vector xyzAve = (xyzOwn + xyzNei) / 2;
   scalar magSf_ = mag(Sf);
-  deltaw = this->deltaw(magSf_, face);
   vector n = Sf/magSf_;
+  scalar deltaw = this->deltaw(magSf_, face), \
+    jw = this->jw(xyzAve),                    \
+    Uwn = this->Uwn(xyzOwn, xyzNei, face),    \
+    lambda_res = (deltaw/jw) * (lambda - Uwn);
+  /*
   //left
-  jw = this->jw(xyzOwn);
-  Uwn = this->Uwn(xyzOwn, n);
   scalar lambdaLeft = (deltaw/jw) * (lambda - Uwn); 
   //right
   jw = this->jw(xyzNei);
@@ -192,7 +200,8 @@ scalar Foam::arbMesh::Shift(scalar lambda, vector& xyzOwn, vector& xyzNei, label
   scalar lambdaRight = (deltaw/jw) * (lambda - Uwn);
   //stab
   scalar lambdaStab = 0;
-  return (lambdaLeft + lambdaRight)/2 + lambdaStab;
+  */
+  return lambda_res;
 }
 
 vector Foam::arbMesh::getMagSf(vectorList x)
@@ -200,7 +209,7 @@ vector Foam::arbMesh::getMagSf(vectorList x)
   vectorList iso(x.size());
   vector tanVecZeta = vector::zero;
   vector tanVecEta = vector::zero;
-  scalar a = 0;
+  //scalar a = 0;
   vector n = vector::zero;
   if (x.size()==4)
     {

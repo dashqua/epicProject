@@ -98,7 +98,7 @@ public:
         scalar jw(vector& xyz);
         scalar deltaw(scalar msgSf_, label& face);
         vector apply_mapping(vector coord);
-        scalar Uwn(vector& xyz, vector n);
+        scalar Uwn(vector& xyzOwn, vector& xyzNei, label& face); //(vector& xyz, vector n); 
         scalar Shift(scalar lambda, vector& xyzOwn, vector& xyzNei, label& face, vector n);
         vector getMagSf(vectorList x);
         void sortVlist(vectorList& vlist);

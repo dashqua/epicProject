@@ -28,7 +28,7 @@ boundaryField
     }
     outlet
     {
-        type            cyclic;slip;
+      type            cyclic;//slip;
     }
     fixedWall
     {

@@ -232,8 +232,13 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     //rhoEFlux = RhoEFlux_E;
     
     // the physical flux is sum of the left and right numerical fluxes
-    // in addition to a correction term (stabilization)
-    // /!\ DELTAW IS THE SAME FOR BOTH SIDES, IS RELATED TO FACE
+    // in addition to a correction term (stabilization)     ( MADE UP ABOVE)
+    rhoFlux_TALE  = amsh.deltaw(magSf, faceI)*(rhoFlux_E  - amsh.Uwn(xyzOwn, xyzNei, faceI)*(rhoRight+rhoLeft)/2);
+    //
+    rhoUFlux_TALE = amsh.deltaw(magSf, faceI)*(rhoUFlux_E - amsh.Uwn(xyzOwn, xyzNei, faceI)*(URight+ULeft)/2);
+    //
+    rhoEFlux_TALE = amsh.deltaw(magSf, faceI)*(rhoEFlux_E - amsh.Uwn(xyzOwn, xyzNei, faceI)*(rhoRight*eRight+rhoLeft*eLeft)/2);
+    /*
     rhoFlux_TALE = \
       ( amsh.deltaw(magSf, faceI) * (rhoFlux_E - amsh.Uwn(xyzNei, Sf/magSf) * rhoRight) + \
         amsh.deltaw(magSf, faceI) * (rhoFlux_E - amsh.Uwn(xyzOwn, Sf/magSf) * rhoRight) ) /2;
@@ -245,8 +250,7 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     rhoEFlux_TALE = \
       ( amsh.deltaw(magSf, faceI) * (rhoEFlux_E - amsh.Uwn(xyzNei, Sf/magSf) * rhoRight*eRight) + \
         amsh.deltaw(magSf, faceI) * (rhoEFlux_E - amsh.Uwn(xyzOwn, Sf/magSf) * rhoLeft*eLeft) ) /2;
-    //stabilization here;;
-   
+    */   
 }
 
 // ************************************************************************* //
