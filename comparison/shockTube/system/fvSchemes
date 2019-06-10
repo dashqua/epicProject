@@ -10,48 +10,40 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    object      controlDict;
+    object      fvSchemes;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-startFrom       startTime;
+ddtSchemes
+{
+    default Euler;
+}
 
-startTime       0;
+gradSchemes
+{
+    default         Gauss linear;
+}
 
-stopAt          endTime;
+divSchemes
+{
+    dbns
+    {
+        flux           rusanov;
+        limiter        BarthJespersen;
+    }
+}
 
-endTime         2;
+laplacianSchemes
+{}
 
-deltaT          0.0001;
+interpolationSchemes
+{
+    default               none;
+    interpolate(rho)      linear;
+}
 
-writeControl    timeStep;
+snGradSchemes
+{}
 
-writeInterval   2;
-
-purgeWrite      0;
-
-writeFormat     ascii;
-
-writePrecision  6;
-
-writeCompression off; // compressed;
-
-timeFormat      general;
-
-timePrecision   6;
-
-graphFormat     raw;
-
-runTimeModifiable yes;
-
-adjustTimeStep  no;
-
-// maxCo
-maxCo           2.5;
-
-// maxDeltaT
-maxDeltaT       1;
-
-//elementType     triangle;
 
 // ************************************************************************* //

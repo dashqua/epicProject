@@ -27,28 +27,8 @@ License
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-/*
-Foam::arbMesh Foam::arbMesh(const fvMesh& mesh)
-{
-  Info << "hello arbMesh" << endl;
-}
-*/
-
-
-
-void Foam::arbMesh::hello()
-{
-  Info << "hello" << endl;
-}
-
-void Foam::arbMesh::createFields(pointVectorField MDN_)
-{
-  Info << endl;
-}
-
 void Foam::arbMesh::updateMeshDisplacement(const scalar t)
 {
-  //Info << "mesh.face.size: " << mesh_.faces()[0].size() <<endl;
   const scalar Tper = 2;
   const scalar pii = Foam::mathematicalConstant::pi;
   const pointField& meshpoints = mesh_.points();
@@ -186,7 +166,7 @@ scalar Foam::arbMesh::Shift(scalar lambda, vector& xyzOwn, vector& xyzNei, label
   // MAJ: APPLY EVERY METHODS TO AVERAGE OF XYZOWN AND XYZNEI
   vector xyzAve = (xyzOwn + xyzNei) / 2;
   scalar magSf_ = mag(Sf);
-  vector n = Sf/magSf_;
+  //vector n = Sf/magSf_;
   scalar deltaw = this->deltaw(magSf_, face), \
     jw = this->jw(xyzAve),                    \
     Uwn = this->Uwn(xyzOwn, xyzNei, face),    \
@@ -242,73 +222,6 @@ vector Foam::arbMesh::getMagSf(vectorList x)
   return n;
 }
 
-void Foam::arbMesh::sortVlist(vectorList& vlist)
-{
-  if (mag(vlist[0]) > mag(vlist[1]))
-    {
-      vector& tmp = vlist[0];
-      vlist[0] = vlist[1];
-      vlist[1] = tmp;
-    }
-  if ( mag(vlist[0]) > mag(vlist[2]) ) 
-    {
-      vector& tmp = vlist[0];
-      vlist[0] = vlist[2];
-      vlist[2] = tmp;
-    }
-  if (    (mag(vlist[2]) < mag(vlist[1])) && (mag(vlist[2]) > mag(vlist[0]))  )
-    {
-      vector& tmp = vlist[1];
-      vlist[1] = vlist[2];
-      vlist[2] = tmp;
-    }
-}
-
-scalar arbMesh::facto(scalar n)
-{
-  if (n>1)
-    {
-      return n*this->facto(n-1);
-    }
-  else
-    {
-      return 1;
-    }
-}
-
-scalar arbMesh::arccos(scalar x)
-{
-  scalar pii = Foam::mathematicalConstant::pi;
-  /*
-  scalar a = pii/2;
-  for (int i=0; i<n; i++)
-    {
-      a -= this->facto(2*n)/pow( this->facto(n)*Foam::pow(2,n) , 2 ) * pow(x, 2*n +1)/(2*n +1);
-      } */
-  return pii/2 - (x + x*x*x/6 + 3*x*x*x*x*x/40 + 15*x*x*x*x*x*x*x/336);
-}
-
-vector Foam::arbMesh::vec(vector A, vector B)
-{
-  return A - B;
-}
-
-scalar Foam::arbMesh::len_vec(vector A, vector B)
-{  // returns length between point A and B
-  vector AB = this->vec(A, B);
-  scalar x = AB.x(), y = AB.y();
-  return Foam::sqrt( x*x + y*y );
-}
-
-scalarList Foam::arbMesh::cross(scalarList A, scalarList B)
-{
-  scalarList res(3);
-  res[0] = (A[1]*B[2] - A[2]*B[1]);
-  res[1] = (A[2]*B[0] - A[0]*B[2]);
-  res[2] = (A[0]*B[1] - A[1]*B[0]);
-  return res;
-}
-
 vector Foam::arbMesh::vw(vector& xyz)
 {
   scalar pii = Foam::mathematicalConstant::pi;
@@ -320,6 +233,41 @@ vector Foam::arbMesh::vw(vector& xyz)
     4*pii/Tper * Foam::sin(pii*x/10) * Foam::sin(2*pii*y/15) * Foam::cos(2*pii*t/Tper), \
     6*pii/Tper * Foam::sin(pii*x/10) * Foam::sin(2*pii*y/15) * Foam::cos(4*pii*t/Tper), \
     0);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+void arbMesh::updateFields(scalar t)
+{
+  this->updateMeshDisplacement(t);
+  //const scalar Tper = 2;
+  const scalar pii = Foam::mathematicalConstant::pi;
+  // mean velocity field;
+  vector v_moy = vector::zero; v_moy[0] = 0.8944; v_moy[1] = 0.4472;
+    // analytics fields update;
+  const scalar I = 5.0, r = 1.5, gamma = 1.330, M = sqrt(v_moy[0]*v_moy[0]+v_moy[1]*v_moy[1]),
+    theta = 26.56*pii/180, x10 = 0, x20 = 0, v1 = .8944, v2 = .4472;
+  forAll(this->mesh_.C(),cell)
+  {
+    scalar x1 = this->mesh_.C()[cell].x();
+    scalar x2 = this->mesh_.C()[cell].y();
+
+    rho_theo_[cell] = 1 * Foam::pow( 1 - I*I*(gamma-1)*M*M/(8*pii*pii) * Foam::exp(f_fun(x1,x2,t,v_moy)) , 1/(gamma-1) );
+    p_theo_[cell] = 3 * Foam::pow( 1 - I*I*(gamma-1)*M*M/(8*pii*pii) * Foam::exp(f_fun(x1,x2,t,v_moy)) , gamma/(gamma-1));
+    // INCORRECT U THEO
+    U_theo_[cell] = vector(
+			   sqrt(v_moy[0]*v_moy[0]+v_moy[1]*v_moy[1]) * (Foam::cos(theta)- I*(x2-x20-v2*t)/(2*pii*r)*Foam::exp(f_fun(x1,x2,t,v_moy)/2)),
+			   sqrt(v_moy[0]*v_moy[0]+v_moy[1]*v_moy[1]) * (Foam::sin(theta)+ I*(x1-x10-v1*t)/(2*pii*r)*Foam::exp(f_fun(x1,x2,t,v_moy)/2)),
+			   0 );
+  }  
+}
+
+scalar arbMesh::f_fun(scalar x1,scalar x2, scalar t, vector v)
+{
+  scalar r = 1.5, x10 = 0, x20 = 0, v1 = v[0], v2 = v[1];
+  return (1 - (x1-x10-v1*t)*(x1-x10-v1*t) - (x2-x20-v2*t)*(x2-x20-v2*t) )/(r*r);
 }
 
 // * * * * * * * * * * * * * Static Member Functions * * * * * * * * * * * * //

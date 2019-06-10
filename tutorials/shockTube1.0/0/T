@@ -17,27 +17,40 @@ FoamFile
 
 dimensions      [0 0 0 1 0 0 0];
 
-// internalField   uniform 273.15;
-#include "init/internalT"
+internalField   uniform 273.15;
+//#include "init/internalT"
 
 
 boundaryField
 {
     inlet
     {
-        type            cyclic;//slip;
+      
+      type            slip;//wall; // slip;
     }
     outlet
     {
-        type            cyclic; //slip;
+      type            slip;//wall; //slip;
     }
-    fixedWall
+    left
     {
-        type            symmetryPlane;
+      type            slip;//wall;
     }
+    right
+    {
+      type            slip;//wall;
+    }
+    top
+    {
+      type            slip;//wall;
+    }
+    bottom
+    {
+      type            slip;//wall;
+    }    
     defaultFaces
     {
-        type            empty;
+      type            slip;//wall;
     }
 }
 

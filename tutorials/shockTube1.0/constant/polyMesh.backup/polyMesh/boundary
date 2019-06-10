@@ -9,43 +9,61 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       pointVectorField;
-    location    "0";
-    object      MDN;
+    class       polyBoundaryMesh;
+    location    "constant/polyMesh";
+    object      boundary;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 1 0 0 0 0 0];
-
-internalField   uniform (0 0 0);
-
-boundaryField
-{
+6
+(
     inlet
     {
-        type            calculated;
+        type            cyclic;
+        nFaces          30;
+        startFace       3006;
+	matchTolerance  0.0001;
+	neighbourPatch  outlet;
     }
     outlet
     {
-        type            calculated;
+        type            cyclic;
+        nFaces          30;
+        startFace       3036;
+	matchTolerance  0.0001;
+	neighbourPatch  inlet;
     }
     top
     {
-        type            calculated;
+        type            cyclic;
+        nFaces          40;
+        startFace       3066;
+	matchTolerance  0.0001;
+	neighbourPatch  bottom;
     }
     bottom
     {
-        type            calculated;
+        type            cyclic;
+        nFaces          40;
+        startFace       3106;
+	matchTolerance  0.0001;
+	neighbourPatch  top;
     }
     left
     {
-        type            calculated;
+        type            cyclic;
+        nFaces          600;
+        startFace       3146;
+	neighbourPatch  right;
     }
     right
     {
-        type            calculated;
+        type            cyclic;
+        nFaces          600;
+        startFace       3746;
+	neighbourPatch  left;
     }
-}
+)
 
 
 // ************************************************************************* //

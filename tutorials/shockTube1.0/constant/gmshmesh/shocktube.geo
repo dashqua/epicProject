@@ -80,7 +80,7 @@ Transfinite Surface {1} = {4, 8, 5, 1};
 //+
 Transfinite Surface {4} = {6, 2, 1, 5};
 //+
-Physical Surface("fixedWall") = {5, 6, 3, 4};
+//Physical Surface("fixedWall") = {5, 6, 3, 4};
 //+
 Physical Surface("inlet") = {1};
 //+
@@ -97,9 +97,19 @@ Transfinite Surface {3};
 //+
 //+
 Recombine Surface{1,2,3,4,5,6};
-//+ UNCOMMENT THE FOLLOWING FOR QUADS
+//+
+//+
+//+ UNCOMMENT THE FOLLOWING AT YOUR OWN RISK
 //Mesh.Algorithm = 8;
-//Mesh.Algorithm3D = 6
+//Mesh.Algorithm3D = 6;
 //Mesh.RecombineAll = 1;
 //Mesh.Recombine3DAll = 1;
 //Mesh.SubdivisionAlgorithm = 2;
+//+
+Physical Surface("top") = {3};
+//+
+Physical Surface("bottom") = {4};
+//+
+Physical Surface("left") = {5};
+//+
+Physical Surface("right") = {6};

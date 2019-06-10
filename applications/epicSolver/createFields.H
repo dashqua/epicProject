@@ -170,6 +170,7 @@
 //fvc::interpolate.volToPoint(rhoU, rhoUGrad, rhoUN)
 
     // mesh displacement vector
+    Info << "Reading field MDN\n" << endl;
     pointVectorField MDN
     (
         IOobject
@@ -184,3 +185,50 @@
 	dimensionedVector("MDN", dimLength, vector::zero)
     );
     MDN.write();
+
+    Info<< "Reading analytic fields\n" << endl;
+    volVectorField U_theo
+    (
+        IOobject
+        (
+            "U",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ, // MUST_READ,
+            IOobject::AUTO_WRITE
+        ),
+        mesh,
+	dimensionedVector
+	(
+	    "U_theo",         
+	    dimensionSet(0,1,-1,0,0,0,0),// Foam::sin(PI*C.component(1)/(2*height));
+	    Foam::vector(1 * Foam::cos(26.56), 1 * Foam::sin(26.56), 0)
+	)
+     );        //  	dimensionedVector("xN", dimensionSet(0,1,0,0,0,0,0), vector::zero)
+
+    volScalarField rho_theo
+    (
+        IOobject
+        (
+            "rho_theo",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        thermo->rho()
+    );
+
+    volScalarField p_theo
+    (
+        IOobject
+        (
+            "p_theo",
+            runTime.timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        3.0*rho/rho
+    );
+

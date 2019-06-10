@@ -9,53 +9,77 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volVectorField;
-    location    "0";
-    object      U;
+    class       dictionary;
+    object      blockMeshDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 1 -1 0 0 0 0];
+convertToMeters 1;
 
-internalField   uniform (.8944 .4472 0);
-//#include "init/internalU"
+vertices
+(
+    (0 0 0)
+    (10 0 0)
+    (10 10 0)
+    (0 10 0)
+    (0 0 1)
+    (10 0 1)
+    (10 10 1)
+    (0 10 1)
+);
 
-boundaryField
-{
-    inlet
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) (20 20 1) simpleGrading (1 1 1)
+);
+
+edges
+(
+);
+
+boundary
+(
+    inlet 
     {
-      //#include "init/boundaryUinlet"
-              type            noSlip;
-      /*
-      type fixedValue;
-      value uniform (.8944 4472 0);
-      */
+      faces ((0 4 7 3));
+      type cyclic;
+      neighbourPatch outlet;
     }
-    outlet
+    outlet 
     {
-      type            moSlip;
+      faces ((2 6 5 1));
+      type cyclic;
+      neighbourPatch inlet;
+    }
+    bottom 
+    {
+      faces ((1 5 4 0));
+      type cyclic;
+      neighbourPatch top;
+    }
+    top 
+    {
+      faces ((3 7 6 2));
+      type cyclic;
+      neighbourPatch bottom;
     }
     left
     {
-        type            noSlip;
+      faces  ((0 3 2 1));
+      type empty;//cyclic;
+      //neighbourPatch right;
     }
     right
     {
-        type            noSlip;
+      faces ((4 5 6 7));
+      type empty;//cyclic;
+      //neighbourPatch left;
     }
-    top
-    {
-        type            noSlip;
-    }
-    bottom
-    {
-        type            noSlip;
-    }      
-    defaultFaces
-    {
-        type            noSlip;
-    }
-}
+);
+
+mergePatchPairs
+(
+);
 
 
 // ************************************************************************* //

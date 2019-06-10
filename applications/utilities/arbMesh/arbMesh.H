@@ -66,7 +66,12 @@ private:
   pointVectorField& MDN_;
   const pointMesh& pMesh_;
   const fvMesh& mesh_;
-  //const label& face_;
+  volScalarField& rho_theo_;
+  volVectorField& U_theo_;
+  volScalarField& p_theo_;
+  volScalarField& rho_;
+  volVectorField& rhoU_;
+  volScalarField& rhoE_;
     // Private data
         //- Description of data_
         //scalar data_;
@@ -81,18 +86,22 @@ public:
   //- Static data staticData
   //static const dataType staticData;
         //- Construct from Field
-        explicit arbMesh(pointVectorField& MDN, const fvMesh& mesh, const Time& runTime)
+  explicit arbMesh(pointVectorField& MDN, const fvMesh& mesh, const Time& runTime,
+		   volScalarField& rho_theo, volVectorField& U_theo, volScalarField& p_theo, volScalarField& rho, volVectorField& rhoU, volScalarField& rhoE)
 	:
 	  MDN_(MDN),
 	  pMesh_(MDN.mesh()),
-	  mesh_(mesh)
+	  mesh_(mesh),
+	  rho_theo_(rho_theo),
+	  U_theo_(U_theo),
+	  p_theo_(p_theo),
+	  rho_(rho),
+	  rhoU_(rhoU),
+	  rhoE_(rhoE)
         {
-	  // for deltaw and Uwn, it is necessary to keep initial areas
 	  
 	}
 
-        void hello();
-        void createFields(pointVectorField MDN);
         void updateMeshDisplacement(const scalar t); 
         pointVectorField MDN();
         scalar jw(vector& xyz);
@@ -101,14 +110,16 @@ public:
         scalar Uwn(vector& xyzOwn, vector& xyzNei, label& face); //(vector& xyz, vector n); 
         scalar Shift(scalar lambda, vector& xyzOwn, vector& xyzNei, label& face, vector n);
         vector getMagSf(vectorList x);
-        void sortVlist(vectorList& vlist);
-        scalar facto(scalar n);
-        scalar arccos(scalar x);
-        vector vec(vector A, vector B);
-        scalar len_vec(vector A, vector B);
-        scalarList cross(scalarList A, scalarList B);
         vector vw(vector& xyz);
-        //- Construct from components
+  ////////////////////////////////////////////////
+  ////////////////////////////////////////////////
+  ////////////////////////////////////////////////
+  void updateFields(scalar t);
+  scalar f_fun(scalar x1, scalar x2, scalar t, vector v);
+
+
+
+  //- Construct from components
         //arbMesh(const scalar& data);
 
         //- Construct from Istream

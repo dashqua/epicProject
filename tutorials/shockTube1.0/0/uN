@@ -23,19 +23,27 @@ boundaryField
 {
     inlet
     {
-        type            cyclic;
+        type            calculated;
     }
     outlet
     {
-        type            cyclic;
+        type            calculated;
     }
-    fixedWall
+    top
     {
         type            calculated;
     }
-    global
+    bottom
     {
-        type            global;
+        type            calculated;
+    }
+    left
+    {
+        type            calculated;
+    }
+    right
+    {
+        type            calculated;
     }
 }
 

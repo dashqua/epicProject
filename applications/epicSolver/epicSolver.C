@@ -65,7 +65,14 @@ int main(int argc, char *argv[])
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
   pointVectorField& MDN_ = MDN;
-  arbMesh arbitraryMesh(MDN_, mesh, runTime);
+  volScalarField& rho_theo_ = rho_theo;
+  volVectorField& U_theo_ = U_theo;
+  volScalarField& p_theo_ = p_theo;
+  volScalarField& rho_ = rho;
+  volVectorField& rhoU_ = rhoU;
+  volScalarField& rhoE_ = rhoE;
+  arbMesh arbitraryMesh(MDN_, mesh, runTime, rho_theo_, U_theo_, p_theo_, rho_, rhoU_, rhoE_);
+  //Info << "rho_theo_ : " << rho_theo_ << endl;
   arbMesh& aMsh = arbitraryMesh;
   
     Info<< "\nStarting time loop\n" << endl;
@@ -95,6 +102,7 @@ int main(int argc, char *argv[])
         forAll (beta, i)
         {
             // Solve the approximate Riemann problem for this time step
+	  Info << "dbns compoute flux " << endl;
             dbnsFlux.computeFlux(aMsh);
 
 	    // Time integration
@@ -120,7 +128,7 @@ int main(int argc, char *argv[])
         }
 
 	//# include "updateMeshDisplacement.H"	
-        aMsh.updateMeshDisplacement(runTime.value());
+        aMsh.updateFields(runTime.value());//MeshDisplacement(runTime.value());
 	
         runTime.write();
 
