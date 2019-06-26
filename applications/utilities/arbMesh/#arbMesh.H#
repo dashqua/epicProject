@@ -117,7 +117,7 @@ public:
   void updateFields(scalar t);
   scalar f_fun(scalar x1, scalar x2, scalar t, vector v);
   tensor F(scalar x, scalar y, scalar z, scalar t);
-
+  tensor H(scalar x, scalar y, scalar z, scalar t);
   
 
 

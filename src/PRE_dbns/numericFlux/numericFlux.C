@@ -150,28 +150,7 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
 
     // Calculate fluxes at internal faces
     forAll (owner, faceI)
-    {
-      /*
-      const label& node0 = mesh.faces()[faceI][0];
-      const label& node1 = mesh.faces()[faceI][1];
-      const label& node2 = mesh.faces()[faceI][2];
-      vectorList tmp(3);
-      tmp[0] = mesh.points()[node0];
-      tmp[1] = mesh.points()[node1];
-      tmp[2] = mesh.points()[node2];
-      vector BA = tmp[1]-tmp[0], CA = tmp[2]-tmp[0];
-      
-      Info << "faceI: "<< faceI << endl
-	   << "\tmesh.faces()[faceI]: " << mesh.faces()[faceI]
-	   << "\n\tmesh.owner()[faceI]: " << mesh.owner()[faceI]
-	   << "\ntsize of owner: " << mesh.owner().size() << "\n\tsize of faces: " << mesh.faces().size()
-	   << "\n\tpoints: " << tmp << "\n\t getMagSf(points): " << mag(amsh.getMagSf( tmp  ))
-	   << "\n\tmagSf[faceI]: " << mesh.magSf()[faceI]
-	   << "\n\tscalarProd method: " << (BA ^ CA) /2
-	   << "\n\tBA: " << BA << "\t\nCA: "<< CA << endl 
-	   <<endl<<endl;
-      */
-		   
+    {		   
         const label own = owner[faceI];
         const label nei = neighbour[faceI];
 	

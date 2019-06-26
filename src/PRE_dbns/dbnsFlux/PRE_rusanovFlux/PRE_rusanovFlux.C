@@ -90,11 +90,17 @@ void Foam::PRE_rusanovFlux::evaluateFlux
 
     // normal vector
     vector normalVector = Sf/magSf;
+    // added normalVector for arbitrary modified surface
+    // /!\ NOT COMPLETED
+    vector normalVector_TALE = Sf/magSf;
 
     // Compute left and right contravariant velocities:
     const scalar contrVLeft  = (ULeft & normalVector);
     const scalar contrVRight = (URight & normalVector);
-
+    // added contravariant velocities for TALE;
+    const scalar contrVLeft_TALE  = (ULeft_TALE & normalVector);
+    const scalar contrVRight_TALE = (URight_TALE & normalVector);
+    
     // Compute left and right total enthalpies:
     const scalar hLeft = eLeft + pLeft/rhoLeft;
     const scalar hRight = eRight + pRight/rhoRight;
@@ -199,7 +205,9 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     const scalar diffF35 = lambdaMax*r3*l4e;
 
     // Step 8: compute left and right fluxes
-
+    // Initial L-R flux 5-vector is commented below
+    // this new one is adapted to compute TALE version
+    
     // Left flux 5-vector
     const scalar fluxLeft11 = rhoLeft*contrVLeft;
     const vector fluxLeft124 = ULeft*fluxLeft11 + normalVector*pLeft;
@@ -209,6 +217,18 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     const scalar fluxRight11 = rhoRight*contrVRight;
     const vector fluxRight124 = URight*fluxRight11 + normalVector*pRight;
     const scalar fluxRight15 = hRight*fluxRight11;
+
+    /*
+    // Left flux 5-vector
+    const scalar fluxLeft11 = rhoLeft*contrVLeft;
+    const vector fluxLeft124 = ULeft*fluxLeft11 + normalVector*pLeft;
+    const scalar fluxLeft15 = hLeft*fluxLeft11;
+
+    // Right flux 5-vector
+    const scalar fluxRight11 = rhoRight*contrVRight;
+    const vector fluxRight124 = URight*fluxRight11 + normalVector*pRight;
+    const scalar fluxRight15 = hRight*fluxRight11;
+    */
     
     // Step 10: compute face flux 5-vector
     const scalar flux1 =

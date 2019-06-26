@@ -270,6 +270,28 @@ scalar arbMesh::f_fun(scalar x1,scalar x2, scalar t, vector v)
   return (1 - (x1-x10-v1*t)*(x1-x10-v1*t) - (x2-x20-v2*t)*(x2-x20-v2*t) )/(r*r);
 }
 
+tensor arbMesh::F(scalar x, scalar y, scalar z, scalar t)
+{
+  scalar pii = Foam::mathematicalConstant::pi, Tper = 2;
+  tensor F(
+	   1+pii/5*Foam::cos(pii*x/10)*Foam::sin(2*pii*y/15)*Foam::sin(2*pii*t/Tper),
+	   4*pii/15*Foam::sin(pii*x/10)*Foam::cos(2*pii*y/15)*Foam::sin(2*pii*t/Tper),
+	   0,
+	   3*pii/20*Foam::cos(pii*x/10)*Foam::sin(2*pii*y/15)*Foam::sin(4*pii*t/Tper),
+	   1+pii/5*Foam::sin(pii*x/10)*Foam::cos(2*pii*y/15)*Foam::sin(4*pii*t/Tper),
+	   0,
+	   0,
+	   0,
+	   1
+  );
+  return F;
+}
+
+tensor arbMesh::H(scalar x, scalar y, scalar z, scalar t)
+{
+
+}
+
 // * * * * * * * * * * * * * Static Member Functions * * * * * * * * * * * * //
 
 
