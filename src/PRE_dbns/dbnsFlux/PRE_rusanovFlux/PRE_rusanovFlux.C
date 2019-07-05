@@ -178,17 +178,15 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     // Step 6b: Shift with mapping coefficient
     //#   include "createShiftFields.H"
     //#   include "mappingShift.H"
-    lambda1 = amsh.Shift(lambda1, xyzOwn, xyzNei, faceI, Sf);
-    lambda2 = amsh.Shift(lambda2, xyzOwn, xyzNei, faceI, Sf);
-    lambda3 = amsh.Shift(lambda3, xyzOwn, xyzNei, faceI, Sf);
+    lambda1_TALE = amsh.Shift(lambda1, xyzOwn, xyzNei, faceI, Sf);
+    lambda2_TALE = amsh.Shift(lambda2, xyzOwn, xyzNei, faceI, Sf);
+    lambda3_TALE = amsh.Shift(lambda3, xyzOwn, xyzNei, faceI, Sf);
       
     scalar lambdaMax = max(max(lambda1,lambda2),lambda3);
-
+    scalar lambdaMax_TALE = max(max(lambda1_TALE,lambda2_TALE),lambda3_TALE);
+    
     // Step 7: Compute flux differences
 
-    //MAJ: DO THE FOLLOWING (STAB) FOR TALE VARS
-    // SO IT WILL GIVE F_TALE
-    
     // Components of deltaF1
     const scalar diffF11 = lambdaMax*r1*l1rho;
     const vector diffF124 = lambdaMax*r1*l1U;
@@ -217,35 +215,43 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     const scalar fluxRight11 = rhoRight*contrVRight;
     const vector fluxRight124 = URight*fluxRight11 + normalVector*pRight;
     const scalar fluxRight15 = hRight*fluxRight11;
-
-    /*
-    // Left flux 5-vector
-    const scalar fluxLeft11 = rhoLeft*contrVLeft;
-    const vector fluxLeft124 = ULeft*fluxLeft11 + normalVector*pLeft;
-    const scalar fluxLeft15 = hLeft*fluxLeft11;
-
-    // Right flux 5-vector
-    const scalar fluxRight11 = rhoRight*contrVRight;
-    const vector fluxRight124 = URight*fluxRight11 + normalVector*pRight;
-    const scalar fluxRight15 = hRight*fluxRight11;
-    */
     
-    // Step 10: compute face flux 5-vector
+    // Step 10a: ASSEMBLY OF EULERIAN FLUX
+    //compute face flux 5-vector
     const scalar flux1 =
         0.5*(fluxLeft11 + fluxRight11 - (diffF11 + diffF21 + diffF31));
     const vector flux24 =
         0.5*(fluxLeft124 + fluxRight124 - (diffF124 + diffF224 + diffF324));
     const scalar flux5 =
         0.5*(fluxLeft15 + fluxRight15 - (diffF15 + diffF25 + diffF35));
-
-    //AVERAGE AND STAB IS MADE ABOVE
-    
     // Compute private data
-    // NOTE : this is F_E
     scalar rhoFlux_E  = flux1*magSf;
     vector rhoUFlux_E = flux24*magSf;
     scalar rhoEFlux_E = flux5*magSf;
 
+    // Step 10b: ASSEMBLY OF TALE FLUX    
+    //compute face flux 5-vector
+    const scalar flux1_TALE =   // density
+        0.5*(fluxLeft11 + fluxRight11 - (diffF11 + diffF21 + diffF31));
+    const vector flux24_TALE =  // momentum
+        0.5*(fluxLeft124 + fluxRight124 - (diffF124 + diffF224 + diffF324));
+    const scalar flux5_TALE =   // energy
+        0.5*(fluxLeft15 + fluxRight15 - (diffF15 + diffF25 + diffF35));
+    // Compute private data
+    scalar rhoFlux_TALE  = flux1*magSf;
+    vector rhoUFlux_TALE = flux24*magSf;
+    scalar rhoEFlux_E = flux5*magSf;
+
+
+
+
+
+    
+
+    
+
+
+    
     // Conversion back to F_TALE
     //rhoFlux = (amsh.deltaw(xRight,yRight)+amsh.deltaw(xLeft,yLeft))/2 * ( rhoFlux_E - (amsh.Uwn(xRight,yRight)+amsh.Uwn(xLeft,yLeft))/2 *   U );
     //rhoUFlux = rhoUFlux_E;
@@ -258,19 +264,6 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     rhoUFlux_TALE = amsh.deltaw(magSf, faceI)*(rhoUFlux_E - amsh.Uwn(xyzOwn, xyzNei, faceI)*(URight+ULeft)/2);
     //
     rhoEFlux_TALE = amsh.deltaw(magSf, faceI)*(rhoEFlux_E - amsh.Uwn(xyzOwn, xyzNei, faceI)*(rhoRight*eRight+rhoLeft*eLeft)/2);
-    /*
-    rhoFlux_TALE = \
-      ( amsh.deltaw(magSf, faceI) * (rhoFlux_E - amsh.Uwn(xyzNei, Sf/magSf) * rhoRight) + \
-        amsh.deltaw(magSf, faceI) * (rhoFlux_E - amsh.Uwn(xyzOwn, Sf/magSf) * rhoRight) ) /2;
-    //
-    rhoUFlux_TALE = \
-      ( amsh.deltaw(magSf, faceI) * (rhoUFlux_E - amsh.Uwn(xyzNei, Sf/magSf) * URight) + \
-        amsh.deltaw(magSf, faceI) * (rhoUFlux_E - amsh.Uwn(xyzOwn, Sf/magSf) * ULeft) ) /2;
-    //
-    rhoEFlux_TALE = \
-      ( amsh.deltaw(magSf, faceI) * (rhoEFlux_E - amsh.Uwn(xyzNei, Sf/magSf) * rhoRight*eRight) + \
-        amsh.deltaw(magSf, faceI) * (rhoEFlux_E - amsh.Uwn(xyzOwn, Sf/magSf) * rhoLeft*eLeft) ) /2;
-    */   
 }
 
 // ************************************************************************* //
