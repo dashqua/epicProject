@@ -37,6 +37,8 @@ Author
 #include "basicPsiThermo.H"
 #include "bound.H"
 #include "hllcFlux.H"
+#include "hllcALEFlux.H"
+#include "PRE_hllcALEFlux.H"
 #include "roeFlux.H"
 #include "rusanovFlux.H"
 #include "PRE_rusanovFlux.H"

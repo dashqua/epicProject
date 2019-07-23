@@ -5,6 +5,7 @@ $(OBJECTS_DIR)/PRE_rusanovFlux.o\
 $(OBJECTS_DIR)/betaFlux.o\
 $(OBJECTS_DIR)/hllcFlux.o\
 $(OBJECTS_DIR)/hllcALEFlux.o\
+$(OBJECTS_DIR)/PRE_hllcALEFlux.o\
 $(OBJECTS_DIR)/basicNumericFlux.o\
 $(OBJECTS_DIR)/newBasicNumericFlux.o\
 $(OBJECTS_DIR)/numericFluxes.o\

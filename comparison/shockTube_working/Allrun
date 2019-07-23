@@ -5,5 +5,6 @@
 # Get application name
 application="dbnsFoam"
 
+paraFoam -touch
 runApplication blockMesh
-runApplication $application | sudo perf record
+runApplication $application # | sudo perf record

@@ -60,6 +60,7 @@ dbnsFlux/PRE_rusanovFlux/PRE_rusanovFlux.C
 dbnsFlux/betaFlux/betaFlux.C
 dbnsFlux/hllcFlux/hllcFlux.C
 dbnsFlux/hllcALEFlux/hllcALEFlux.C
+dbnsFlux/PRE_hllcALEFlux/PRE_hllcALEFlux.C
 
 basicNumericFlux/basicNumericFlux.C
 basicNumericFlux/newBasicNumericFlux.C

@@ -28,8 +28,8 @@ divSchemes
 {
     dbns
     {
-        flux           rusanov;
-        limiter        BarthJespersen;
+        flux           hllcALE;
+	limiter        BarthJespersen;
     }
 }
 

@@ -5,6 +5,7 @@ PRE_rusanovFlux.o\
 betaFlux.o\
 hllcFlux.o\
 hllcALEFlux.o\
+PRE_hllcALEFlux.o\
 basicNumericFlux.o\
 newBasicNumericFlux.o\
 numericFluxes.o\
