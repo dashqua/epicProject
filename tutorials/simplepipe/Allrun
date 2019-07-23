@@ -1,0 +1,10 @@
+#!/bin/sh
+# Source tutorial run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+# Get application name
+application="epicSolver"
+
+# runApplication blockMesh
+runApplication paraFoam -touch
+runApplication $application # | sudo perf record
