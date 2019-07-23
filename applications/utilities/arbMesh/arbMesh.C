@@ -254,6 +254,8 @@ void arbMesh::updateFields(scalar t)
     scalar x1 = this->mesh_.C()[cell].x();
     scalar x2 = this->mesh_.C()[cell].y();
 
+    vector tmp_vec = vector(x1, x2, 0);
+    JW_[cell] = this->jw( tmp_vec );
     rho_theo_[cell] = 1 * Foam::pow( 1 - I*I*(gamma-1)*M*M/(8*pii*pii) * Foam::exp(f_fun(x1,x2,t,v_moy)) , 1/(gamma-1) );
     p_theo_[cell] = 3 * Foam::pow( 1 - I*I*(gamma-1)*M*M/(8*pii*pii) * Foam::exp(f_fun(x1,x2,t,v_moy)) , gamma/(gamma-1));
     // INCORRECT U THEO
@@ -270,7 +272,7 @@ scalar arbMesh::f_fun(scalar x1,scalar x2, scalar t, vector v)
   return (1 - (x1-x10-v1*t)*(x1-x10-v1*t) - (x2-x20-v2*t)*(x2-x20-v2*t) )/(r*r);
 }
 
-tensor arbMesh::F(scalar x, scalar y, scalar z, scalar t)
+tensor arbMesh::Fw(scalar x, scalar y, scalar z, scalar t)
 {
   scalar pii = Foam::mathematicalConstant::pi, Tper = 2;
   tensor F(
@@ -287,10 +289,23 @@ tensor arbMesh::F(scalar x, scalar y, scalar z, scalar t)
   return F;
 }
 
-tensor arbMesh::H(scalar x, scalar y, scalar z, scalar t)
+tensor arbMesh::cross(tensor& A, tensor &B)
 {
-
+  tensor C = A;
+  for (int i=0; i<A.dim1(); i++)
+    {
+      for (int j=0; j<B.dim2(); j++)
+	{
+	  C[i,j]
+	}
+    }
 }
+
+/*
+tensor arbMesh::Hw(scalar x, scalar y, scalar z, scalar t)
+{
+  return this->Fw(x,y,z,t)
+}*/
 
 // * * * * * * * * * * * * * Static Member Functions * * * * * * * * * * * * //
 

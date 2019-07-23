@@ -186,6 +186,18 @@
     );
     MDN.write();
 
+    volScalarField JW
+    (
+     IOobject
+     ("JW_",
+      runTime.timeName(),
+      mesh,
+      IOobject::NO_READ,
+      IOobject::AUTO_WRITE
+      ),
+     (1 * rho) - thermo->rho()
+     );
+
     Info<< "Reading analytic fields\n" << endl;
     volVectorField U_theo
     (

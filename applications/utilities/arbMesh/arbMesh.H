@@ -72,6 +72,7 @@ private:
   volScalarField& rho_;
   volVectorField& rhoU_;
   volScalarField& rhoE_;
+  volScalarField& JW_;
     // Private data
         //- Description of data_
         //scalar data_;
@@ -87,7 +88,7 @@ public:
   //static const dataType staticData;
         //- Construct from Field
   explicit arbMesh(pointVectorField& MDN, const fvMesh& mesh, const Time& runTime,
-		   volScalarField& rho_theo, volVectorField& U_theo, volScalarField& p_theo, volScalarField& rho, volVectorField& rhoU, volScalarField& rhoE)
+		   volScalarField& rho_theo, volVectorField& U_theo, volScalarField& p_theo, volScalarField& rho, volVectorField& rhoU, volScalarField& rhoE, volScalarField& JW)
 	:
 	  MDN_(MDN),
 	  pMesh_(MDN.mesh()),
@@ -97,7 +98,8 @@ public:
 	  p_theo_(p_theo),
 	  rho_(rho),
 	  rhoU_(rhoU),
-	  rhoE_(rhoE)
+	  rhoE_(rhoE),
+	  JW_(JW)
         {
 	  
 	}

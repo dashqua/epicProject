@@ -17,8 +17,7 @@ FoamFile
 
 dimensions      [1 -1 -2 0 0 0 0];
 
-internalField uniform 1;//nonuniform List<scalar>
-/*
+internalField   nonuniform List<scalar>
 100
 (
 303975
@@ -123,34 +122,25 @@ internalField uniform 1;//nonuniform List<scalar>
 101325
 )
 ;
-*/
 
 boundaryField
 {
     inlet
     {
-        type            cyclic;
+        type            slip;
     }
     outlet
     {
-        type            cyclic;
+        type            slip;
     }
     bottom
     {
-        type            cyclic;
+        type            symmetryPlane;
     }
     top
     {
-        type            cyclic;
+        type            symmetryPlane;
     }
-    left
-    {
-      type            empty;//cyclic;
-    }
-    right
-    {
-      type            empty;//cyclic;
-    }      
     defaultFaces
     {
         type            empty;

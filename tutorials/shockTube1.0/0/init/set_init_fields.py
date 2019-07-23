@@ -37,3 +37,22 @@ f.close()
     #303975
 #101325
 
+
+
+strval=""
+for z in range(nbeq):
+    for i in range(nbeqq2):
+        strval+="1"
+        for j in range(nbeqq2 -1):
+            strval+="3"
+
+content ="// internal Field uniform 273.15;  \n\
+internalField nonuniform List<scalar> \n\
+%d                                    \n\
+(                                     \n\
+%s                                    \n\
+)                                     \n\
+;" % (nbe,strval)
+f = open(sys.argv[0] + "internalp", "w")
+f.write(content)
+f.close()

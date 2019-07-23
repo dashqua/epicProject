@@ -56,23 +56,22 @@ void Foam::PRE_rusanovFlux::evaluateFlux
 {
   // Step 0: Conversion from U_TALE to U_E
   // Note : Own <=> Left ; Nei <=> Right
-  // /!\ Flux are interpolated before in numerifFlux
   scalar jwLeft = amsh.jw(xyzOwn);
   scalar jwRight = amsh.jw(xyzNei);
   
   //scalar& rhoFlux = rhoFlux_TALE / jw;
   //vector& rhoUFlux_TALE;
   //scalar& rhoEFlux_TALE;
-  const scalar& pLeft = pLeft_TALE / jwLeft;
-  const scalar& pRight = pRight_TALE / jwRight;
-  const vector& ULeft = ULeft_TALE / jwLeft;
-  const vector& URight = URight_TALE / jwRight;
-  const scalar& TLeft = TLeft_TALE/ jwLeft;
-  const scalar& TRight = TRight_TALE / jwRight;
-  const scalar& RLeft = RLeft_TALE / jwLeft;
-  const scalar& RRight = RRight_TALE / jwRight;
-  const scalar& CvLeft = CvLeft_TALE / jwLeft;
-  const scalar& CvRight = CvRight_TALE / jwRight;
+  const scalar& pLeft = pLeft_TALE ;/// jwLeft;
+  const scalar& pRight = pRight_TALE ;/// jwRight;
+  const vector& ULeft = ULeft_TALE ;/// jwLeft;
+  const vector& URight = URight_TALE ;/// jwRight;
+  const scalar& TLeft = TLeft_TALE  ;/// jwLeft;
+  const scalar& TRight = TRight_TALE ;/// jwRight;
+  const scalar& RLeft = RLeft_TALE ;/// jwLeft;
+  const scalar& RRight = RRight_TALE ;/// jwRight;
+  const scalar& CvLeft = CvLeft_TALE ;/// jwLeft;
+  const scalar& CvRight = CvRight_TALE ;/// jwRight;
   
   // Step 1: decode rho left and right:
     scalar rhoLeft = pLeft/(RLeft*TLeft);
@@ -178,9 +177,9 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     // Step 6b: Shift with mapping coefficient
     //#   include "createShiftFields.H"
     //#   include "mappingShift.H"
-    lambda1_TALE = amsh.Shift(lambda1, xyzOwn, xyzNei, faceI, Sf);
-    lambda2_TALE = amsh.Shift(lambda2, xyzOwn, xyzNei, faceI, Sf);
-    lambda3_TALE = amsh.Shift(lambda3, xyzOwn, xyzNei, faceI, Sf);
+    scalar lambda1_TALE = amsh.Shift(lambda1, xyzOwn, xyzNei, faceI, Sf);
+    scalar lambda2_TALE = amsh.Shift(lambda2, xyzOwn, xyzNei, faceI, Sf);
+    scalar lambda3_TALE = amsh.Shift(lambda3, xyzOwn, xyzNei, faceI, Sf);
       
     scalar lambdaMax = max(max(lambda1,lambda2),lambda3);
     scalar lambdaMax_TALE = max(max(lambda1_TALE,lambda2_TALE),lambda3_TALE);
@@ -229,20 +228,6 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     vector rhoUFlux_E = flux24*magSf;
     scalar rhoEFlux_E = flux5*magSf;
 
-    // Step 10b: ASSEMBLY OF TALE FLUX    
-    //compute face flux 5-vector
-    const scalar flux1_TALE =   // density
-        0.5*(fluxLeft11 + fluxRight11 - (diffF11 + diffF21 + diffF31));
-    const vector flux24_TALE =  // momentum
-        0.5*(fluxLeft124 + fluxRight124 - (diffF124 + diffF224 + diffF324));
-    const scalar flux5_TALE =   // energy
-        0.5*(fluxLeft15 + fluxRight15 - (diffF15 + diffF25 + diffF35));
-    // Compute private data
-    scalar rhoFlux_TALE  = flux1*magSf;
-    vector rhoUFlux_TALE = flux24*magSf;
-    scalar rhoEFlux_E = flux5*magSf;
-
-
 
 
 
@@ -259,11 +244,11 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     
     // the physical flux is sum of the left and right numerical fluxes
     // in addition to a correction term (stabilization)     ( MADE UP ABOVE)
-    rhoFlux_TALE  = amsh.deltaw(magSf, faceI)*(rhoFlux_E  - amsh.Uwn(xyzOwn, xyzNei, faceI)*(rhoRight+rhoLeft)/2);
+    rhoFlux_TALE  = rhoFlux_E;//amsh.deltaw(magSf, faceI)*(rhoFlux_E  - amsh.Uwn(xyzOwn, xyzNei, faceI)*(rhoRight+rhoLeft)/2);
     //
-    rhoUFlux_TALE = amsh.deltaw(magSf, faceI)*(rhoUFlux_E - amsh.Uwn(xyzOwn, xyzNei, faceI)*(URight+ULeft)/2);
+    rhoUFlux_TALE = rhoUFlux_E;//amsh.deltaw(magSf, faceI)*(rhoUFlux_E - amsh.Uwn(xyzOwn, xyzNei, faceI)*(URight+ULeft)/2);
     //
-    rhoEFlux_TALE = amsh.deltaw(magSf, faceI)*(rhoEFlux_E - amsh.Uwn(xyzOwn, xyzNei, faceI)*(rhoRight*eRight+rhoLeft*eLeft)/2);
+    rhoEFlux_TALE = rhoEFlux_E;//amsh.deltaw(magSf, faceI)*(rhoEFlux_E - amsh.Uwn(xyzOwn, xyzNei, faceI)*(rhoRight*eRight+rhoLeft*eLeft)/2);
 }
 
 // ************************************************************************* //

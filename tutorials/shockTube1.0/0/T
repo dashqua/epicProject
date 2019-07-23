@@ -34,23 +34,23 @@ boundaryField
     }
     left
     {
-      type            slip;//wall;
+      type            symmetryPlane;//slip;//wall;
     }
     right
     {
-      type            slip;//wall;
+      type            symmetryPlane;//slip;//wall;
     }
     top
     {
-      type            slip;//wall;
+      type            symmetryPlane;//slip;//wall;
     }
     bottom
     {
-      type            slip;//wall;
+      type            symmetryPlane;//slip;//wall;
     }    
     defaultFaces
     {
-      type            slip;//wall;
+      type            empty;//slip;//wall;
     }
 }
 

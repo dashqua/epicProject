@@ -6,4 +6,4 @@
 application="dbnsFoam"
 
 runApplication blockMesh
-runApplication $application # | sudo perf record
+runApplication $application | sudo perf record

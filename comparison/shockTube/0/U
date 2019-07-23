@@ -17,33 +17,25 @@ FoamFile
 
 dimensions      [0 1 -1 0 0 0 0];
 
-internalField   uniform (.8944 .4472 0);
+internalField   uniform (0 0 0);
 
 boundaryField
 {
     inlet
     {
-        type            cyclic;
+        type            slip;
     }
     outlet
     {
-        type            cyclic;
+        type            slip;
     }
     bottom
     {
-        type            cyclic;
+        type            symmetryPlane;
     }
     top
     {
-        type            cyclic;
-    }
-    left
-    {
-      type            empty;//cyclic;
-    }
-    right
-    {
-      type            empty;//cyclic;
+        type            symmetryPlane;
     }
     defaultFaces
     {

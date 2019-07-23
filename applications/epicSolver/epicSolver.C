@@ -71,10 +71,11 @@ int main(int argc, char *argv[])
   volScalarField& rho_ = rho;
   volVectorField& rhoU_ = rhoU;
   volScalarField& rhoE_ = rhoE;
-  arbMesh arbitraryMesh(MDN_, mesh, runTime, rho_theo_, U_theo_, p_theo_, rho_, rhoU_, rhoE_);
+  volScalarField& JW_ = JW;
+  arbMesh arbitraryMesh(MDN_, mesh, runTime, rho_theo_, U_theo_, p_theo_, rho_, rhoU_, rhoE_, JW_);
   //Info << "rho_theo_ : " << rho_theo_ << endl;
   arbMesh& aMsh = arbitraryMesh;
-  
+
     Info<< "\nStarting time loop\n" << endl;
 
     // Runge-Kutta coefficient
@@ -126,6 +127,9 @@ int main(int argc, char *argv[])
 
 #           include "updateFields.H"
         }
+
+	Info << "JW[51]: " << JW_[51] <<endl;
+	Info << "rho[51]: " << rho[51] << endl;
 
 	//# include "updateMeshDisplacement.H"	
         aMsh.updateFields(runTime.value());//MeshDisplacement(runTime.value());

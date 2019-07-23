@@ -25,7 +25,7 @@ boundaryField
     inlet
     {
       //#include "init/boundaryUinlet"
-              type            noSlip;
+      type            slip;//noSlip;
       /*
       type fixedValue;
       value uniform (.8944 4472 0);
@@ -33,27 +33,27 @@ boundaryField
     }
     outlet
     {
-      type            moSlip;
+      type            slip;//noSlip;
     }
     left
     {
-        type            noSlip;
+      type            symmetryPlane;//noSlip;
     }
     right
     {
-        type            noSlip;
+      type            symmetryPlane;//noSlip;
     }
     top
     {
-        type            noSlip;
+      type            symmetryPlane;//noSlip;
     }
     bottom
     {
-        type            noSlip;
+      type            symmetryPlane;//noSlip;
     }      
     defaultFaces
     {
-        type            noSlip;
+      type            empty;//noSlip;
     }
 }
 
