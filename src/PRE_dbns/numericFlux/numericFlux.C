@@ -146,8 +146,9 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
     vector xyztmp = vector::zero, xyztmp2 = vector::zero;
     vector& xyzOwn = xyztmp;
     vector& xyzNei = xyztmp2;
-    const double& t = mesh.time().value();
-
+    // const double& t = mesh.time().value();
+    const vector& dotX = amsh.dotX();
+    
     // Calculate fluxes at internal faces
     forAll (owner, faceI)
     {		   
@@ -186,12 +187,9 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
             magSf[faceI],
 	    xyzOwn,
 	    xyzNei,
-	    t,
 	    amsh,
 	    faceI,
-	    mesh.faces()[faceI],
-	    mesh.faceOwner()[faceI],
-	    mesh.faceNeighbour()[faceI]
+	    dotX
         );
     }
 
@@ -324,12 +322,9 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
                     pMagSf[facei],
 		    xyzOwn,
 		    xyzNei,
-		    t,
 		    amsh,
 		    facei,
-		    mesh.faces()[facei],
-		    mesh.faceOwner()[facei],
-		    mesh.faceNeighbour()[facei]
+		    dotX
                 );
             }
         }
@@ -357,13 +352,10 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
                     pMagSf[facei],
 		    xyzOwn,
 		    xyzNei,
-		    t,
 		    amsh,
 		    facei,
-		    mesh.faces()[facei],
-		    mesh.faceOwner()[facei],
-		    mesh.faceNeighbour()[facei]
-                );
+		    dotX
+		 );
             }
         }
     }

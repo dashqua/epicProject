@@ -46,12 +46,9 @@ void Foam::PRE_rusanovFlux::evaluateFlux
     const scalar& magSf,
     vector& xyzOwn,
     vector& xyzNei,
-    const double& t,
     arbMesh& amsh,
     label& faceI,
-    const face& faceObj,
-    const int& cellOwnerObj,
-    const int& cellNeighbourObj
+    const vector& dotX
 ) const
 {
   // Step 0: Conversion from U_TALE to U_E

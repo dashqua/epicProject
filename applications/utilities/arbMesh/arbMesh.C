@@ -235,6 +235,11 @@ vector Foam::arbMesh::vw(vector& xyz)
     0);
 }
 
+vector arbMesh::dotX()
+{
+  return vector::zero;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -289,6 +294,7 @@ tensor arbMesh::Fw(scalar x, scalar y, scalar z, scalar t)
   return F;
 }
 
+/*
 tensor arbMesh::cross(tensor& A, tensor &B)
 {
   tensor C = A;
@@ -300,8 +306,9 @@ tensor arbMesh::cross(tensor& A, tensor &B)
 	}
     }
 }
+*/
 
-/*
+ /*
 tensor arbMesh::Hw(scalar x, scalar y, scalar z, scalar t)
 {
   return this->Fw(x,y,z,t)

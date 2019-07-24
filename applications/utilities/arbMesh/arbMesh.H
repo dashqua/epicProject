@@ -113,12 +113,14 @@ public:
         scalar Shift(scalar lambda, vector& xyzOwn, vector& xyzNei, label& face, vector n);
         vector getMagSf(vectorList x);
         vector vw(vector& xyz);
+        
+  vector dotX();
   ////////////////////////////////////////////////
   ////////////////////////////////////////////////
   ////////////////////////////////////////////////
   void updateFields(scalar t);
   scalar f_fun(scalar x1, scalar x2, scalar t, vector v);
-  tensor F(scalar x, scalar y, scalar z, scalar t);
+  tensor Fw(scalar x, scalar y, scalar z, scalar t);
 
   
 

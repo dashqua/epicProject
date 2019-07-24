@@ -31,6 +31,7 @@ License
 #include "betaFlux.H"
 #include "hllcFlux.H"
 #include "hllcALEFlux.H"
+#include "PRE_hllcALEFlux.H"
 
 #include "firstOrderLimiter.H"
 #include "BarthJespersenLimiter.H"
@@ -53,7 +54,9 @@ makeBasicNumericFluxForAllLimiters(PRE_rusanovFlux);
 makeBasicNumericFluxForAllLimiters(betaFlux);
 makeBasicNumericFluxForAllLimiters(roeFlux);
 makeBasicNumericFluxForAllLimiters(hllcFlux);
-
+makeBasicNumericFluxForAllLimiters(hllcALEFlux);
+makeBasicNumericFluxForAllLimiters(PRE_hllcALEFlux);
+  
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace Foam
