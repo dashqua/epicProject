@@ -33,16 +33,17 @@
             "U",
             runTime.timeName(),
             mesh,
-            IOobject::NO_READ, // MUST_READ,
+            IOobject::MUST_READ, //NO_READ, // MUST_READ,
             IOobject::AUTO_WRITE
         ),
-        mesh,
+        mesh/*,
 	dimensionedVector
 	(
 	    "U",         
 	    dimensionSet(0,1,-1,0,0,0,0),// Foam::sin(PI*C.component(1)/(2*height));
 	    Foam::vector(1 * Foam::cos(26.56), 1 * Foam::sin(26.56), 0)
 	)
+	    */
      );        //  	dimensionedVector("xN", dimensionSet(0,1,0,0,0,0,0), vector::zero)
 
 
@@ -163,7 +164,7 @@
     const surfaceScalarField& phi = dbnsFlux.rhoFlux();
 
     // delta T
-    dimensionedScalar deltaT("deltaT", dimTime, runTime.deltaTValue());
+    //dimensionedScalar deltaT("deltaT", dimTime, runTime.deltaTValue());
 
     // interpolation schemes
     //interpolationSchemes interpolate(mesh);
@@ -197,6 +198,12 @@
       ),
      (1 * rho) - thermo->rho()
      );
+
+
+/////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
 
     Info<< "Reading analytic fields\n" << endl;
     volVectorField U_theo
