@@ -147,7 +147,6 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
     vector& xyzOwn = xyztmp;
     vector& xyzNei = xyztmp2;
     // const double& t = mesh.time().value();
-    const vector& dotX = amsh.dotX();
     
     // Calculate fluxes at internal faces
     forAll (owner, faceI)
@@ -166,6 +165,9 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
 	xyzNei[0] = Cf[nei].x();
 	xyzNei[1] = Cf[nei].y();
 	xyzNei[2] = Cf[nei].z();
+
+	vector dotXtemp = amsh.vw(xyzOwn)/2 + amsh.vw(xyzNei)/2;
+	const vector& dotX = dotXtemp;
 	
         // calculate fluxes with reconstructed primitive variables at faces
 	Flux::evaluateFlux
@@ -226,6 +228,10 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
         // Face areas
         const fvsPatchVectorField& pSf = Sf.boundaryField()[patchi];
         const fvsPatchScalarField& pMagSf = magSf.boundaryField()[patchi];
+
+	
+	vector dotXtemp = amsh.vw(xyzOwn)/2 + amsh.vw(xyzNei)/2;
+	const vector& dotX = dotXtemp;
 	
         if (pp.coupled())
         {

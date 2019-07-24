@@ -8,7 +8,7 @@ GMSH="/home/thomas/gmsh-3.0.6-Linux64/bin/gmsh"
 
 # Clean everything in here
 cleanCase
-rm -rf perf*
+rm -rf perf* *png
 
 # Get mesh
 cp constant/gmshmesh/squarepipe.msh .

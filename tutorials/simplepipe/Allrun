@@ -8,3 +8,6 @@ application="epicSolver"
 # runApplication blockMesh
 runApplication paraFoam -touch
 runApplication $application # | sudo perf record
+
+# run postprocessing analysis
+python3 trend.py
