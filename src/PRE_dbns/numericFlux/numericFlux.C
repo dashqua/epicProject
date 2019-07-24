@@ -146,7 +146,6 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
     vector xyztmp = vector::zero, xyztmp2 = vector::zero;
     vector& xyzOwn = xyztmp;
     vector& xyzNei = xyztmp2;
-    // const double& t = mesh.time().value();
     
     // Calculate fluxes at internal faces
     forAll (owner, faceI)
@@ -194,8 +193,6 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
 	    dotX
         );
     }
-
-    Info << " Switches to boundary " << endl;
     
     // Update boundary field and values
     forAll (rhoFlux_.boundaryField(), patchi)
