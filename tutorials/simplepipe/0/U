@@ -17,7 +17,7 @@ FoamFile
 
 dimensions      [0 1 -1 0 0 0 0];
 
-internalField   uniform (.8944 .4472 0);
+internalField   uniform (1. 0. 0.);//(.8944 .4472 0);
 //#include "init/internalU"
 
 boundaryField
@@ -25,7 +25,6 @@ boundaryField
     side
     {
       type symmetryPlane;
-
     }
     inbound
     {
