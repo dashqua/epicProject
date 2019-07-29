@@ -23,18 +23,29 @@ internalField   uniform 273.15;
 
 boundaryField
 {
-    side
+  left
     {
-      type symmetryPlane;
-
+      type cyclic;//symmetryPlane;
     }
-    inbound
+  right
     {
-      type slip;
+      type cyclic;//Slip;//symmetryPlane;
     }
-    outbound
+  top
     {
-      type slip;
+      type cyclic;//symmetryPlane;
+    }
+  bottom
+    {
+      type cyclic;//Slip;//symmetryPlane;
+    }
+  inbound
+    {
+      type cyclic;//slip;
+    }
+  outbound
+    {
+      type cyclic;//slip;
     }
     defaultFaces
     {

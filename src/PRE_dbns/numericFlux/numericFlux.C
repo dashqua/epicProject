@@ -167,7 +167,7 @@ void Foam::numericFlux<Flux, Limiter>::computeFlux(arbMesh& amsh)
 
 	vector dotXtemp = amsh.vw(xyzOwn)/2 + amsh.vw(xyzNei)/2;
 	const vector& dotX = dotXtemp;
-	
+
         // calculate fluxes with reconstructed primitive variables at faces
 	Flux::evaluateFlux
         (

@@ -17,24 +17,38 @@ FoamFile
 
 dimensions      [1 -1 -2 0 0 0 0];
 
-internalField   uniform 3;
+internalField   uniform 1;
 // #include "init/internalp"
 
 boundaryField
 {
-    side
+  left
     {
-      type symmetryPlane;
+      type cyclic;//Slip;//symmetryPlane;
     }
-    inbound
+  right
     {
+      type cyclic;//Slip;//symmetryPlane;
+    }
+  top
+    {
+      type cyclic;//Slip;//symmetryPlane;
+    }
+  bottom
+    {
+      type cyclic;//Slip;//symmetryPlane;
+    }
+  inbound
+    {
+      type cyclic;/*
       type fixedValue;
       value uniform 3;
-      //type slip;
+      //type slip; 
+      */
     }
     outbound
     {
-      type slip;
+      type cyclic;//slip;
     }
     defaultFaces
     {

@@ -1,4 +1,5 @@
 EXE_INC = \
+    -DFULLDEBUG -g -O0 \
     -I$(EPIC_PROJECT_DIR)/src/PRE_dbns/lnInclude \
     -I$(EPIC_PROJECT_DIR)/applications/utilities/arbMesh/lnInclude \
     -I$(LIB_SRC)/dbns/lnInclude \

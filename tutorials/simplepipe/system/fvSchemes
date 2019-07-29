@@ -28,7 +28,7 @@ divSchemes
 {
     dbns
     {
-      flux           beta; //PRE_rusanov;
+      flux           rusanov;//hllcALE;//rusanov; //hllcALE; //PRE_rusanov;
         limiter        BarthJespersen;
     }
 }

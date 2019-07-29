@@ -89,12 +89,14 @@ int main(int argc, char *argv[])
 
     // Switch off solver messages
     lduMatrix::debug = 0;
-
+    
     while (runTime.run())
     {
 #       include "readTimeControls.H"
 #       include "readFieldBounds.H"
+      Info << "before compressibleCourantNo" << endl;
 #       include "compressibleCourantNo.H"
+      Info << "before setDelta" << endl;
 #       include "setDeltaT.H"
 
         runTime++;

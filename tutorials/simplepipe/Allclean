@@ -11,9 +11,10 @@ cleanCase
 rm -rf perf* *png
 
 # Get mesh
+#/home/thomas/gmsh-3.0.6-Linux64/bin/gmsh -3 constant/gmshmesh/squarepipe.geo -o constant/gmshmesh/squarepipe.msh
 cp constant/gmshmesh/squarepipe.msh .
 gmshToFoam squarepipe.msh
-rm squarepipe.msh
+rm -rf squarepipe.msh
 
 # Gget conditions
 rm 0/init/internalp

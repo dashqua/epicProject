@@ -1,5 +1,7 @@
     Info<< "Reading thermophysical properties\n" << endl;
 
+// const scalar pi = Foam::mathematicalConstant::pi;
+
     autoPtr<basicPsiThermo> thermo
     (
         basicPsiThermo::New(mesh)
@@ -235,7 +237,7 @@
             IOobject::NO_READ,
             IOobject::AUTO_WRITE
         ),
-        thermo->rho()
+	3 * rho / ( 1.0 * rho )
     );
 
     volScalarField p_theo

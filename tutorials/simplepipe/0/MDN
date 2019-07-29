@@ -23,15 +23,31 @@ boundaryField
 {
     inbound
     {
-        type            calculated;
+        type            cyclic;
     }
-    side
+    top
     {
-        type            calculated;
+        type            cyclic;
     }
     outbound
     {
-        type            calculated;
+        type            cyclic;
+    }
+    bottom
+    {
+        type            cyclic;
+    }
+    left
+    {
+        type            cyclic;
+    }
+    right
+    {
+        type            cyclic;
+    }
+    global
+    {
+        type            global;
     }
 }
 
