@@ -45,10 +45,11 @@ boundaryField
     {
         type            cyclic;
     }
-    global
+    /*global
     {
         type            global;
     }
+    */
 }
 
 

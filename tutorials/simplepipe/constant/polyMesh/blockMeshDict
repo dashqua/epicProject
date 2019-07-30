@@ -38,7 +38,7 @@ edges
 blocks
 (
 	hex (0 1 2 3 4 5 6 7)
-	(10 10 1)
+	(10 10 2)
 	simpleGrading (1 1 1)
 );
 
@@ -48,36 +48,42 @@ boundary
 	{
 		type		cyclicAMI;
 		neighbourPatch	outbound;
+		matchTolerance  0.1;
 		faces		((0 3 7 4));
 	}
 	outbound
 	{
 		type		cyclicAMI;
 		neighbourPatch	inbound;
+		matchTolerance  0.1;
 		faces		((1 2 6 5));
 	}
 	left
 	{
 		type		cyclicAMI;
 		neighbourPatch	right;
+		matchTolerance  0.1;
 		faces		((0 1 2 3));
 	}
 	right
 	{
 		type		cyclicAMI;
 		neighbourPatch	left;
+		matchTolerance  0.1;
 		faces 		((4 5 6 7));
 	}
 	top
 	{
 		type		cyclicAMI;
 		neighbourPatch	bottom;
+		matchTolerance  0.1;
 		faces		((2 3 7 6));
 	}
 	bottom
 	{
 		type		cyclicAMI;
 		neighbourPatch	top;
+		matchTolerance  0.1;
 		faces		((1 0 4 5));
 	}
 );

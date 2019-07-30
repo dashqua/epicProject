@@ -10,4 +10,4 @@ runApplication paraFoam -touch
 runApplication $application # | sudo perf record
 
 # run postprocessing analysis
-python3 trend.py
+#python3 trend.py

@@ -25,27 +25,33 @@ boundaryField
 {
   left
     {
-      type cyclic;//symmetryPlane;
+      type cyclicAMI;//symmetryPlane;
+      value uniform 273.15;
     }
   right
     {
-      type cyclic;//Slip;//symmetryPlane;
+      type cyclicAMI;//Slip;//symmetryPlane;
+      value uniform 273.15;
     }
   top
     {
-      type cyclic;//symmetryPlane;
+      type cyclicAMI;//symmetryPlane;
+      value uniform 273.15;
     }
   bottom
     {
-      type cyclic;//Slip;//symmetryPlane;
+      type cyclicAMI;//Slip;//symmetryPlane;
+      value uniform 273.15;
     }
   inbound
     {
-      type cyclic;//slip;
+      type cyclicAMI;//slip;
+      value uniform 273.15;
     }
   outbound
     {
-      type cyclic;//slip;
+      type cyclicAMI;//slip;
+      value uniform 273.15;
     }
     defaultFaces
     {
