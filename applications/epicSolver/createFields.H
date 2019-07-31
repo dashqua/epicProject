@@ -11,7 +11,7 @@
 
     volScalarField& h = thermo->h();
     volScalarField& p = thermo->p();
-    const volScalarField& T = thermo->T();
+const volScalarField& T = thermo->T();  T.write();
 
     Info<< "Reading field rho\n" << endl;
     volScalarField rho
@@ -26,6 +26,7 @@
         ),
         thermo->rho()
     );
+rho.write();
 
     Info<< "Reading field U\n" << endl;
     volVectorField U
@@ -47,7 +48,7 @@
 	)
 	    */
      );        //  	dimensionedVector("xN", dimensionSet(0,1,0,0,0,0,0), vector::zero)
-
+U.write();
 
     // Material (cell centered) x
     const volVectorField& C = mesh.C();
