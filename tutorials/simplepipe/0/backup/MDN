@@ -21,29 +21,29 @@ internalField   uniform (0 0 0);
 
 boundaryField
 {
-    inlet
+    inbound
     {
         type            cyclic;
     }
-    outlet
-    {
-        type            cyclic;
-    }
-    top
-    {
-        type            cyclic;
-    }
-    bottom
+    outbound
     {
         type            cyclic;
     }
     left
     {
-        type            cyclic;
+        type            calculated;
     }
     right
     {
-        type            cyclic;
+        type            calculated;
+    }
+    top
+    {
+        type            calculated;
+    }
+    bottom
+    {
+        type            calculated;
     }
     global
     {

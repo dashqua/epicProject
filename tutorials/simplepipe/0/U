@@ -17,39 +17,35 @@ FoamFile
 
 dimensions      [0 1 -1 0 0 0 0];
 
-internalField   uniform (0.8944 0.4472 0);
+internalField   uniform (1 0 0);
 
 boundaryField
 {
     inbound
     {
-        type            cyclic;
-        value           uniform (0.8944 0.4472 0);
+      type cyclicAMI;
+      value uniform (1 0 0);
     }
     outbound
     {
-        type            cyclic;
-        value           uniform (0.8944 0.4472 0);
+      type cyclicAMI;
+      value uniform (1 0 0);
     }
     left
     {
-        type            fixedValue;
-        value           uniform (0 0 0);
+      type noSlip;
     }
     right
     {
-        type            fixedValue;
-        value           uniform (0 0 0);
+      type noSlip;
     }
     top
     {
-        type            fixedValue;
-        value           uniform (0 0 0);
+      type noSlip;
     }
     bottom
     {
-        type            fixedValue;
-        value           uniform (0 0 0);
+      type noSlip;
     }
 }
 

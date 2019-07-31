@@ -46,14 +46,14 @@ boundary
 (
 	inbound
 	{
-		type		cyclic;
+		type		cyclicAMI;
 		neighbourPatch	outbound;
 		matchTolerance  0.1;
 		faces		((0 3 7 4));
 	}
 	outbound
 	{
-		type		cyclic;
+		type		cyclicAMI;
 		neighbourPatch	inbound;
 		matchTolerance  0.1;
 		faces		((1 2 6 5));
@@ -62,29 +62,29 @@ boundary
 	{
 	  type		wall;//cyclic;
 	  //neighbourPatch	right;
-		//matchTolerance  0.1;
-		faces		((0 1 2 3));
+	  //matchTolerance  0.1;
+	  faces		((0 1 2 3));
 	}
 	right
 	{
 	  type		wall;//cyclic;
 	  //neighbourPatch	left;
 	  //matchTolerance  0.1;
-		faces 		((4 5 6 7));
+	  faces 	((4 5 6 7));
 	}
 	top
 	{
 	  type		wall;//cyclic;
 	  //neighbourPatch	bottom;
 	  //matchTolerance  0.1;
-		faces		((2 3 7 6));
+	  faces		((2 3 7 6));
 	}
 	bottom
 	{
 	  type		wall;//cyclic;
 	  //neighbourPatch	top;
-		//matchTolerance  0.1;
-		faces		((1 0 4 5));
+	  //matchTolerance  0.1;
+	  faces		((1 0 4 5));
 	}
 );
 

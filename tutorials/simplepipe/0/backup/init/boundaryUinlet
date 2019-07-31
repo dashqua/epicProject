@@ -1,3 +1,0 @@
-//        type            slip;
-type fixedValue;
-value uniform (.8944 4472 0);

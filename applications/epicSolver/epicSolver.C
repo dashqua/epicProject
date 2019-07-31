@@ -89,6 +89,9 @@ int main(int argc, char *argv[])
 
     // Switch off solver messages
     lduMatrix::debug = 0;
+
+    // INITIAL CONDITIONS
+    #include "initialConditions.H"
     
     while (runTime.run())
     {

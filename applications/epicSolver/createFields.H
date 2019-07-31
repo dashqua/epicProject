@@ -26,7 +26,7 @@ const volScalarField& T = thermo->T();  T.write();
         ),
         thermo->rho()
     );
-rho.write();
+//rho.write();
 
     Info<< "Reading field U\n" << endl;
     volVectorField U
