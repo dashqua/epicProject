@@ -43,6 +43,9 @@ Plane Surface(23) = {22};
 Line Loop(24) = {1, 9, -5, -12};
 Plane Surface(25) = {24};
 //+
+Surface Loop(1) = {17, 25, 15, 21, 23, 19};
+Volume(1) = {1};
+//+
 Transfinite Line{1:4,5:8} = 10;
 Transfinite Line{9:12}    = 1;
 Transfinite Surface{15} = {1,2,3,4};
@@ -51,17 +54,21 @@ Transfinite Surface{19} = {3,4,8,7};
 Transfinite Surface{21} = {2,1,5,6};
 Transfinite Surface{23} = {2,3,7,6};
 Transfinite Surface{25} = {1,4,8,5};
-
+Transfinite Volume(1);
+//+
 Recombine Surface{19,21,23,25} = 45;
-
+Recombine Volume(1);
+//+
+TransfQuadTri {1};
+//+
 Physical Surface("inbound") = {25};
 Physical Surface("right") = {17};
 Physical Surface("left") = {15};
 Physical Surface("outbound") = {23};
 Physical Surface("top") = {19};
 Physical Surface("bottom") = {21};
-Surface Loop(1) = {17, 25, 15, 21, 23, 19};
-Volume(1) = {1};
+
+
 Physical Volume("domain") = {1};
 
 

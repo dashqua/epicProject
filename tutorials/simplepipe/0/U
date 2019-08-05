@@ -33,11 +33,11 @@ boundaryField
     }
     left
     {
-      type noSlip;
+      type empty;//noSlip;
     }
     right
     {
-      type noSlip;
+      type empty;//noSlip;
     }
     top
     {

@@ -17,26 +17,30 @@ FoamFile
 
 dimensions      [1 -1 -2 0 0 0 0];
 
-internalField   uniform 0;
+internalField   uniform 1;
 // #include "init/internalp"
 
 boundaryField
 {
   left
     {
-      type zeroGradient;
+      type empty;//wall;//zeroGradient;
+      //value uniform 1;
     }
   right
     {
-      type zeroGradient;
+      type empty;//wall;//zeroGradient;
+      //value uniform 1;
     }
   top
     {
-      type zeroGradient;
+      type wall;//zeroGradient;
+      value uniform 1;
     }
   bottom
     {
-      type zeroGradient;
+      type wall;//zeroGradient;
+      value uniform 1;
     }
   inbound
     {

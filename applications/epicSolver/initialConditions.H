@@ -1,1 +1,1 @@
-U.write();
+Info << U.internalField() << endl;

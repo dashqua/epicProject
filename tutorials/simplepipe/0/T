@@ -33,13 +33,13 @@ boundaryField
     }
     left
     {
-        type            fixedValue;
-        value           uniform 273.15;
+      type            empty;//fixedValue;
+      //value           uniform 273.15;
     }
     right
     {
-        type            fixedValue;
-        value           uniform 273.15;
+      type            empty;//fixedValue;
+      //value           uniform 273.15;
     }
     top
     {

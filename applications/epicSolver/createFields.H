@@ -1,17 +1,17 @@
     Info<< "Reading thermophysical properties\n" << endl;
 
-// const scalar pi = Foam::mathematicalConstant::pi;
-
+    // const scalar pi = Foam::mathematicalConstant::pi;
+Info << "start ok" << endl;
     autoPtr<basicPsiThermo> thermo
     (
         basicPsiThermo::New(mesh)
     );
-
+Info << "thermo ok" << endl;
     // Primitive variables
 
     volScalarField& h = thermo->h();
-    volScalarField& p = thermo->p();
-const volScalarField& T = thermo->T();  T.write();
+volScalarField& p = thermo->p(); Info << "p ok" << endl;
+const volScalarField& T = thermo->T(); Info << "T ok" << endl;
 
     Info<< "Reading field rho\n" << endl;
     volScalarField rho
@@ -25,8 +25,8 @@ const volScalarField& T = thermo->T();  T.write();
             IOobject::AUTO_WRITE
         ),
         thermo->rho()
-    );
-//rho.write();
+     ); Info << "rho ok" << endl;
+    //rho.write();
 
     Info<< "Reading field U\n" << endl;
     volVectorField U
@@ -48,6 +48,7 @@ const volScalarField& T = thermo->T();  T.write();
 	)
 	    */
      );        //  	dimensionedVector("xN", dimensionSet(0,1,0,0,0,0,0), vector::zero)
+Info << "U ok" << endl;
 U.write();
 
     // Material (cell centered) x

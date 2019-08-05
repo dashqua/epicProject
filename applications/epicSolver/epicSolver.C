@@ -58,12 +58,18 @@ Author
 
 int main(int argc, char *argv[])
 {
+  Info << "issou 1" << endl;
 #   include "setRootCase.H"
+  Info << "issou 2" << endl;
 #   include "createTime.H"
+  Info << "issou 3" << endl;
 #   include "createMesh.H"
+  Info << "issou 4" << endl;
 #   include "createFields.H"
+  Info << "issou 5" << endl;
 #   include "createTimeControls.H"
-
+  Info << "issou 6" << endl;
+  
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
   pointVectorField& MDN_ = MDN;
@@ -92,6 +98,7 @@ int main(int argc, char *argv[])
 
     // INITIAL CONDITIONS
     #include "initialConditions.H"
+    Info << "CHANCLA" << endl;
     
     while (runTime.run())
     {
