@@ -1,138 +1,151 @@
-/*---------------------------------------------------------------------------* \
+/*---------------------------------------------------------------------------*\
   =========                 |
-  \\      /  F ield         | foam-extend: Open Source CFD
-   \\    /   O peration     | Version:     4.0
-    \\  /    A nd           | Web:         http://www.foam-extend.org
-     \\/     M anipulation  | For copyright notice see file Copyright
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Copyright (C) 2019 OpenFOAM Foundation
+     \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of foam-extend.
+    This file is part of OpenFOAM.
 
-    foam-extend is free software: you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation, either version 3 of the License, or (at your
-    option) any later version.
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-    foam-extend is distributed in the hope that it will be useful, but
-    WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    General Public License for more details.
+    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+    for more details.
 
     You should have received a copy of the GNU General Public License
-    along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Application
-    dbnsFoam
+    awesomeSolver
 
 Description
-    Density-based compressible explicit time-marching flow solver
-    using enthalpy based thermo packages
-
-Author
-    Hrvoje Jasak
 
 \*---------------------------------------------------------------------------*/
 
 #include "fvCFD.H"
-//#include "basicPsiThermo.H"
-//#include "bound.H"
-
-#include "pointFields.H"
-#include "GeometricField.H"
-#include "volPointInterpolation.H"
-#include "arbMesh.H"
+#include "fluidThermo.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 int main(int argc, char *argv[])
 {
-#   include "setRootCase.H"
-#   include "createTime.H"
-#   include "createMesh.H"
-#   include "createFields.H"
-#   include "createTimeControls.H"
+    #include "setRootCase.H"
+    #include "createTime.H"
+    #include "createMesh.H"
+    #include "createFields.H"
+    #include "createTimeControls.H"
   
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+    // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-  pointVectorField& MDN_ = MDN;
-  volScalarField& rho_theo_ = rho_theo;
-  volVectorField& U_theo_ = U_theo;
-  volScalarField& p_theo_ = p_theo;
-  volScalarField& rho_ = rho;
-  volVectorField& rhoU_ = rhoU;
-  volScalarField& rhoE_ = rhoE;
-  volScalarField& JW_ = JW;
-  arbMesh arbitraryMesh(MDN_, mesh, runTime, rho_theo_, U_theo_, p_theo_, rho_, rhoU_, rhoE_, JW_);
-  //Info << "rho_theo_ : " << rho_theo_ << endl;
-  arbMesh& aMsh = arbitraryMesh;
+    Info << "\nStarting time loop \n" << endl;
 
-    Info<< "\nStarting time loop\n" << endl;
-
-    // Runge-Kutta coefficient
-    scalarList beta(4);
-    beta[0] = 0.1100;
-    beta[1] = 0.2766;
-    beta[2] = 0.5000;
-    beta[3] = 1.0000;
-
-    // Switch off solver messages
-    lduMatrix::debug = 0;
-
-    // INITIAL CONDITIONS
-    #include "initialConditions.H"
-    Info << "CHANCLA" << endl;
-    
     while (runTime.run())
-    {
-#       include "readTimeControls.H"
-#       include "readFieldBounds.H"
-      Info << "before compressibleCourantNo" << endl;
-#       include "compressibleCourantNo.H"
-      Info << "before setDelta" << endl;
-#       include "setDeltaT.H"
+      {
+	Info << "Time = " << runTime.timeName() << nl << endl;
 
-        runTime++;
-
-        Info<< "\n Time = " << runTime.value() << endl;
-
-        // Low storage Runge-Kutta time integration
-        forAll (beta, i)
-        {
-            // Solve the approximate Riemann problem for this time step
-            //dbnsFlux.computeFlux(aMsh);
-
-	    // Time integration
-	    /*
-            solve
-            (
-                1.0/beta[i]*fvm::ddt(rho)
-              + fvc::div(dbnsFlux.rhoFlux())
-            );
-
-            solve
-            (
-                1.0/beta[i]*fvm::ddt(rhoU)
-              + fvc::div(dbnsFlux.rhoUFlux())
-            );
-
-            solve
-            (
-                1.0/beta[i]*fvm::ddt(rhoE)
-              + fvc::div(dbnsFlux.rhoEFlux())
-            );
-	    */
-        }
+	// CODE //
+	//COMPUTE THE FLUX
+	const unallocLabelList& owner = mesh.owner();
+	const unallocLabelList& neighbour = mesh.neighbour();
+	const surfaceVectorField& Sf = mesh.Sf();
+	const surfaceScalarField& magSf = mesh.magSf();
+	const volScalarField Cv = thermo.Cv();
+	const volScalarField R = thermo.Cp() - Cv;
+	gradP = fvc::grad(p);
+	//gradP.correctBoundaryConditions;
+	gradU = fvc::grad(U);
+	//gradU.correctBoundaryConditions;
+	const volVectorField& cellCentre =mesh.C();
+	const surfaceVectorField& faceCentre = mesh.Cf();
 	
-        runTime.write();
+	forAll(owner, faceI)
+	  {
+	    const label own = owner[faceI];
+	    const label nei = neighbour[faceI];
+	    const vector deltaRLeft = faceCentre[faceI] - cellCentre[own];
+	    const vector deltaRRight = faceCentre[faceI] - cellCentre[nei];
 
-        Info<< "    ExecutionTime = "
-            << runTime.elapsedCpuTime()
-            << " s\n" << endl;
-    }
+	    //==>
+	    // Step 0 : Decode left and right info 
+	    vector normalVector = Sf[faceI]/magSf[faceI];
+	    scalar rhoLeft  = rho[own];
+	    scalar rhoRight = rho[nei];
+	    scalar eLeft  = E[own];
+	    scalar eRight = E[nei];
+	    const scalar pLeft  = p[own];
+	    const scalar pRight = p[nei];
+	    const vector URight = U[nei];
+	    const vector ULeft  = U[own];
+	    const scalar kappaLeft  = (Cv[own]+R[own])/Cv[own];
+	    const scalar kappaRight = (Cv[nei]+R[nei])/Cv[nei];
+	    const scalar contrVLeft  = U[own] & normalVector;
+	    const scalar contrVRight = U[nei] & normalVector;
+	    const scalar hLeft  = eLeft + pLeft/rhoLeft;
+	    const scalar hRight = eRight + pRight/rhoRight;
 
-    Info<< "\n end \n";
+	    // Step 1a : Compute Roe's averaged quantities
+	    const scalar rhoTilde = Foam::sqrt(max(rhoLeft*rhoRight, SMALL));
+	    const scalar rhoLeftSqrt  = Foam::sqrt(max(rhoLeft, SMALL));
+	    const scalar rhoRightSqrt = Foam::sqrt(max(rhoRight, SMALL));
+	    const scalar wLeft  = rhoLeftSqrt/(rhoLeftSqrt + rhoRightSqrt);
+	    const scalar wRight = 1 - wLeft;
+	    const vector UTilde = ULeft*wLeft + URight*wRight;
+	    const scalar hTilde = hLeft*wLeft + hRight*wRight;
+	    const scalar qTildeSquare = magSqr(UTilde);
+	    const scalar kappaTilde = kappaLeft*wLeft + kappaRight*wRight;
+	    const scalar aTilde = Foam::sqrt(max((kappaTilde-a)*(hTilde-0.5*qTildeSquare), SMALL));
+	    const scalar contrVTilde = UTilde & normalVector;
 
-    return(0);
+	    // Step 1b : Compute primitive differences
+	    const scalar deltaP = pRight - pLeft;
+	    const scalar deltaRho = rhoRight - rhoLeft;
+	    const vector deltaU = URight - ULeft;
+
+	    // Step 2 : Compute right eigenvectors
+	    // note : eigen 2 and 3 are added
+	    const vector l1U = UTilde - aTilde*normalVector; //tmp
+	    const vector l5U = UTilde + aTilde*normalVector; //tmp  
+	    const vector eigen1 = vector(1, l1U[0], l1U[1], l1U[2], hTilde-aTilde*contrVTilde);
+	    const vector eigen23 = vector(0, 1, 1, 0, (UTilde & deltaU) - contrVTilde*deltaContrV);
+	    const vector eigen4 = vector(1, U[0], U[1], U[2], 0.5*qTildeSquare);
+	    const vector eigen5 = vector(1, l5U[0], l5U[1], l5U[2], hTilde+aTilde*contrVTilde);
+
+	    // Step 3 : Compute eigenvalues
+	    scalar lambda1 = mag(contrVTilde - aTilde);
+	    scalar lambda2 = mag(contrVTilde);
+	    scalar lambda3 = mag(contrVTilde + aTilde);
+	    scalar lambdaMax = max(max(lambda1,lambda2),lambda3);
+
+	    // Step 4 : Compute wave strengths
+	    const scalar r1 = (deltaP - rhoTilde*deltaContrV)/(2*Foam::sqrt(aTilde));
+	    //const scalar r23 = 
+	    const scalar r4 = deltaRho - deltaP/Foam::sqrt(aTilde);
+	    const scalar r5 = (deltaP + rhoTilde*deltaContrV)/(2*Foam::sqrt(aTilde));
+
+	    // Step 5 : Assemble the flux
+	    // Step 5a : Compute flux differences
+	    const vector diffF1 = lambdaMax*r1*eigen1;
+	    const vector diffF2 = lambdaMax*(r23*eigen23 + )
+	  }
+	
+	runTime.write();
+      
+	Info<< nl << "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
+	    << "  ClockTime = " << runTime.elapsedClockTime() << " s"
+	    << nl << endl;
+
+      }
+
+
+    Info<< "End\n" << endl;
+
+    return 0;
 }
 
 

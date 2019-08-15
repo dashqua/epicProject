@@ -1,257 +1,115 @@
-    Info<< "Reading thermophysical properties\n" << endl;
+Info << "Reading thermophysical properties\n" << endl;
 
-    // const scalar pi = Foam::mathematicalConstant::pi;
-Info << "start ok" << endl;
-    autoPtr<basicPsiThermo> thermo
-    (
-        basicPsiThermo::New(mesh)
-    );
-Info << "thermo ok" << endl;
-    // Primitive variables
+autoPtr<fluidThermo> pThermo
+(
+ fluidThermo::New(mesh)
+);
+fluidThermo& thermo = pThermo();
+thermo.validate(args.executable(), "h", "e");  // probablement enables  h and e fields to be taken from thermo
 
-    volScalarField& h = thermo->h();
-volScalarField& p = thermo->p(); Info << "p ok" << endl;
-const volScalarField& T = thermo->T(); Info << "T ok" << endl;
+Info << "Reading pressure p and enthalpy h\n" << endl;
+volScalarField& p = thermo.p();
+volScalarField& h = thermo.he();
 
-    Info<< "Reading field rho\n" << endl;
-    volScalarField rho
-    (
-        IOobject
-        (
-            "rho",
-            runTime.timeName(),
-            mesh,
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-        thermo->rho()
-     ); Info << "rho ok" << endl;
-    //rho.write();
+volScalarField rho
+(
+ IOobject
+ (
+  "rho",
+  runTime.timeName(),
+  mesh,
+  IOobject::READ_IF_PRESENT,
+  IOobject::AUTO_WRITE
+ ),
+ thermo.rho()
+);
 
-    Info<< "Reading field U\n" << endl;
-    volVectorField U
-    (
-        IOobject
-        (
-            "U",
-            runTime.timeName(),
-            mesh,
-            IOobject::MUST_READ, //NO_READ, // MUST_READ,
-            IOobject::AUTO_WRITE
-        ),
-        mesh/*,
-	dimensionedVector
-	(
-	    "U",         
-	    dimensionSet(0,1,-1,0,0,0,0),// Foam::sin(PI*C.component(1)/(2*height));
-	    Foam::vector(1 * Foam::cos(26.56), 1 * Foam::sin(26.56), 0)
-	)
-	    */
-     );        //  	dimensionedVector("xN", dimensionSet(0,1,0,0,0,0,0), vector::zero)
-Info << "U ok" << endl;
-U.write();
+Info << "Reading field U\n" << endl;
+volVectorField U
+(
+ IOobject
+ (
+  "U",
+  runTime.timeName(),
+  mesh,
+  IOobject::MUST_READ,
+  IOobject::AUTO_WRITE
+  ),
+  mesh
+);
 
-    // Material (cell centered) x
-    const volVectorField& C = mesh.C();
-    volVectorField x
-    (
-        IOobject("x", mesh),
-	C
-     );
+Info << "Reading field E\n" << endl;
+volScalarField E
+(
+ IOobject
+ (
+  "E",
+  runTime.timeName(),
+  mesh,
+  IOobject::NO_READ,
+  IOobject::NO_WRITE
+ ),
+ p/(thermo.gamma()-1) + 0.5 * magSqr(U)
+);
 
-    // Nodal displacements
-    pointMesh pMesh(mesh);
-    pointVectorField xN
-    (
-        IOobject("xN", mesh),
-	pMesh,
-	dimensionedVector("xN", dimensionSet(0,1,0,0,0,0,0), vector::zero)
-    );
-    xN.internalField() = mesh.points();
-    pointVectorField XN = xN;
-    pointVectorField uN
-    (
-        IOobject
-        (
-	    "uN",
-	    runTime.timeName(),
-	    mesh,
-	    IOobject::NO_READ,
-	    IOobject::AUTO_WRITE
-	),
-	pMesh,
-	dimensionedVector("uN", dimLength, vector::zero)
-    );
-    uN.write();
+Info << "Reading Flux Fields\n" << endl;
+surfaceScalarField rhoFlux
+(
+ IOobject
+ (
+  "phi",
+  mesh.time().timeName(),mesh,
+  IOobject::NO_READ,
+  IOobject::NO_WRITE
+  ),
+ linearInterpolate(thermo.rho()*U) & mesh.Sf()
+);
 
-    // Normals
-    const surfaceVectorField& Sf = mesh.Sf();
-    //const surfaceScalarField& magSf = mesh.magSf();
-    const surfaceVectorField N = Sf/mesh.magSf();
-    surfaceVectorField n
-    (
-        IOobject("n", mesh),
-	N
-    );
+surfaceVectorField rhoUFlux
+(
+ IOobject
+ (
+  "rhoUFlux",
+  mesh.time().timeName(),
+  mesh,
+  IOobject::NO_READ,
+  IOobject::NO_WRITE
+ ),
+ rhoFlux*linearInterpolate(U)
+);
 
-    // Conservative variables
+surfaceScalarField EFlux
+(
+ IOobject
+ (
+  "EFlux",
+  mesh.time().timeName(),
+  mesh,
+  IOobject::NO_READ,
+  IOobject::NO_WRITE
+ ),
+ linearInterpolate(p/(thermo.gamma()-1 + 0.5*magSqr(U)))
+);
 
-    volVectorField rhoU
-    (
-        IOobject
-        (
-            "rhoU",
-            runTime.timeName(),
-            mesh,
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
-        rho*U
-    );
-
-    volPointInterpolation interpolateVolPoint(mesh);
-    pointVectorField UN = interpolateVolPoint.interpolate(U);
-/*
-    pointVectorField rhoUN
-    (
-        IOobject
-        (
-            "rhoUN",
-            runTime.timeName(),
-            pMesh,
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
-	rho*UN
-    );
-*/
-/*
-    pointVectorField UN
-    (
-        IOobject
-        (
-            "UN",
-            runTime.timeName(),
-            pMesh,
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
-        pMesh
-    );
-*/
-
-    volScalarField rhoE
-    (
-        IOobject
-        (
-            "rhoE",
-            runTime.timeName(),
-            mesh,
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
-        rho*(h + 0.5*magSqr(U)) - p
-    );
+Info << "Reading Gradient Fields\n" << endl;
+volVectorField gradP(fvc::grad(p));
+volTensorField gradU(fvc::grad(U));
 
 
-    // Create numeric flux
-    autoPtr<basicNumericFlux> dbnsFluxPtr = basicNumericFlux::New
-    (
-        p,
-        U,
-        T,
-        thermo()
-    );
-    basicNumericFlux& dbnsFlux = dbnsFluxPtr();
-
-    // Create mass flux alias for easier coupling with other code components
-    const surfaceScalarField& phi = dbnsFlux.rhoFlux();
-
-    // delta T
-    //dimensionedScalar deltaT("deltaT", dimTime, runTime.deltaTValue());
-
-    // interpolation schemes
-    //interpolationSchemes interpolate(mesh);
-//fvc::interpolate.volToPoint(rhoU, rhoUGrad, rhoUN)
-
-    // mesh displacement vector
-    Info << "Reading field MDN\n" << endl;
-    pointVectorField MDN
-    (
-        IOobject
-        (
-	    "MDN",
-	    runTime.timeName(),
-	    mesh,
-	    IOobject::NO_READ,
-	    IOobject::AUTO_WRITE
-	),
-	pMesh,
-	dimensionedVector("MDN", dimLength, vector::zero)
-    );
-    MDN.write();
-
-    volScalarField JW
-    (
-     IOobject
-     ("JW_",
-      runTime.timeName(),
-      mesh,
-      IOobject::NO_READ,
-      IOobject::AUTO_WRITE
-      ),
-     (1 * rho) - thermo->rho()
-     );
 
 
-/////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////
+Info << "Creating Phi\n" << endl;
+#include "compressibleCreatePhi.H"
 
-    Info<< "Reading analytic fields\n" << endl;
-    volVectorField U_theo
-    (
-        IOobject
-        (
-            "U",
-            runTime.timeName(),
-            mesh,
-            IOobject::NO_READ, // MUST_READ,
-            IOobject::AUTO_WRITE
-        ),
-        mesh,
-	dimensionedVector
-	(
-	    "U_theo",         
-	    dimensionSet(0,1,-1,0,0,0,0),// Foam::sin(PI*C.component(1)/(2*height));
-	    Foam::vector(1 * Foam::cos(26.56), 1 * Foam::sin(26.56), 0)
-	)
-     );        //  	dimensionedVector("xN", dimensionSet(0,1,0,0,0,0,0), vector::zero)
+//Info << "Initiating pressureControl\n" << endl;
+//pressureControl pressureControl(p, rho, simple.dict());
 
-    volScalarField rho_theo
-    (
-        IOobject
-        (
-            "rho_theo",
-            runTime.timeName(),
-            mesh,
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-	3 * rho / ( 1.0 * rho )
-    );
+// ??
+mesh.setFluxRequired(p.name());
 
-    volScalarField p_theo
-    (
-        IOobject
-        (
-            "p_theo",
-            runTime.timeName(),
-            mesh,
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-        3.0*rho/rho
-    );
+Info << "Initializing initialMassan" << endl;
+dimensionedScalar initialMass = fvc::domainIntegrate(rho);
 
+
+#include "createMRF.H"
+//#include "createFvOptions.H"

@@ -53,8 +53,7 @@
 
 # 8 "<command-line>" 2
 # 1 "Make/options"
-EXE_INC = -DFULLDEBUG -g -O0 -I$(LIB_SRC)/finiteVolume/lnInclude 
+EXE_INC = -I$(LIB_SRC)/finiteVolume/lnInclude -I$(LIB_SRC)/finiteVolume/cfdTools -I$(LIB_SRC)/meshTools/lnInclude -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude -I$(LIB_SRC)/TurbulenceModels/turbulenceModels/lnInclude -I$(LIB_SRC)/TurbulenceModels/compressible/lnInclude -I$(LIB_SRC)/transportModels/compressible/lnInclude -I$(LIB_SRC)/sampling/lnInclude
+# 10 "Make/options"
 
-
-
-EXE_LIBS = -lfiniteVolume -lbasicThermophysicalModels -L$(FOAM_USER_LIBBIN) -larbMesh
+EXE_LIBS = -lfiniteVolume -lmeshTools -lspecie -lcompressibleTransportModels -lcompressibleTurbulenceModels -lturbulenceModels -lfluidThermophysicalModels -lfvOptions
