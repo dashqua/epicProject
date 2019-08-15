@@ -34,20 +34,8 @@ Author
 \*---------------------------------------------------------------------------*/
 
 #include "fvCFD.H"
-#include "basicPsiThermo.H"
-#include "bound.H"
-#include "hllcFlux.H"
-#include "hllcALEFlux.H"
-#include "PRE_hllcALEFlux.H"
-#include "roeFlux.H"
-#include "rusanovFlux.H"
-#include "PRE_rusanovFlux.H"
-#include "betaFlux.H"
-#include "MDLimiter.H"
-#include "firstOrderLimiter.H"
-#include "BarthJespersenLimiter.H"
-#include "VenkatakrishnanLimiter.H"
-#include "numericFlux.H"
+//#include "basicPsiThermo.H"
+//#include "bound.H"
 
 #include "pointFields.H"
 #include "GeometricField.H"
@@ -58,17 +46,11 @@ Author
 
 int main(int argc, char *argv[])
 {
-  Info << "issou 1" << endl;
 #   include "setRootCase.H"
-  Info << "issou 2" << endl;
 #   include "createTime.H"
-  Info << "issou 3" << endl;
 #   include "createMesh.H"
-  Info << "issou 4" << endl;
 #   include "createFields.H"
-  Info << "issou 5" << endl;
 #   include "createTimeControls.H"
-  Info << "issou 6" << endl;
   
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -117,9 +99,10 @@ int main(int argc, char *argv[])
         forAll (beta, i)
         {
             // Solve the approximate Riemann problem for this time step
-            dbnsFlux.computeFlux(aMsh);
+            //dbnsFlux.computeFlux(aMsh);
 
 	    // Time integration
+	    /*
             solve
             (
                 1.0/beta[i]*fvm::ddt(rho)
@@ -137,15 +120,8 @@ int main(int argc, char *argv[])
                 1.0/beta[i]*fvm::ddt(rhoE)
               + fvc::div(dbnsFlux.rhoEFlux())
             );
-
-#           include "updateFields.H"
+	    */
         }
-
-	Info << "JW[51]: " << JW_[51] <<endl;
-	Info << "rho[51]: " << rho[51] << endl;
-
-	//# include "updateMeshDisplacement.H"	
-        aMsh.updateFields(runTime.value());//MeshDisplacement(runTime.value());
 	
         runTime.write();
 

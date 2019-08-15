@@ -1,15 +1,9 @@
 EXE_INC = \
     -DFULLDEBUG -g -O0 \
-    -I$(EPIC_PROJECT_DIR)/applications/utilities/arbMesh/lnInclude \
     -I$(LIB_SRC)/finiteVolume/lnInclude \
-    -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
-    -I$(LIB_SRC)/thermophysicalModels/specie/lnInclude
-
 
 EXE_LIBS = \
     -lfiniteVolume \
     -lbasicThermophysicalModels \
-    -lspecie \
     -L$(FOAM_USER_LIBBIN) \
-    -lPRE_dbns \
     -larbMesh

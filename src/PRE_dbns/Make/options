@@ -5,7 +5,9 @@ EXE_INC = \
     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
     -I$(LIB_SRC)/turbulenceModels/compressible/turbulenceModel \
     -I$(PARMGRIDGEN_INCLUDE_DIR)/IMlib \
-    -I$(PARMGRIDGEN_INCLUDE_DIR)/Lib
+    -I$(PARMGRIDGEN_INCLUDE_DIR)/Lib \
+    -I$(EPIC_PROJECT_DIR)/src/foam-extend-libraries/PRE_gradientLimiters   
+    
 
 LIB_LIBS = \
     -lfiniteVolume \
