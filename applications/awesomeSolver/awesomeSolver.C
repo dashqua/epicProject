@@ -124,14 +124,24 @@ int main(int argc, char *argv[])
 
 	    // Step 4 : Compute wave strengths
 	    const scalar r1 = (deltaP - rhoTilde*deltaContrV)/(2*Foam::sqrt(aTilde));
-	    //const scalar r23 = 
+	    //const scalar r23 = /!\ HAS TO BE CODED
 	    const scalar r4 = deltaRho - deltaP/Foam::sqrt(aTilde);
 	    const scalar r5 = (deltaP + rhoTilde*deltaContrV)/(2*Foam::sqrt(aTilde));
 
 	    // Step 5 : Assemble the flux
 	    // Step 5a : Compute flux differences
 	    const vector diffF1 = lambdaMax*r1*eigen1;
-	    const vector diffF2 = lambdaMax*(r23*eigen23 + )
+	    const vector diffF23 = lambdaMax*(r23*eigen23);
+	    const vector diffF4 = lambdaMax*r4*eigen4;
+	    const vector diffF5 = lambdaMax*r5*eigen5;
+	    // Step 5b : Compute left and right fluxes
+	    const vector urcvL = ULeft*rhoLeft*contrVLeft;// tmp
+	    const vector fluxLeft1 = vector(rhoLeft*contrVLeft,
+					    urcvL[0],
+					    urcv[1],
+					    urcv[2],
+					    hLeft*rhoLeft*contrVLeft
+					    );  // REECRIRE CE VECTOR + FAIRE LES AUTRES
 	  }
 	
 	runTime.write();
