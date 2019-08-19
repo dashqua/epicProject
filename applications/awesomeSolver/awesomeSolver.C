@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     
     while (runTime.run())
       {
-        #include "readFieldBounds.H"
+        //#include "readFieldBounds.H"
 
 	runTime++;
 	Info << "Time = " << runTime.timeName() << nl << endl;
@@ -69,7 +69,8 @@ int main(int argc, char *argv[])
 	//gradU.correctBoundaryConditions;
 	const volVectorField& cellCentre =mesh.C();
 	const surfaceVectorField& faceCentre = mesh.Cf();
-	
+
+	// Internal faces
 	forAll(owner, faceI)
 	  {
 	    const label own = owner[faceI];
@@ -222,6 +223,55 @@ int main(int argc, char *argv[])
 	      // note : most of the calculation can be vectorized
 	  }
 
+
+	// Boundary faces
+	forAll(rhoFlux.boundaryField(), patchi)
+	  {
+	    const fvPatch& curPatch = p.boundaryField()[patchi].patch();
+	    fvsPatchScalarField& pRhoFLux = rhoFlux.boundaryField()[patchi];
+	    fvsPatchScalarField& pRhoUFLux = rhoUFlux.boundaryField()[patchi];	    
+	    fvsPatchScalarField& pEFLux = EFlux.boundaryField()[patchi];
+	    const fvsPatchScalarField& pp = p.boundaryField()[patchi];
+	    const vectorField& pU = U.boundaryField()[patchi];
+	    const scalarField& pT = T.boundaryField()[patchi];
+	    const scalarField& pCv = Cv.boundaryField()[patchi];
+	    const scalarField& pR = R.boundaryField()[patchi];
+	    const fvPatchVectorField& pGradP = gradP.boundaryField()[patchi];
+	    const fvPatchVectorField& pGradU = gradU.boundaryField()[patchi];
+	    const fvPatchVectorField& pGradT = gradT.boundaryField()[patchi];
+	    const fvPatchVectorField& pSf = Sf.boundaryField()[patchi];
+	    const fvPatchVectorField& pMagSf = magSf.boundaryField()[patchi];
+	    /*
+	    const scalarField ppLeft = p.boundaryField()[patchi].patchInternalField();
+	    const scalarField ppRight = p.boundaryField()[patchi].patchNeighbourField();
+	    const vectorField pULeft = U.boundaryField()[patchi].patchInternalField();
+	    const vectorField pURight = U.boundaryField()[patchi].patchNeighbourField();
+	    const scalarField pTLeft = T.boundaryField()[patchi].patchInternalField();
+	    const scalarField pTRight = T.boundaryField()[patchi].patchNeighbourField();
+	    const vectorField pgradPLeft = pGradP.patchInternalField();
+	    const vectorField pgradPRight = pGradP.patchNeighbourField();
+	    const tensorField pgradULeft = pGradU.patchInternalField();
+	    const tensorField pgradURight = pGradU.patchNeighbourField();
+	    const vectorField pgradTLeft = pGradT.patchInternalField();
+	    const vectorField pgradTRight = pGradT.patchNeighbourField();
+	    vectorField pDeltaRLeft = curPatch.fvPatch::delta();
+	    vectorField pDeltaRRight = pDeltaRLeft - curPatch.delta();
+	    */
+
+	    forAll(pp, facei)
+	      {
+		// calculate flux
+	      }
+
+
+
+
+	  }
+
+
+	
+
+	
 	// Time integration
 	solve(fvm::ddt(rho)  + fvc::div(rhoFlux));
 	solve(fvm::ddt(rhoU) + fvc::div(rhoUFlux));
@@ -230,12 +280,12 @@ int main(int argc, char *argv[])
 	Info << " [+] Update Fields \n";
 	U = rhoU / rho;                Info << " [+] U done\n"; 
 	// U.correctBoundaryConditions();
-	H = Cp/Cv*(E - 0.5*magSqr(U)); Info << " [+] E done\n"; 
+	H = (E - p)/rho; Info << " [+] E done\n"; 
 	//H.correctBoundaryConditions();
-	dimensionedScalar CpMin = min(Cp);
-	dimensionedScalar CpMax = max(Cp);
-	dimensionedScalar hMin = CpMin*TMin;
-	dimensionedScalar hMax = CpMax*TMax;
+	//dimensionedScalar CpMin = min(Cp);
+	//dimensionedScalar CpMax = max(Cp);
+	//dimensionedScalar hMin = CpMin*TMin;
+	//dimensionedScalar hMax = CpMax*TMax;
 	//boundMinMax(h, hMin, hMax);
 	thermo.correct();
 	//boundMinMax(rho, rhoMin, rhoMax);
@@ -244,8 +294,13 @@ int main(int argc, char *argv[])
 	//boundMinMax(p, pMin, pMax);
 
 
-
-
+	// Write-up some variables
+	Info << min(rho) << endl;
+	Info << max(rho) << endl;
+	Info << min(E) << endl;
+	Info << max(E) << endl;
+	Info << min(H) << endl;
+	Info << max(H) << endl;
 	
 	runTime.write();
       
