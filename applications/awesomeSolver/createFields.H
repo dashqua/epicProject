@@ -7,13 +7,32 @@ autoPtr<psiThermo> pThermo
 psiThermo& thermo = pThermo();
 //thermo.validate(args.executable(), "h", "e");  // probablement enables  h and e fields to be taken from thermo
 
-Info << "Reading pressure p, internal energy e\n" << endl;
+Info << "Reading pressure p\n" << endl;
 volScalarField& p = thermo.p();
-volScalarField& e = thermo.he(); // TO VERIFY
+/*
+Info << "Reading internal energy e\n" << endl;
+// trick to get enthalpy and internal energy
+// using rho*H = e + p
+volScalarField& he = thermo.he();
+if (he.name() == "e")
+  {
+    volScalarField e = he;
+    volScalarField h = (e+p)/thermo.rho();      
+  }
+ else if (he.name() == "h")
+   {
+     volScalarField h = he;
+     volScalarField e = thermo.rho()*h - p;
+   }
+ else
+   { Info << "Error enthalpy/internal energy\n"; return 0; }
+*/
+Info << "Reading capacities Cp and Cv\n" << endl;
+const volScalarField& Cp = thermo.Cp();
+const volScalarField& Cv = thermo.Cv();
 
-Info << "Reading capcities Cp and Cv\n" << endl;
-volScalarField& Cp = thermo.Cp();
-volScalarField& Cv = thermo.Cv();
+Info << "Reading temperature T\n" << endl;
+const volScalarField& T = thermo.T();
 
 volScalarField rho
 (

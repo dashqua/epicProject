@@ -50,6 +50,9 @@ int main(int argc, char *argv[])
     
     while (runTime.run())
       {
+        #include "readFieldBounds.H"
+
+	runTime++;
 	Info << "Time = " << runTime.timeName() << nl << endl;
 
 	// CODE //
@@ -223,20 +226,22 @@ int main(int argc, char *argv[])
 	solve(fvm::ddt(rho)  + fvc::div(rhoFlux));
 	solve(fvm::ddt(rhoU) + fvc::div(rhoUFlux));
 	solve(fvm::ddt(E)    + fvc::div(EFlux));
-	
-	// Update Fields
-	U = rhoU / U;
+
+	Info << " [+] Update Fields \n";
+	U = rhoU / rho;                Info << " [+] U done\n"; 
 	// U.correctBoundaryConditions();
-	H = Cp/Cv*(E - 0.5*magSqr(U));
+	H = Cp/Cv*(E - 0.5*magSqr(U)); Info << " [+] E done\n"; 
 	//H.correctBoundaryConditions();
 	dimensionedScalar CpMin = min(Cp);
 	dimensionedScalar CpMax = max(Cp);
 	dimensionedScalar hMin = CpMin*TMin;
 	dimensionedScalar hMax = CpMax*TMax;
-
-
-
-
+	//boundMinMax(h, hMin, hMax);
+	thermo.correct();
+	//boundMinMax(rho, rhoMin, rhoMax);
+	p = rho*(thermo.Cp() - thermo.Cv())*T; Info << " [+] p done\n";
+	//p.correctBoundaryConditions;
+	//boundMinMax(p, pMin, pMax);
 
 
 
