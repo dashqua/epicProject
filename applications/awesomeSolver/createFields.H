@@ -1,15 +1,19 @@
 Info << "Reading thermophysical properties\n" << endl;
 
-autoPtr<fluidThermo> pThermo
+autoPtr<psiThermo> pThermo
 (
- fluidThermo::New(mesh)
+ psiThermo::New(mesh)
 );
-fluidThermo& thermo = pThermo();
-thermo.validate(args.executable(), "h", "e");  // probablement enables  h and e fields to be taken from thermo
+psiThermo& thermo = pThermo();
+//thermo.validate(args.executable(), "h", "e");  // probablement enables  h and e fields to be taken from thermo
 
-Info << "Reading pressure p and enthalpy h\n" << endl;
+Info << "Reading pressure p, internal energy e\n" << endl;
 volScalarField& p = thermo.p();
-volScalarField& h = thermo.he();
+volScalarField& e = thermo.he(); // TO VERIFY
+
+Info << "Reading capcities Cp and Cv\n" << endl;
+volScalarField& Cp = thermo.Cp();
+volScalarField& Cv = thermo.Cv();
 
 volScalarField rho
 (
@@ -38,6 +42,20 @@ volVectorField U
   mesh
 );
 
+Info << "Reading field H\n" << endl;
+volScalarField H
+(
+ IOobject
+ (
+  "H",
+  runTime.timeName(),
+  mesh,
+  IOobject::NO_READ,
+  IOobject::AUTO_WRITE
+ ),
+ p*(thermo.gamma()/(thermo.gamma()-1))/rho + 0.5*magSqr(U)
+);
+
 Info << "Reading field E\n" << endl;
 volScalarField E
 (
@@ -48,11 +66,26 @@ volScalarField E
   mesh,
   IOobject::NO_READ,
   IOobject::NO_WRITE
- ),
- p/(thermo.gamma()-1) + 0.5 * magSqr(U)
+  ),
+ rho*H - p//p/(thermo.gamma()-1) + 0.5 * rho * magSqr(U) // e
 );
 
-Info << "Reading Flux Fields\n" << endl;
+Info << "Reading conserved variable rhoU\n" << endl;
+volVectorField rhoU
+(
+ IOobject
+ (
+  "rhoU",
+  runTime.timeName(),
+  mesh,
+  IOobject::NO_READ,
+  IOobject::NO_WRITE
+ ),
+ rho*U  
+);
+
+
+Info << "Reading rho Flux Fields\n" << endl;
 surfaceScalarField rhoFlux
 (
  IOobject
@@ -65,6 +98,7 @@ surfaceScalarField rhoFlux
  linearInterpolate(thermo.rho()*U) & mesh.Sf()
 );
 
+Info << "Reading rho*U Flux Fields\n" << endl;
 surfaceVectorField rhoUFlux
 (
  IOobject
@@ -78,6 +112,7 @@ surfaceVectorField rhoUFlux
  rhoFlux*linearInterpolate(U)
 );
 
+Info << "Reading E Flux Fields\n" << endl;
 surfaceScalarField EFlux
 (
  IOobject
@@ -88,7 +123,7 @@ surfaceScalarField EFlux
   IOobject::NO_READ,
   IOobject::NO_WRITE
  ),
- linearInterpolate(p/(thermo.gamma()-1 + 0.5*magSqr(U)))
+ linearInterpolate(U*(E+p)) & mesh.Sf() //linearInterpolate( U*(E+p) )   //linearInterpolate(p/(thermo.gamma()-1 + 0.5*magSqr(U)))
 );
 
 Info << "Reading Gradient Fields\n" << endl;
