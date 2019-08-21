@@ -117,10 +117,13 @@ public:
   ////////////////////////////////////////////////
   ////////////////////////////////////////////////
   ////////////////////////////////////////////////
-  void updateFields(scalar t);
+  void updateFields();
   scalar f_fun(scalar x1, scalar x2, scalar t, vector v);
-  tensor Fw(scalar x, scalar y, scalar z, scalar t);
-  
+  tensor Fw(vector& xyz);
+  scalar detFw(vector& xyz);
+  tensor invFw(vector& xyz);
+  tensor Hw(vector& xyz);
+  tensor transposeHw(vector& xyz);
   
 
 

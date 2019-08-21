@@ -11,7 +11,7 @@ FoamFile
     format      ascii;
     class       volVectorField;
     location    "0";
-    object      U;
+    object      U_TALE;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -23,32 +23,32 @@ boundaryField
 {
     inlet
     {
-        type            slip;
-        value           uniform (0 0.4472 0);
+        type            cyclic;
+        value           uniform (0.8944 0.4472 0);
     }
     outlet
     {
-        type            slip;
-        value           uniform (0 0.4472 0);
+        type            cyclic;
+        value           uniform (0.8944 0.4472 0);
     }
     top
     {
-        type            symmetryPlane;
-        value           uniform (0.8944 0 0);
+        type            cyclic;
+        value           uniform (0.8944 0.4472 0);
     }
     bottom
     {
-        type            symmetryPlane;
-        value           uniform (0.8944 0 0);
+        type            cyclic;
+        value           uniform (0.8944 0.4472 0);
     }
     left
     {
-        type            symmetryPlane;
+        type            cyclic;
         value           uniform (0.8944 0.4472 0);
     }
     right
     {
-        type            symmetryPlane;
+        type            cyclic;
         value           uniform (0.8944 0.4472 0);
     }
 }

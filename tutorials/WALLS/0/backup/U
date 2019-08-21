@@ -17,39 +17,43 @@ FoamFile
 
 dimensions      [0 1 -1 0 0 0 0];
 
-internalField   uniform (0.8944 0.4472 0);
+internalField   uniform (.8944 .4472 0);
+//#include "init/internalU"
 
 boundaryField
 {
     inlet
     {
-        type            slip;
-        value           uniform (0 0.4472 0);
+      //#include "init/boundaryUinlet"
+              type            cyclic;
+      /*
+      type fixedValue;
+      value uniform (.8944 4472 0);
+      */
     }
     outlet
     {
-        type            slip;
-        value           uniform (0 0.4472 0);
-    }
-    top
-    {
-        type            symmetryPlane;
-        value           uniform (0.8944 0 0);
-    }
-    bottom
-    {
-        type            symmetryPlane;
-        value           uniform (0.8944 0 0);
+      type            cyclic;
     }
     left
     {
-        type            symmetryPlane;
-        value           uniform (0.8944 0.4472 0);
+        type            cyclic;
     }
     right
     {
-        type            symmetryPlane;
-        value           uniform (0.8944 0.4472 0);
+        type            cyclic;
+    }
+    top
+    {
+        type            cyclic;
+    }
+    bottom
+    {
+        type            cyclic;
+    }      
+    defaultFaces
+    {
+        type            empty;
     }
 }
 

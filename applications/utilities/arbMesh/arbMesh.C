@@ -239,16 +239,19 @@ vector Foam::arbMesh::vw(vector& xyz)
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-void arbMesh::updateFields(scalar t)
+void arbMesh::updateFields()
 {
+  scalar t = mesh_.time().value();
+  Info << " [+] Update Mesh Displacement\n";
   this->updateMeshDisplacement(t);
   //const scalar Tper = 2;
   const scalar pii = Foam::mathematicalConstant::pi;
   // mean velocity field;
   vector v_moy = vector::zero; v_moy[0] = 0.8944; v_moy[1] = 0.4472;
-    // analytics fields update;
+  // analytics fields update;
   const scalar I = 5.0, r = 1.5, gamma = 1.330, M = sqrt(v_moy[0]*v_moy[0]+v_moy[1]*v_moy[1]),
     theta = 26.56*pii/180, x10 = 0, x20 = 0, v1 = .8944, v2 = .4472;
+  Info << " [+] Update theoretical U\n"; // INCORRECT U THEO
   forAll(this->mesh_.C(),cell)
   {
     scalar x1 = this->mesh_.C()[cell].x();
@@ -272,8 +275,10 @@ scalar arbMesh::f_fun(scalar x1,scalar x2, scalar t, vector v)
   return (1 - (x1-x10-v1*t)*(x1-x10-v1*t) - (x2-x20-v2*t)*(x2-x20-v2*t) )/(r*r);
 }
 
-tensor arbMesh::Fw(scalar x, scalar y, scalar z, scalar t)
+tensor arbMesh::Fw(vector& xyz)
 {
+  scalar t = mesh_.time().value();
+  scalar x = xyz[0], y = xyz[1], z = xyz[2];
   scalar pii = Foam::mathematicalConstant::pi, Tper = 2;
   tensor F(
 	   1+pii/5*Foam::cos(pii*x/10)*Foam::sin(2*pii*y/15)*Foam::sin(2*pii*t/Tper),
@@ -289,6 +294,41 @@ tensor arbMesh::Fw(scalar x, scalar y, scalar z, scalar t)
   return F;
 }
 
+scalar arbMesh::detFw(vector& xyz)
+{
+  tensor Fw = this->Fw(xyz);
+  return( Fw.xx() * Fw.yy() - Fw.xy() * Fw.yx());
+}
+
+tensor arbMesh::invFw(vector& xyz)
+{
+  tensor Fw = this->Fw(xyz);
+  tensor invFw(  Fw.yy() , -Fw.xy(), 0,
+		 -Fw.yx(), Fw.xx() , 0,
+		       0 ,       0 , 1	   );
+  return invFw / this->detFw(xyz);
+}
+
+tensor arbMesh::Hw(vector& xyz)
+{
+  tensor Fw = this->Fw(xyz);
+  tensor Hw(  Fw.yy() , -Fw.yx(), 0,
+	      -Fw.xy(), Fw.xx() , 0,
+	      0 ,       0 , 1	   );	    
+  return Hw;
+}
+
+tensor arbMesh::transposeHw(vector& xyz)
+{
+  tensor Fw = this->Fw(xyz);
+  tensor Hw(  Fw.yy() , -Fw.xy(), 0,
+	      -Fw.yx(), Fw.xx() , 0,
+	      0 ,       0 , 1	   );	    
+  return Hw;
+}
+
+
+  
 /*
 tensor arbMesh::cross(tensor& A, tensor &B)
 {
@@ -303,11 +343,6 @@ tensor arbMesh::cross(tensor& A, tensor &B)
 }
 */
 
- /*
-tensor arbMesh::Hw(scalar x, scalar y, scalar z, scalar t)
-{
-  return this->Fw(x,y,z,t)
-}*/
 
 // * * * * * * * * * * * * * Static Member Functions * * * * * * * * * * * * //
 

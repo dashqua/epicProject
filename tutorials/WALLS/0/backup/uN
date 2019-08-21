@@ -9,47 +9,45 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volVectorField;
+    class       pointVectorField;
     location    "0";
-    object      U;
+    object      uN;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 1 -1 0 0 0 0];
+dimensions      [0 1 0 0 0 0 0];
 
-internalField   uniform (0.8944 0.4472 0);
+internalField   uniform (0 0 0);
 
 boundaryField
 {
     inlet
     {
-        type            slip;
-        value           uniform (0 0.4472 0);
+        type            cyclic;
     }
     outlet
     {
-        type            slip;
-        value           uniform (0 0.4472 0);
+        type            cyclic;
     }
     top
     {
-        type            symmetryPlane;
-        value           uniform (0.8944 0 0);
+        type            cyclic;
     }
     bottom
     {
-        type            symmetryPlane;
-        value           uniform (0.8944 0 0);
+        type            cyclic;
     }
     left
     {
-        type            symmetryPlane;
-        value           uniform (0.8944 0.4472 0);
+        type            cyclic;
     }
     right
     {
-        type            symmetryPlane;
-        value           uniform (0.8944 0.4472 0);
+        type            cyclic;
+    }
+    global
+    {
+        type            global;
     }
 }
 

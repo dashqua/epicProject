@@ -9,49 +9,41 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volVectorField;
-    location    "0";
-    object      U;
+    class       dictionary;
+    object      fvSchemes;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 1 -1 0 0 0 0];
-
-internalField   uniform (0.8944 0.4472 0);
-
-boundaryField
+ddtSchemes
 {
-    inlet
+    default Euler;
+}
+
+gradSchemes
+{
+    default         Gauss linear;
+}
+
+divSchemes
+{
+    dbns
     {
-        type            slip;
-        value           uniform (0 0.4472 0);
-    }
-    outlet
-    {
-        type            slip;
-        value           uniform (0 0.4472 0);
-    }
-    top
-    {
-        type            symmetryPlane;
-        value           uniform (0.8944 0 0);
-    }
-    bottom
-    {
-        type            symmetryPlane;
-        value           uniform (0.8944 0 0);
-    }
-    left
-    {
-        type            symmetryPlane;
-        value           uniform (0.8944 0.4472 0);
-    }
-    right
-    {
-        type            symmetryPlane;
-        value           uniform (0.8944 0.4472 0);
+      flux           rusanov;//PRE_rusanov;
+        limiter        BarthJespersen;
     }
 }
+
+laplacianSchemes
+{}
+
+interpolationSchemes
+{
+    default               none;
+    interpolate(rho)      linear;
+}
+
+snGradSchemes
+{}
 
 
 // ************************************************************************* //

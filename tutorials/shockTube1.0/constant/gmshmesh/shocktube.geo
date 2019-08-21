@@ -1,5 +1,5 @@
 //+ increase lc parameter for coarser mesh
-lc = 4.;
+lc = 1.;
 
 x = 10;
 y = 7.5;

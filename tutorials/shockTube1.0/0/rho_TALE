@@ -9,47 +9,47 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volVectorField;
+    class       volScalarField;
     location    "0";
-    object      U;
+    object      rho_TALE;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 1 -1 0 0 0 0];
+dimensions      [1 -3 0 0 0 0 0];
 
-internalField   uniform (0.8944 0.4472 0);
+internalField   uniform 0.0153761;
 
 boundaryField
 {
     inlet
     {
-        type            slip;
-        value           uniform (0 0.4472 0);
+        type            calculated;
+        value           uniform 0.0153761;
     }
     outlet
     {
-        type            slip;
-        value           uniform (0 0.4472 0);
+        type            calculated;
+        value           uniform 0.0153761;
     }
     top
     {
-        type            symmetryPlane;
-        value           uniform (0.8944 0 0);
+        type            calculated;
+        value           uniform 0.0153761;
     }
     bottom
     {
-        type            symmetryPlane;
-        value           uniform (0.8944 0 0);
+        type            calculated;
+        value           uniform 0.0153761;
     }
     left
     {
-        type            symmetryPlane;
-        value           uniform (0.8944 0.4472 0);
+        type            calculated;
+        value           uniform 0.0153761;
     }
     right
     {
-        type            symmetryPlane;
-        value           uniform (0.8944 0.4472 0);
+        type            calculated;
+        value           uniform 0.0153761;
     }
 }
 

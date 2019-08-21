@@ -9,47 +9,52 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volVectorField;
+    class       volScalarField;
     location    "0";
-    object      U;
+    object      p;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 1 -1 0 0 0 0];
+dimensions      [1 -1 -2 0 0 0 0];
 
-internalField   uniform (0.8944 0.4472 0);
+internalField   uniform 3;
+//#include "init/internalp"
 
 boundaryField
 {
     inlet
     {
-        type            slip;
-        value           uniform (0 0.4472 0);
+      type     wall;
+      value uniform 3;
     }
     outlet
     {
-        type            slip;
-        value           uniform (0 0.4472 0);
-    }
-    top
-    {
-        type            symmetryPlane;
-        value           uniform (0.8944 0 0);
-    }
-    bottom
-    {
-        type            symmetryPlane;
-        value           uniform (0.8944 0 0);
+      type     wall;
+      value uniform 3;
     }
     left
     {
-        type            symmetryPlane;
-        value           uniform (0.8944 0.4472 0);
+      type     wall;
+      value uniform 3;
     }
     right
     {
-        type            symmetryPlane;
-        value           uniform (0.8944 0.4472 0);
+      type     wall;
+      value uniform 3;
+    }
+    top
+    {
+      type     wall;
+      value uniform 3;
+    }
+    bottom
+    {
+      type     wall;
+      value uniform 3;
+    }
+    defaultFaces
+    {
+      type            empty;//slip;//wall;
     }
 }
 

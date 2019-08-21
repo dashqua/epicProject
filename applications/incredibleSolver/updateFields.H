@@ -1,0 +1,43 @@
+Info << "\nUpdating Fields\n" << endl;
+{
+  Info << "\nUpdating Fields\n";
+  Info << " [+] Updating aMsh\n";
+  aMsh.updateFields();
+  Info << " [+] Updating TALE variables\n";
+  Info << " [+] Updating U, rho and p fields\n";  
+  scalar M  = 0.5;
+  scalar M2 = M*M;
+  scalar I  = 5.0;
+  scalar I2 = I*I;
+  scalar r  = 1.5;
+  scalar theta = Foam::atan(0.5);
+  const volScalarField Cv = thermo->Cv();
+  const volScalarField Cp = thermo->Cp();
+  scalar Rhoinf = 1;
+  scalar Uinf = 0.8944;
+  scalar Vinf = 0.4472;
+  scalar Pinf = 3;
+  scalar pii  = Foam::mathematicalConstant::pi;
+  scalar pii2 = pii*pii;
+  scalar t = mesh.time().value();
+  forAll(C, cell)
+    {
+      scalar gamma = Cp[cell] / Cv[cell];
+      scalar x1 = C[cell].x();
+      scalar x2 = C[cell].y();
+      scalar x3 = C[cell].z();
+      vector pos = vector(x1, x2, x3);      
+      scalar v1 = Uinf*Foam::cos(theta);
+      scalar v2 = Vinf*Foam::sin(theta);
+      // Updating TALE variables
+      rho_TALE[cell] = rho[cell] * aMsh.jw(pos);
+      U_TALE[cell]   = aMsh.transposeHw(pos) & U[cell];
+      // Updating U, rho and p
+      rho[cell] = Rhoinf * Foam::pow( 1 - I2*M2*(gamma-1)/(8*pii2) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/(r*r)) , 1/(gamma-1));
+      U[cell] = vector(
+		       Uinf * ( Foam::cos(theta)- I*(x2-v2*t)/(2*pii*r) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/(r*r))/2 ),
+		       Vinf * ( Foam::sin(theta)- I*(x1-v1*t)/(2*pii*r) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/(r*r))/2 ),
+		       0);
+      p[cell] = Pinf * Foam::pow( 1 - I2*M2*(gamma-1)/(8*pii2) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/(r*r)) , gamma/(gamma-1));
+    }
+}
