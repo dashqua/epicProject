@@ -1,6 +1,5 @@
 Info << "\nUpdating Fields\n" << endl;
 {
-  Info << "\nUpdating Fields\n";
   Info << " [+] Updating aMsh\n";
   aMsh.updateFields();
   Info << " [+] Updating TALE variables\n";

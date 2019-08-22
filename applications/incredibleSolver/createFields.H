@@ -30,10 +30,6 @@ volVectorField U
 Info << "\nReading arbitrary Mesh variables\n";
 Info << " [+] Reading cell centers\n";
 const volVectorField& C = mesh.C();
-Info << " [+] Reading normals N and n\n";
-const surfaceVectorField& Sf = mesh.Sf();
-//const surfaceVectorField N = Sf/mesh.magSf();
-//surfaceVectorField n(IOobject("n", mesh),N);
 Info << " [+] Reading pMesh\n";
 pointMesh pMesh(mesh);
 //Info << " [+] Reading current position x\n";
@@ -44,12 +40,6 @@ pointVectorField MDN
  IOobject("MDN", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::AUTO_WRITE),
  pMesh,
  dimensionedVector("MDN", dimLength, vector::zero)
-);
-Info << " [+] Reading arbitrary determinant";
-volScalarField JW
-(
- IOobject("JW", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::AUTO_WRITE),
- 0 * p
 );
 
 Info << "\nReading TALE fields\n";
@@ -125,21 +115,24 @@ volScalarField rhoE
 
 
 Info << "\nReading Arbitrary Mesh Object\n";
-pointVectorField& MDN_ = MDN;
+pointVectorField& MDN_    = MDN;
 volScalarField& rho_theo_ = rho_theo;
-volVectorField& U_theo_ = U_theo;
-volScalarField& p_theo_ = p_theo;
-volScalarField& rho_ = rho;
-volVectorField& rhoU_ = rhoU;
-volScalarField& rhoE_ = rhoE;
-volScalarField& JW_ = JW;
-arbMesh arbitraryMesh(MDN_, mesh, runTime, rho_theo_, U_theo_, p_theo_, rho_, rhoU_, rhoE_, JW_);
+volVectorField& U_theo_   = U_theo;
+volScalarField& p_theo_   = p_theo;
+volScalarField& rho_      = rho;
+volVectorField& rhoU_     = rhoU;
+volScalarField& rhoE_     = rhoE;
+volScalarField& rho_TALE_ = rho_TALE;
+volVectorField& U_TALE_   = U_TALE;
+volScalarField Cv_       = thermo->Cv(); volScalarField& CvP_ = Cv_;
+volScalarField Cp_       = thermo->Cp(); volScalarField& CpP_ = Cp_;
+arbMesh arbitraryMesh(MDN_, mesh, runTime, rho_theo_, U_theo_, p_theo_, rho_, rhoU_, rhoE_, rho_TALE_, U_TALE_, CvP_, CpP_);
 arbMesh& aMsh = arbitraryMesh;
 
 
 
-
-#include "updateFields.H"
+aMsh.updateFields();
+//#include "updateFields.H"
 
 forAll(C, cell)
 {

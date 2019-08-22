@@ -82,7 +82,6 @@ int main(int argc, char *argv[])
       // The following replaces #include "compressibleCourantNo.H"
       scalar CoNum = 0.0;
       scalar meanCoNum = 0.0;
-      Info<<"yes"<<endl;
       {
 	scalarField sumPhi
 	  (
@@ -127,8 +126,12 @@ int main(int argc, char *argv[])
               + fvc::div(dbnsFlux.rhoEFlux())
             );
 
-#           include "updateFields.H"
+	    //#           include "updateFields.H"
+	    //	    aMsh.updateFields();
         }
+
+	// After solving, variables are updating according to the arbitrary mapping.
+	aMsh.updateFields();	
 	
         runTime.write();
 

@@ -72,7 +72,10 @@ private:
   volScalarField& rho_;
   volVectorField& rhoU_;
   volScalarField& rhoE_;
-  volScalarField& JW_;
+  volScalarField& rho_TALE_;
+  volVectorField& U_TALE_;
+  const volScalarField& Cv_;
+  const volScalarField& Cp_;
     // Private data
         //- Description of data_
         //scalar data_;
@@ -88,42 +91,45 @@ public:
   //static const dataType staticData;
         //- Construct from Field
   explicit arbMesh(pointVectorField& MDN, const fvMesh& mesh, const Time& runTime,
-		   volScalarField& rho_theo, volVectorField& U_theo, volScalarField& p_theo, volScalarField& rho, volVectorField& rhoU, volScalarField& rhoE, volScalarField& JW)
-	:
-	  MDN_(MDN),
-	  pMesh_(MDN.mesh()),
-	  mesh_(mesh),
-	  rho_theo_(rho_theo),
-	  U_theo_(U_theo),
-	  p_theo_(p_theo),
-	  rho_(rho),
-	  rhoU_(rhoU),
-	  rhoE_(rhoE),
-	  JW_(JW)
-        {
+		   volScalarField& rho_theo, volVectorField& U_theo, volScalarField& p_theo, volScalarField& rho, volVectorField& rhoU, volScalarField& rhoE, volScalarField& rho_TALE, volVectorField& U_TALE, const volScalarField& Cv, const volScalarField& Cp)
+    :
+    MDN_(MDN),
+    pMesh_(MDN.mesh()),
+    mesh_(mesh),
+    rho_theo_(rho_theo),
+    U_theo_(U_theo),
+    p_theo_(p_theo),
+    rho_(rho),
+    rhoU_(rhoU),
+    rhoE_(rhoE),
+    rho_TALE_(rho_TALE),
+    U_TALE_(U_TALE),
+    Cv_(Cv),
+    Cp_(Cp)
+  {
 	  
-	}
+  }
 
-        void updateMeshDisplacement(const scalar t); 
-        pointVectorField MDN();
-        scalar jw(vector& xyz);
-        scalar deltaw(scalar msgSf_, label& face);
-        vector apply_mapping(vector coord);
-        scalar Uwn(vector& xyzOwn, vector& xyzNei, label& face); //(vector& xyz, vector n); 
-        scalar Shift(scalar lambda, vector& xyzOwn, vector& xyzNei, label& face, vector n);
-        vector getMagSf(vectorList x);
-        vector vw(vector& xyz);
-        
+  pointVectorField MDN();
+  scalar jw(vector& xyz);
+  scalar deltaw(scalar msgSf_, label& face);
+  vector apply_mapping(vector coord);
+  scalar Shift(scalar lambda, vector& xyzOwn, vector& xyzNei, label& face, vector n);
+  vector getMagSf(vectorList x);
+
+
   ////////////////////////////////////////////////
+  vector phix(vector& xyz);                     // Arbitrary Mapping
+  vector vw(vector& xyz);                       // Velocity of the mapping
+  vector c(label& cell);                        // convective velocity
+  
   ////////////////////////////////////////////////
-  ////////////////////////////////////////////////
-  void updateFields();
-  scalar f_fun(scalar x1, scalar x2, scalar t, vector v);
-  tensor Fw(vector& xyz);
-  scalar detFw(vector& xyz);
-  tensor invFw(vector& xyz);
-  tensor Hw(vector& xyz);
-  tensor transposeHw(vector& xyz);
+  void updateFields();                          // Update theoretical, TALE and MDN fields
+  tensor Fw(vector& xyz);                       // Deformation Gradient
+  scalar detFw(vector& xyz);                    // Jacobian of Def Grad (Vol Map)
+  tensor invFw(vector& xyz);                    // inverse of Def Grad
+  tensor Hw(vector& xyz);                       // Area Map JF^-T
+  tensor transposeHw(vector& xyz);              // transpose of Area Map
   
 
 

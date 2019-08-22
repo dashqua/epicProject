@@ -27,24 +27,6 @@ License
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-void Foam::arbMesh::updateMeshDisplacement(const scalar t)
-{
-  const scalar Tper = 2;
-  const scalar pii = Foam::mathematicalConstant::pi;
-  const pointField& meshpoints = mesh_.points();
-  forAll(meshpoints,ptI)
-  {
-    scalar ptX = meshpoints[ptI].x();
-    scalar ptY = meshpoints[ptI].y();
-    MDN_[ptI] = vector(							\
-       ptX + 2 * Foam::sin(pii*ptX/10) * Foam::sin(2*pii*ptY/15) * Foam::sin(2*pii*t/Tper),   \
-       ptY + 3/2 * Foam::sin(pii*ptX/10) * Foam::sin(2*pii*ptY/15) * Foam::sin(4*pii*t/Tper), \
-       0                                                                                      \
-    );
-
-  }
-}
-
 pointVectorField Foam::arbMesh::MDN()
 {
   return MDN_;
@@ -106,19 +88,6 @@ scalar Foam::arbMesh::deltaw(scalar magSf_, label& face)
       coords[1] = this->apply_mapping(coords[1]);
       coords[2] = this->apply_mapping(coords[2]);
       da = mag(this->getMagSf( coords ));
-      //Info << "mesh.face:     " << mesh_.faces()[face] << "\nface: " << face << endl;
-      //Info << "size3:\n da=" << da << "\n dA=" << dA
-      //<< "\n mesh_.magSf()=" << mesh_.magSf()[face] << "\n magSf_=" << magSf_
-      //  <<endl<<endl<<endl;
-      /*
-      vectorList t_test(4);
-      t_test[0] = vector(0,0,0);
-      t_test[1] = vector(1,0,0);
-      t_test[2] = vector(1,1,0);
-      t_test[3] = vector(0,1,0);
-      scalar test = this->getMagSf( t_test );
-      Info << "~~~~~  " << test << endl <<endl;
-      */
       return da/dA;
     }
   else
@@ -142,35 +111,17 @@ vector Foam::arbMesh::apply_mapping(vector coord)
   return res;
 }
 
-scalar Foam::arbMesh::Uwn(vector& xyzOwn, vector& xyzNei, label& face) //previous cchi
-{
-  // /!\ IMPLEMENTED ONLY FOR TRIANGLE ATM
-  const label& node0 = mesh_.faces()[face][0];
-  const label& node1 = mesh_.faces()[face][1];
-  const label& node2 = mesh_.faces()[face][2];
-  vectorList coords(3);
-  coords[0] = mesh_.points()[node0];
-  coords[1] = mesh_.points()[node1];
-  coords[2] = mesh_.points()[node2];
-  vector Sf = this->getMagSf( coords );
-  scalar magSf = mag(Sf);
-  vector n = Sf/magSf;
-
-  vector xyzAve = (xyzOwn + xyzNei) / 2 ;
-  vector vw = this->vw(xyzAve);
-  return Foam::dot( vw , n );
-}
 
 scalar Foam::arbMesh::Shift(scalar lambda, vector& xyzOwn, vector& xyzNei, label& face, vector Sf)
 {
   // MAJ: APPLY EVERY METHODS TO AVERAGE OF XYZOWN AND XYZNEI
   vector xyzAve = (xyzOwn + xyzNei) / 2;
   scalar magSf_ = mag(Sf);
-  //vector n = Sf/magSf_;
-  scalar deltaw = this->deltaw(magSf_, face), \
-    jw = this->jw(xyzAve),                    \
-    Uwn = this->Uwn(xyzOwn, xyzNei, face),    \
-    lambda_res = (deltaw/jw) * (lambda - Uwn);
+  vector n = Sf/magSf_;
+  scalar deltaw = this->deltaw(magSf_, face);
+  scalar jw = this->jw(xyzAve);
+  scalar Uwn = (this->vw(xyzOwn) + this->vw(xyzNei))/2 & n ;
+  scalar lambda_res = (deltaw/jw) * (lambda - Uwn);
   /*
   //left
   scalar lambdaLeft = (deltaw/jw) * (lambda - Uwn); 
@@ -222,17 +173,42 @@ vector Foam::arbMesh::getMagSf(vectorList x)
   return n;
 }
 
-vector Foam::arbMesh::vw(vector& xyz)
+vector arbMesh::phix(vector& xyz)
 {
   scalar pii = Foam::mathematicalConstant::pi;
-  scalar Tper = 2;
+  scalar T = 2;
   scalar t = mesh_.time().value();
   scalar x = xyz[0];
   scalar y = xyz[1];
   return vector( \
-    4*pii/Tper * Foam::sin(pii*x/10) * Foam::sin(2*pii*y/15) * Foam::cos(2*pii*t/Tper), \
-    6*pii/Tper * Foam::sin(pii*x/10) * Foam::sin(2*pii*y/15) * Foam::cos(4*pii*t/Tper), \
+		x + 2*Foam::sin(pii*x/10)*Foam::sin(2*pii*y/15)*Foam::sin(2*pii*t/T),   \
+		y + 3/2*Foam::sin(pii*x/10)*Foam::sin(2*pii*y/15)*Foam::sin(4*pii*t/T), \	
+		0);
+}
+
+vector arbMesh::vw(vector& xyz)
+{
+  scalar pii = Foam::mathematicalConstant::pi;
+  scalar T = 2;
+  scalar t = mesh_.time().value();
+  scalar x = xyz[0];
+  scalar y = xyz[1];
+  return vector( \
+    4*pii/T * Foam::sin(pii*x/10) * Foam::sin(2*pii*y/15) * Foam::cos(2*pii*t/T), \
+    6*pii/T * Foam::sin(pii*x/10) * Foam::sin(2*pii*y/15) * Foam::cos(4*pii*t/T), \
     0);
+}
+
+vector arbMesh::c(label& cell)
+{
+  
+  scalar x = this->mesh_.C()[cell].x();
+  scalar y = this->mesh_.C()[cell].y();
+  scalar z = this->mesh_.C()[cell].z();
+  vector pos = vector(x,y,z);
+  vector& posref = pos;
+  vector c =this->U_theo_[cell] - this->vw(posref);
+  return c;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -241,38 +217,58 @@ vector Foam::arbMesh::vw(vector& xyz)
 
 void arbMesh::updateFields()
 {
+  Info << "\nUpdating Fields\n" << endl;
+  Info << " [+] Updating TALE variables\n";
+  Info << " [+] Updating U, rho and p fields\n";
+  scalar M  = 0.5;
+  scalar M2 = M*M;
+  scalar I  = 5.0;
+  scalar I2 = I*I;
+  scalar r  = 1.5;
+  scalar theta = Foam::atan(0.5);
+  const volScalarField Cv = this->Cv_;
+  const volScalarField Cp = this->Cp_;
+  scalar Rhoinf = 1;
+  scalar Uinf = 0.8944;
+  scalar Vinf = 0.4472;
+  scalar Pinf = 3;
+  scalar pii  = Foam::mathematicalConstant::pi;
+  scalar pii2 = pii*pii;
   scalar t = mesh_.time().value();
+  volVectorField C = mesh_.C();
+  forAll(C, cell)
+    {
+      scalar gamma = Cp[cell] / Cv[cell];
+      scalar x1 = C[cell].x();
+      scalar x2 = C[cell].y();
+      scalar x3 = C[cell].z();
+      vector pos = vector(x1, x2, x3);
+      scalar v1 = Uinf*Foam::cos(theta);
+      scalar v2 = Vinf*Foam::sin(theta);
+
+      // Updating theoretical U, rho and p    
+      rho_theo_[cell] = Rhoinf * Foam::pow( 1 - I2*M2*(gamma-1)/(8*pii2) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/(r*r)) , 1/(gamma-1));
+      U_theo_[cell] = vector(
+			     Uinf * ( Foam::cos(theta)- I*(x2-v2*t)/(2*pii*r) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/(r*r))/2 ),
+			     Vinf * ( Foam::sin(theta)- I*(x1-v1*t)/(2*pii*r) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/(r*r))/2 ),
+			     0);
+      p_theo_[cell] = Pinf * Foam::pow( 1 - I2*M2*(gamma-1)/(8*pii2) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/(r*r)) , gamma/(gamma-1));
+
+	
+      // Updating TALE variables       
+      rho_TALE_[cell] = this->jw(pos) * rho_theo_[cell];
+      U_TALE_[cell]   = this->transposeHw(pos) & U_theo_[cell];
+    }
   Info << " [+] Update Mesh Displacement\n";
-  this->updateMeshDisplacement(t);
-  //const scalar Tper = 2;
-  const scalar pii = Foam::mathematicalConstant::pi;
-  // mean velocity field;
-  vector v_moy = vector::zero; v_moy[0] = 0.8944; v_moy[1] = 0.4472;
-  // analytics fields update;
-  const scalar I = 5.0, r = 1.5, gamma = 1.330, M = sqrt(v_moy[0]*v_moy[0]+v_moy[1]*v_moy[1]),
-    theta = 26.56*pii/180, x10 = 0, x20 = 0, v1 = .8944, v2 = .4472;
-  Info << " [+] Update theoretical U\n"; // INCORRECT U THEO
-  forAll(this->mesh_.C(),cell)
-  {
-    scalar x1 = this->mesh_.C()[cell].x();
-    scalar x2 = this->mesh_.C()[cell].y();
-
-    vector tmp_vec = vector(x1, x2, 0);
-    JW_[cell] = this->jw( tmp_vec );
-    rho_theo_[cell] = 1 * Foam::pow( 1 - I*I*(gamma-1)*M*M/(8*pii*pii) * Foam::exp(f_fun(x1,x2,t,v_moy)) , 1/(gamma-1) );
-    p_theo_[cell] = 3 * Foam::pow( 1 - I*I*(gamma-1)*M*M/(8*pii*pii) * Foam::exp(f_fun(x1,x2,t,v_moy)) , gamma/(gamma-1));
-    // INCORRECT U THEO
-    U_theo_[cell] = vector(
-			   sqrt(v_moy[0]*v_moy[0]+v_moy[1]*v_moy[1]) * (Foam::cos(theta)- I*(x2-x20-v2*t)/(2*pii*r)*Foam::exp(f_fun(x1,x2,t,v_moy)/2)),
-			   sqrt(v_moy[0]*v_moy[0]+v_moy[1]*v_moy[1]) * (Foam::sin(theta)+ I*(x1-x10-v1*t)/(2*pii*r)*Foam::exp(f_fun(x1,x2,t,v_moy)/2)),
-			   0 );
-  }  
-}
-
-scalar arbMesh::f_fun(scalar x1,scalar x2, scalar t, vector v)
-{
-  scalar r = 1.5, x10 = 0, x20 = 0, v1 = v[0], v2 = v[1];
-  return (1 - (x1-x10-v1*t)*(x1-x10-v1*t) - (x2-x20-v2*t)*(x2-x20-v2*t) )/(r*r);
+  forAll(mesh_.points(), ptI)
+    {
+      scalar pX  = mesh_.points()[ptI].x();
+      scalar pY  = mesh_.points()[ptI].y();
+      scalar pZ  = mesh_.points()[ptI].z();
+      vector pos = vector(pX, pY, pZ);
+      // Updating Mesh Displacement Vector
+      MDN_[ptI] = this->phix(pos);    
+    }  
 }
 
 tensor arbMesh::Fw(vector& xyz)
