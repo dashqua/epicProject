@@ -249,15 +249,10 @@ void arbMesh::updateFields()
       // Updating theoretical U, rho and p    
       rho_theo_[cell] = Rhoinf * Foam::pow( 1 - I2*M2*(gamma-1)/(8*pii2) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/(r*r)) , 1/(gamma-1));
       U_theo_[cell] = vector(
-			     Uinf * ( Foam::cos(theta)- I*(x2-v2*t)/(2*pii*r) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/(r*r))/2 ),
-			     Vinf * ( Foam::sin(theta)- I*(x1-v1*t)/(2*pii*r) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/(r*r))/2 ),
-			     0);
+	     Uinf * ( Foam::cos(theta)- I*(x2-v2*t)/(2*pii*r) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/(r*r))/2 ),
+	     Vinf * ( Foam::sin(theta)- I*(x1-v1*t)/(2*pii*r) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/(r*r))/2 ),
+	     0);
       p_theo_[cell] = Pinf * Foam::pow( 1 - I2*M2*(gamma-1)/(8*pii2) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/(r*r)) , gamma/(gamma-1));
-
-	
-      // Updating TALE variables       
-      rho_TALE_[cell] = this->jw(pos) * rho_theo_[cell];
-      U_TALE_[cell]   = this->transposeHw(pos) & U_theo_[cell];
     }
   Info << " [+] Update Mesh Displacement\n";
   forAll(mesh_.points(), ptI)
@@ -296,6 +291,15 @@ scalar arbMesh::detFw(vector& xyz)
   return( Fw.xx() * Fw.yy() - Fw.xy() * Fw.yx());
 }
 
+tensor arbMesh::transposeFw(vector& xyz)
+{
+  tensor Fw = this->Fw(xyz);
+  tensor transposeFw(Fw.xx(), Fw.yx(), 0,
+		     Fw.xy(), Fw.yy(), 0,
+		     0,0,1);
+  return transposeFw;
+}
+
 tensor arbMesh::invFw(vector& xyz)
 {
   tensor Fw = this->Fw(xyz);
@@ -323,21 +327,199 @@ tensor arbMesh::transposeHw(vector& xyz)
   return Hw;
 }
 
-
-  
-/*
-tensor arbMesh::cross(tensor& A, tensor &B)
+tensor arbMesh::inverseTransposeHw(vector&xyz)
 {
-  tensor C = A;
-  for (int i=0; i<A.dim1(); i++)
-    {
-      for (int j=0; j<B.dim2(); j++)
-	{
-	  C[i,j]
-	}
-    }
+  return 1/this->detFw(xyz) * Fw(xyz);
 }
-*/
+
+/////////////////////////////////////////////////////////////////////////////
+
+void arbMesh::computeTALEfromEUL()
+{
+  // If not precised, variables are assumed to be EULERIAN
+  // e.g. rhoU is rho_EUL * U_EUL
+  volVectorField C = mesh_.C();
+
+  /*
+  forAll(mesh_.owner(), face)
+    {
+      scalar x = mesh_.Cf()[face].x();
+      scalar y = mesh_.Cf()[face].y();
+      scalar z = mesh_.Cf()[face].z();
+      vector pos = vector(x,y,z);
+
+      // Update Fluxes      /!\ similar pattern here
+      rhoFlux_[face]  = this->detFw(pos) * this->transposeHw(pos) & rhoFlux_[face];
+      rhoUFlux_[face] = this->detFw(pos) * this->transposeHw(pos) & rhoUFlux_[face];
+      rhoEFlux_[face] = this->detFw(pos) * this->transposeHw(pos) & rhoEFlux_[face];
+    }*/
+
+  volVectorField tempRhoFlux = rho_ * U_;
+  volVectorField tempRhoUFlux = U_; //its OK its temp
+  volVectorField tempRhoEFlux = U_; // Cv_ * T_ + 0.5*magSqr(U_);
+  forAll(C, cell)
+    {
+      scalar x = C[cell].x();
+      scalar y = C[cell].y();
+      scalar z = C[cell].z();
+      vector pos = vector(x,y,z);
+
+      // Update Primitive Fields
+      rho_[cell] = this->detFw(pos) * rho_[cell];
+      U_[cell] = this->detFw(pos) * U_[cell];
+      E_[cell] = this->detFw(pos) * E_[cell];
+      
+      // Update Conserved Fields
+      rhoU_[cell] = rho_[cell]*U_[cell];
+      rhoE_[cell] = rho_[cell]*E_[cell];
+
+      // Update Fluxes via temporary variables
+      tempRhoFlux[cell]  = this->detFw(pos) * this->transposeHw(pos) & ( rho_[cell] * U_[cell] );
+    }
+  rhoFlux_  = (linearInterpolate(tempRhoFlux) & mesh_.Sf());
+  rhoUFlux_ = rhoFlux_ * linearInterpolate(U_);
+  rhoEFlux_ = rhoFlux_ * linearInterpolate(Cv_*T_ + 0.5*magSqr(U_));
+}
+
+
+void arbMesh::computeEULfromTALE()
+{
+  // If not precised, variables are assumed to be TALE
+  // e.g. rhoU is rho_EUL * U_EUL
+  volVectorField C = mesh_.C();
+
+  /*
+  forAll(mesh_.owner(), face)
+    {
+      scalar x = mesh_.Cf()[face].x();
+      scalar y = mesh_.Cf()[face].y();
+      scalar z = mesh_.Cf()[face].z();
+      vector pos = vector(x,y,z);
+
+      // Update Fluxes      /!\ similar pattern here
+      rhoFlux_[face]  = this->detFw(pos) * this->transposeHw(pos) & rhoFlux_[face];
+      rhoUFlux_[face] = this->detFw(pos) * this->transposeHw(pos) & rhoUFlux_[face];
+      rhoEFlux_[face] = this->detFw(pos) * this->transposeHw(pos) & rhoEFlux_[face];
+    }*/
+
+  volVectorField tempRhoFlux = rho_ * U_;
+  volVectorField tempRhoUFlux = U_;
+  volVectorField tempRhoEFlux = U_; // Cv_[0] * T_ + 0.5*magSqr(U_);
+  forAll(C, cell)
+    {
+      scalar x = C[cell].x();
+      scalar y = C[cell].y();
+      scalar z = C[cell].z();
+      vector pos = vector(x,y,z);
+
+      // Update Primitive Fields
+      rho_[cell] = 1/this->detFw(pos) * rho_[cell];
+      U_[cell] = 1/this->detFw(pos) * U_[cell];
+      E_[cell] = 1/this->detFw(pos) * E_[cell];
+      
+      // Update Conserved Fields
+      rhoU_[cell] = rho_[cell]*U_[cell];
+      rhoE_[cell] = rho_[cell]*E_[cell];
+
+      // Update Fluxes via temporary variables
+      tempRhoFlux[cell]  = 1/this->detFw(pos) * this->inverseTransposeHw(pos) & ( rho_[cell] * U_[cell] );
+    }
+  rhoFlux_  = (linearInterpolate(tempRhoFlux) & mesh_.Sf());
+  rhoUFlux_ = rhoFlux_ * linearInterpolate(U_);
+  rhoEFlux_ = rhoFlux_ * linearInterpolate(Cv_*T_ + 0.5*magSqr(U_));
+}
+
+void arbMesh::correctInitialVariables()
+{
+  Info << "\nCorrection of Initial Variables\n" << endl;
+  Info << " [+] Correcting theoretical variables\n";
+  Info << " [+] Correcting U, rho and p fields\n";
+  scalar M  = 0.5;
+  scalar M2 = M*M;
+  scalar I  = 5.0;
+  scalar I2 = I*I;
+  scalar r  = 1.5;
+  scalar theta = Foam::atan(0.5);
+  const volScalarField Cv = this->Cv_;
+  const volScalarField Cp = this->Cp_;
+  scalar Rhoinf = 1;
+  scalar Uinf = 0.8944;
+  scalar Vinf = 0.4472;
+  scalar Pinf = 3;
+  scalar pii  = Foam::mathematicalConstant::pi;
+  scalar pii2 = pii*pii;
+  scalar t = mesh_.time().value();
+  volVectorField C = mesh_.C();
+  Info << " [+] Correcting theoretical and conserved variables\n";
+  forAll(C, cell)
+    {
+      scalar gamma = Cp[cell] / Cv[cell];
+      scalar x1 = C[cell].x();
+      scalar x2 = C[cell].y();
+      scalar x3 = C[cell].z();
+      vector pos = vector(x1, x2, x3);
+      scalar v1 = Uinf*Foam::cos(theta);
+      scalar v2 = Vinf*Foam::sin(theta);
+
+      // Correcting theoretical U, rho and p    
+      rho_theo_[cell] = Rhoinf * Foam::pow( 1 - I2*M2*(gamma-1)/(8*pii2) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/(r*r)) , 1/(gamma-1));
+      U_theo_[cell] = vector(
+	     Uinf * ( Foam::cos(theta)- I*(x2-v2*t)/(2*pii*r) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/(r*r))/2 ),
+	     Vinf * ( Foam::sin(theta)- I*(x1-v1*t)/(2*pii*r) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/(r*r))/2 ),
+	     0);
+      p_theo_[cell] = Pinf * Foam::pow( 1 - I2*M2*(gamma-1)/(8*pii2) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/(r*r)) , gamma/(gamma-1));
+
+      // Correcting Primitive Fields       
+      rho_[cell] = rho_theo_[cell];
+      U_[cell]   = U_theo_[cell];
+      p_[cell]   = p_theo_[cell]; 
+	
+      // Correcting Conserved Fields
+      rhoU_[cell] = rho_[cell] * U_[cell];
+      rhoE_[cell] = rho_[cell] * E_[cell]; // (h_[cell] + 0.5*magSqr(U_));
+
+      // Fluxes don't need to be initialized because they are computed afterwards
+    }
+  //  /!\ AT THE MOMENT, H AND E ARE NOT CORRECTED
+  //E_   = p_/(gamma-1) + 0.5 * rho_ * magSqr(U_);
+  //h_   = p_/(rho_*(gamma-1)) + 0.5 * magSqr(U_);
+
+  Info << " [+] test: Correcting Boundary Conditions\n";
+  U_.correctBoundaryConditions();
+  h_.correctBoundaryConditions();
+  p_.correctBoundaryConditions();
+  
+  Info << " [+] Correcting Mesh Displacement\n";
+  forAll(mesh_.points(), ptI)
+    {
+      scalar pX  = mesh_.points()[ptI].x();
+      scalar pY  = mesh_.points()[ptI].y();
+      scalar pZ  = mesh_.points()[ptI].z();
+      vector pos = vector(pX, pY, pZ);
+      // Updating Mesh Displacement Vector
+      MDN_[ptI] = this->phix(pos);    
+    }    
+}
+
+surfaceScalarField arbMesh::FluxTALEfromEUL(const surfaceScalarField& rhoFlux)
+{
+  // Getting TALE from EUL Scalar flux <=> multiply by JH^-T = F^-1
+  surfaceScalarField rhoFlux_TALE = rhoFlux;
+  forAll(mesh_.Cf(), face)
+    {
+      vector pos = mesh_.Cf()[face];
+      rhoFlux_TALE[face] = 
+    }
+
+}
+
+surfaceScalarField arbMesh::FluxTALEfromEUL(const surfaceVectorField& rhoUFlux)
+{
+
+
+}
+
+
 
 
 // * * * * * * * * * * * * * Static Member Functions * * * * * * * * * * * * //

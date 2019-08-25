@@ -17,5 +17,4 @@ rm -rf perf*
 #gmshToFoam shocktube.msh
 #rm -rf shocktube.msh
 
-# Generate the paraview guide file
-paraFoam -touch
+blockMesh

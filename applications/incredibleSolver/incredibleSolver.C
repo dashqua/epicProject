@@ -91,10 +91,8 @@ int main(int argc, char *argv[])
 	meanCoNum =
 	  0.5*(gSum(sumPhi)/gSum(mesh.V().field()))*runTime.deltaTValue();
       }
-
-      Info<< "Courant Number mean: " << meanCoNum
-	  << " max: " << CoNum << endl;
-
+      Info<< "Courant Number mean: " << meanCoNum  << " max: " << CoNum << endl;
+      // 
 #       include "setDeltaT.H"
 
         runTime++;
@@ -104,33 +102,42 @@ int main(int argc, char *argv[])
         // Low storage Runge-Kutta time integration
         forAll (beta, i)
         {
-            // Solve the approximate Riemann problem for this time step
+	    // Compute EUL variables from TALE variables
+            aMsh.computeEULfromTALE();
+	  
+	    // Solve the approximate Riemann problem for this time step
             dbnsFlux.computeFlux(aMsh);
 
+	    // Use EUL variables to get TALE variables
+	    aMsh.computeTALEfromEUL();
+
+	    surfaceScalarField rhoFlux_TALE  = aMsh.FluxTALEfromEUL(rhoFlux);
+	    surfaceVectorField rhoUFlux_TALE = aMsh.FluxTALEfromEUL(rhoEFlux);
+	    surfaceScalarField rhoEFlux_TALE = aMsh.FluxTALEfromEUL(rhoEFlux);
+	      
             // Time integration
             solve
             (
                 1.0/beta[i]*fvm::ddt(rho)
-              + fvc::div(dbnsFlux.rhoFlux())
+              + fvc::div(rhoFlux_TALE)
             );
 
             solve
             (
                 1.0/beta[i]*fvm::ddt(rhoU)
-              + fvc::div(dbnsFlux.rhoUFlux())
+              + fvc::div(rhoUFlux_TALE)
             );
 
             solve
             (
                 1.0/beta[i]*fvm::ddt(rhoE)
-              + fvc::div(dbnsFlux.rhoEFlux())
+              + fvc::div(rhoEFlux_TALE)
             );
 
-	    //#           include "updateFields.H"
-	    //	    aMsh.updateFields();
+#           include "updateFields.H"
         }
 
-	// After solving, variables are updating according to the arbitrary mapping.
+	// theoretical variables are updated.
 	aMsh.updateFields();	
 	
         runTime.write();

@@ -64,18 +64,27 @@ class arbMesh
 {
 private:
   pointVectorField& MDN_;
-  const pointMesh& pMesh_;
-  const fvMesh& mesh_;
+  volScalarField& rho_;
+  volVectorField& U_;
+  volScalarField& p_;
+  volScalarField& E_;
+  const volScalarField& T_;
+  volScalarField& h_;
   volScalarField& rho_theo_;
   volVectorField& U_theo_;
   volScalarField& p_theo_;
-  volScalarField& rho_;
   volVectorField& rhoU_;
   volScalarField& rhoE_;
-  volScalarField& rho_TALE_;
-  volVectorField& U_TALE_;
+  volVectorField& U_tilde_;
   const volScalarField& Cv_;
   const volScalarField& Cp_;
+  surfaceScalarField rhoFlux_;
+  surfaceVectorField rhoUFlux_;
+  surfaceScalarField rhoEFlux_;
+  const fvMesh& mesh_;
+  const pointMesh& pMesh_;
+
+  
     // Private data
         //- Description of data_
         //scalar data_;
@@ -90,24 +99,29 @@ public:
   //- Static data staticData
   //static const dataType staticData;
         //- Construct from Field
-  explicit arbMesh(pointVectorField& MDN, const fvMesh& mesh, const Time& runTime,
-		   volScalarField& rho_theo, volVectorField& U_theo, volScalarField& p_theo, volScalarField& rho, volVectorField& rhoU, volScalarField& rhoE, volScalarField& rho_TALE, volVectorField& U_TALE, const volScalarField& Cv, const volScalarField& Cp)
+  explicit arbMesh(pointVectorField& MDN, volScalarField& rho, volVectorField& U, volScalarField& p, volScalarField& E, const volScalarField& T, volScalarField& h, volScalarField& rho_theo, volVectorField& U_theo, volScalarField& p_theo, volVectorField& rhoU, volScalarField& rhoE,  volVectorField& U_tilde, const volScalarField& Cv, const volScalarField& Cp, const surfaceScalarField& rhoFlux, const surfaceVectorField& rhoUFlux, surfaceScalarField& rhoEFlux)
     :
     MDN_(MDN),
-    pMesh_(MDN.mesh()),
-    mesh_(mesh),
+    rho_(rho),
+    U_(U),
+    p_(p),
+    E_(E),
+    T_(T),
+    h_(h),
     rho_theo_(rho_theo),
     U_theo_(U_theo),
     p_theo_(p_theo),
-    rho_(rho),
     rhoU_(rhoU),
     rhoE_(rhoE),
-    rho_TALE_(rho_TALE),
-    U_TALE_(U_TALE),
+    U_tilde_(U_tilde),
     Cv_(Cv),
-    Cp_(Cp)
+    Cp_(Cp),
+    mesh_(rho.mesh()),
+    pMesh_(MDN.mesh())
   {
-	  
+    surfaceScalarField rhoFlux_ = rhoFlux;
+    surfaceVectorField rhoUFlux_ = rhoUFlux;
+    surfaceScalarField rhoEFlux_ = rhoEFlux;
   }
 
   pointVectorField MDN();
@@ -127,12 +141,21 @@ public:
   void updateFields();                          // Update theoretical, TALE and MDN fields
   tensor Fw(vector& xyz);                       // Deformation Gradient
   scalar detFw(vector& xyz);                    // Jacobian of Def Grad (Vol Map)
+  tensor transposeFw(vector& xyz);              // transpose of Def Grad 
   tensor invFw(vector& xyz);                    // inverse of Def Grad
   tensor Hw(vector& xyz);                       // Area Map JF^-T
   tensor transposeHw(vector& xyz);              // transpose of Area Map
+  tensor inverseTransposeHw(vector& xyz);         // inverseTranspose of Area Map
   
+  ////////////////////////////////////////////////
+  void computeTALEfromEUL();                    // Compute TALE variables from EUL variables
+  void computeEULfromTALE();                    // Compute EUL variables from TALE variables
+  void correctInitialVariables();               // Correct Variables to comply with initial cond
 
-
+  ////////////////////////////////////////////////
+  surfaceScalarField FluxTALEfromEUL(const surfaceScalarField& rhoFlux);
+  surfaceVectorField FluxTALEfromEUL(const surfaceVectorField& rhoUFlux);
+  
   //- Construct from components
         //arbMesh(const scalar& data);
 

@@ -7,14 +7,10 @@ autoPtr<basicPsiThermo> thermo
 Info << "\nReading primitive variables\n";
 Info << " [+] Reading enthalpy h\n";
 volScalarField& h = thermo->h();
-Info << " [+] Reading pressure p\n";
-volScalarField p
-(
- IOobject("p", runTime.timeName(), mesh, IOobject::MUST_READ, IOobject::AUTO_WRITE),
- mesh // thermo->p()
-);
 Info << " [+] Reading temperature T\n";
 const volScalarField& T = thermo->T();
+Info << " [+] Reading pressure p\n";
+volScalarField& p = thermo->p(); 
 Info << " [+] Reading density rho\n";
 volScalarField rho
 (
@@ -26,6 +22,12 @@ volVectorField U
 (
  IOobject("U", runTime.timeName(), mesh, IOobject::MUST_READ, IOobject::AUTO_WRITE),
  mesh
+);
+Info << " [+] Reading Energy E\n";
+volScalarField E
+(
+ IOobject("E", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::AUTO_WRITE),
+ rho * h - p//p/(thermo->Cp/thermo->Cv() -1) + 0.5 * rho * magSqr(U)
 );
 Info << "\nReading arbitrary Mesh variables\n";
 Info << " [+] Reading cell centers\n";
@@ -42,35 +44,43 @@ pointVectorField MDN
  dimensionedVector("MDN", dimLength, vector::zero)
 );
 
+// write mesh velocity field on mesh not pmesh for now
+volVectorField U_tilde
+(
+ IOobject("U_tilde", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::AUTO_WRITE),
+ U
+);
+/*
 Info << "\nReading TALE fields\n";
 Info << " [+] Reading rho_TALE\n";
 volScalarField rho_TALE
 (
- IOobject
- (
-  "rho_TALE",
-  runTime.timeName(),
-  mesh,
-  IOobject::NO_READ,
-  IOobject::AUTO_WRITE
-  ),
+ IOobject("rho_TALE", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::AUTO_WRITE),
  thermo->rho()
 );
 
 Info << " [+] Reading U_TALE\n";
 volVectorField U_TALE
 (
- IOobject
- (
-  "U_TALE",
-  runTime.timeName(),
-  mesh,
-  IOobject::NO_READ,
-  IOobject::AUTO_WRITE
-  ),
+ IOobject("U_TALE", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::AUTO_WRITE),
  U
 );
 
+Info << "\nReading EUL fields\n";
+Info << "[+] Reading rho_EUL\n";
+volScalarField rho_EUL
+(
+ IOobject("rho_EUL", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::AUTO_WRITE),
+ thermo->rho()
+);
+
+Info << " [+] Reading U_EUL\n";
+volVectorField U_EUL
+(
+ IOobject("U_EUL", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::AUTO_WRITE),
+ U
+);
+*/
 
 Info << "\nReading analytic fields\n";
 Info << " [+] Reading theoretical U\n";
@@ -111,40 +121,6 @@ volScalarField rhoE
  rho*h - p // NOPE :(h + 0.5*magSqr(U)) - p
 );
 
-
-
-
-Info << "\nReading Arbitrary Mesh Object\n";
-pointVectorField& MDN_    = MDN;
-volScalarField& rho_theo_ = rho_theo;
-volVectorField& U_theo_   = U_theo;
-volScalarField& p_theo_   = p_theo;
-volScalarField& rho_      = rho;
-volVectorField& rhoU_     = rhoU;
-volScalarField& rhoE_     = rhoE;
-volScalarField& rho_TALE_ = rho_TALE;
-volVectorField& U_TALE_   = U_TALE;
-volScalarField Cv_       = thermo->Cv(); volScalarField& CvP_ = Cv_;
-volScalarField Cp_       = thermo->Cp(); volScalarField& CpP_ = Cp_;
-arbMesh arbitraryMesh(MDN_, mesh, runTime, rho_theo_, U_theo_, p_theo_, rho_, rhoU_, rhoE_, rho_TALE_, U_TALE_, CvP_, CpP_);
-arbMesh& aMsh = arbitraryMesh;
-
-
-
-aMsh.updateFields();
-//#include "updateFields.H"
-
-forAll(C, cell)
-{
-  // update rhoU and rhoE
-  rhoU[cell] = rho[cell]*U[cell];
-  rhoE[cell] = rho[cell]*h[cell] -p[cell];
-}
-
-
-
-
-
 // Create numeric flux
 Info << "\nInstanciation of flux\n";
 autoPtr<basicNumericFlux> dbnsFluxPtr = basicNumericFlux::New(p, U, T, thermo() );
@@ -154,9 +130,30 @@ const surfaceScalarField& phi = dbnsFlux.rhoFlux();
 
 
 
-  
+Info << "\nReading Arbitrary Mesh Object\n";
+pointVectorField& MDN_    = MDN;
+volScalarField& rho_      = rho;
+volVectorField& U_        = U;
+volScalarField& p_        = p;
+volScalarField& E_        = E;
+volScalarField& h_        = h;
+volScalarField& rho_theo_ = rho_theo;
+volVectorField& U_theo_   = U_theo;
+volScalarField& p_theo_   = p_theo;
+volVectorField& rhoU_     = rhoU;
+volScalarField& rhoE_     = rhoE;
+volVectorField& U_tilde_  = U_tilde;
+volScalarField Cv_        = thermo->Cv(); volScalarField& CvP_ = Cv_;
+volScalarField Cp_        = thermo->Cp(); volScalarField& CpP_ = Cp_;
+surfaceScalarField& rhoFlux_ = dbnsFlux.rhoFlux();
+surfaceVectorField& rhoUFlux_ = dbnsFlux.rhoUFlux();
+surfaceScalarField& rhoEFlux_ = dbnsFlux.rhoEFlux();
+arbMesh arbitraryMesh(MDN_, rho_, U_, p_, E_, T, h_, rho_theo_, U_theo_, p_theo_,  rhoU_, rhoE_, U_tilde_, CvP_, CpP_, rhoFlux_, rhoUFlux_, rhoEFlux_);
+arbMesh& aMsh = arbitraryMesh;
 
 
+// Now that every variables is read, they are corrected to comply with the initial conditions of arbMesh
+aMsh.correctInitialVariables();
 
 Info << "\nWrite-up of some variables\n" << endl;
 rho.write();
@@ -165,3 +162,6 @@ p.write();
 MDN.write();
 rho_TALE.write();
 U_TALE.write();
+p_theo.write();
+U_theo.write();
+T.write();
