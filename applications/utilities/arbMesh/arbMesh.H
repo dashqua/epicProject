@@ -46,6 +46,7 @@ SourceFiles
 #include "volPointInterpolation.H"
 #include "fvMesh.H"
 #include "vectorList.H"
+#include "basicThermo.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -76,13 +77,13 @@ private:
   volVectorField& rhoU_;
   volScalarField& rhoE_;
   volVectorField& U_tilde_;
+  const fvMesh& mesh_;
   const volScalarField& Cv_;
   const volScalarField& Cp_;
-  surfaceScalarField rhoFlux_;
-  surfaceVectorField rhoUFlux_;
-  surfaceScalarField rhoEFlux_;
-  const fvMesh& mesh_;
-  const pointMesh& pMesh_;
+  //surfaceScalarField rhoFlux_;
+  //surfaceVectorField rhoUFlux_;
+  //surfaceScalarField rhoEFlux_;
+
 
   
     // Private data
@@ -99,14 +100,30 @@ public:
   //- Static data staticData
   //static const dataType staticData;
         //- Construct from Field
-  explicit arbMesh(pointVectorField& MDN, volScalarField& rho, volVectorField& U, volScalarField& p, volScalarField& E, const volScalarField& T, volScalarField& h, volScalarField& rho_theo, volVectorField& U_theo, volScalarField& p_theo, volVectorField& rhoU, volScalarField& rhoE,  volVectorField& U_tilde, const volScalarField& Cv, const volScalarField& Cp, const surfaceScalarField& rhoFlux, const surfaceVectorField& rhoUFlux, surfaceScalarField& rhoEFlux)
+  explicit arbMesh(
+	   pointVectorField& MDN,
+	   volVectorField& U,
+	   volScalarField& p,
+	   volScalarField& E,
+	   volScalarField& h,
+	   volScalarField& rho_theo,
+	   volVectorField& U_theo,
+	   volScalarField& p_theo,
+	   volVectorField& rhoU,
+	   volScalarField& rhoE,
+	   volVectorField& U_tilde,
+	   surfaceScalarField& rhoFlux,
+	   surfaceVectorField& rhoUFlux,
+	   surfaceScalarField& rhoEFlux,
+	   basicThermo& thermo
+		   )
     :
     MDN_(MDN),
-    rho_(rho),
+    rho_(thermo.rho()),
     U_(U),
     p_(p),
     E_(E),
-    T_(T),
+    T_(thermo.T()),
     h_(h),
     rho_theo_(rho_theo),
     U_theo_(U_theo),
@@ -114,16 +131,16 @@ public:
     rhoU_(rhoU),
     rhoE_(rhoE),
     U_tilde_(U_tilde),
-    Cv_(Cv),
-    Cp_(Cp),
-    mesh_(rho.mesh()),
-    pMesh_(MDN.mesh())
-  {
-    surfaceScalarField rhoFlux_ = rhoFlux;
-    surfaceVectorField rhoUFlux_ = rhoUFlux;
-    surfaceScalarField rhoEFlux_ = rhoEFlux;
-  }
-
+    mesh_(p.mesh()),
+    Cv_(thermo.Cv()), Cp_(thermo.Cp())
+    { }
+  //rhoFlux_  = rhoFlux;
+    //rhoUFlux_ = rhoUFlux;
+    //rhoEFlux_ = rhoEFlux;
+    //mesh_ = p.mesh();
+  
+  ////////////////////////////////////////////////
+  
   pointVectorField MDN();
   scalar jw(vector& xyz);
   scalar deltaw(scalar msgSf_, label& face);
@@ -153,8 +170,8 @@ public:
   void correctInitialVariables();               // Correct Variables to comply with initial cond
 
   ////////////////////////////////////////////////
-  surfaceScalarField FluxTALEfromEUL(const surfaceScalarField& rhoFlux);
-  surfaceVectorField FluxTALEfromEUL(const surfaceVectorField& rhoUFlux);
+  //surfaceScalarField FluxTALEfromEUL(const surfaceScalarField& rhoFlux);
+  //surfaceVectorField FluxTALEfromEUL(const surfaceVectorField& rhoUFlux);
   
   //- Construct from components
         //arbMesh(const scalar& data);
@@ -164,15 +181,6 @@ public:
 
         //- Construct as copy
         //arbMesh(const arbMesh&);
-
-	  /*
-	  pointVectorField xN_
-	  (
-	     IOobject("xN_", mesh_),
-	     pMesh_,
-	     dimensionedVector("xN_", dimensionSet(0,1,0,0,0,0,0), vector::zero)
-	  );
-	  */
 
     // Selectors
 

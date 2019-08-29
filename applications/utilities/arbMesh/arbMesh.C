@@ -182,7 +182,7 @@ vector arbMesh::phix(vector& xyz)
   scalar y = xyz[1];
   return vector( \
 		x + 2*Foam::sin(pii*x/10)*Foam::sin(2*pii*y/15)*Foam::sin(2*pii*t/T),   \
-		y + 3/2*Foam::sin(pii*x/10)*Foam::sin(2*pii*y/15)*Foam::sin(4*pii*t/T), \	
+		y + 3/2*Foam::sin(pii*x/10)*Foam::sin(2*pii*y/15)*Foam::sin(4*pii*t/T), \
 		0);
 }
 
@@ -354,6 +354,9 @@ void arbMesh::computeTALEfromEUL()
       rhoEFlux_[face] = this->detFw(pos) * this->transposeHw(pos) & rhoEFlux_[face];
     }*/
 
+
+
+  /*
   volVectorField tempRhoFlux = rho_ * U_;
   volVectorField tempRhoUFlux = U_; //its OK its temp
   volVectorField tempRhoEFlux = U_; // Cv_ * T_ + 0.5*magSqr(U_);
@@ -379,54 +382,14 @@ void arbMesh::computeTALEfromEUL()
   rhoFlux_  = (linearInterpolate(tempRhoFlux) & mesh_.Sf());
   rhoUFlux_ = rhoFlux_ * linearInterpolate(U_);
   rhoEFlux_ = rhoFlux_ * linearInterpolate(Cv_*T_ + 0.5*magSqr(U_));
+
+  */
 }
 
 
 void arbMesh::computeEULfromTALE()
 {
-  // If not precised, variables are assumed to be TALE
-  // e.g. rhoU is rho_EUL * U_EUL
-  volVectorField C = mesh_.C();
 
-  /*
-  forAll(mesh_.owner(), face)
-    {
-      scalar x = mesh_.Cf()[face].x();
-      scalar y = mesh_.Cf()[face].y();
-      scalar z = mesh_.Cf()[face].z();
-      vector pos = vector(x,y,z);
-
-      // Update Fluxes      /!\ similar pattern here
-      rhoFlux_[face]  = this->detFw(pos) * this->transposeHw(pos) & rhoFlux_[face];
-      rhoUFlux_[face] = this->detFw(pos) * this->transposeHw(pos) & rhoUFlux_[face];
-      rhoEFlux_[face] = this->detFw(pos) * this->transposeHw(pos) & rhoEFlux_[face];
-    }*/
-
-  volVectorField tempRhoFlux = rho_ * U_;
-  volVectorField tempRhoUFlux = U_;
-  volVectorField tempRhoEFlux = U_; // Cv_[0] * T_ + 0.5*magSqr(U_);
-  forAll(C, cell)
-    {
-      scalar x = C[cell].x();
-      scalar y = C[cell].y();
-      scalar z = C[cell].z();
-      vector pos = vector(x,y,z);
-
-      // Update Primitive Fields
-      rho_[cell] = 1/this->detFw(pos) * rho_[cell];
-      U_[cell] = 1/this->detFw(pos) * U_[cell];
-      E_[cell] = 1/this->detFw(pos) * E_[cell];
-      
-      // Update Conserved Fields
-      rhoU_[cell] = rho_[cell]*U_[cell];
-      rhoE_[cell] = rho_[cell]*E_[cell];
-
-      // Update Fluxes via temporary variables
-      tempRhoFlux[cell]  = 1/this->detFw(pos) * this->inverseTransposeHw(pos) & ( rho_[cell] * U_[cell] );
-    }
-  rhoFlux_  = (linearInterpolate(tempRhoFlux) & mesh_.Sf());
-  rhoUFlux_ = rhoFlux_ * linearInterpolate(U_);
-  rhoEFlux_ = rhoFlux_ * linearInterpolate(Cv_*T_ + 0.5*magSqr(U_));
 }
 
 void arbMesh::correctInitialVariables()
@@ -501,6 +464,8 @@ void arbMesh::correctInitialVariables()
     }    
 }
 
+
+/*
 surfaceScalarField arbMesh::FluxTALEfromEUL(const surfaceScalarField& rhoFlux)
 {
   // Getting TALE from EUL Scalar flux <=> multiply by JH^-T = F^-1
@@ -510,14 +475,14 @@ surfaceScalarField arbMesh::FluxTALEfromEUL(const surfaceScalarField& rhoFlux)
       vector pos = mesh_.Cf()[face];
       rhoFlux_TALE[face] = 
     }
-
 }
+  */
 
-surfaceScalarField arbMesh::FluxTALEfromEUL(const surfaceVectorField& rhoUFlux)
-{
+//surfaceVectorField arbMesh::FluxTALEfromEUL(const surfaceVectorField& rhoUFlux)
+//{
 
 
-}
+//}
 
 
 
