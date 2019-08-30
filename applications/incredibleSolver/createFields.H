@@ -17,7 +17,8 @@ pointMesh pMesh(mesh);
 Info << "\nReading primitive variables\n";
 Info << " [+] Reading temperature T\n"; const volScalarField& T = thermo->T();
 Info << " [+] Reading pressure p\n"   ; volScalarField& p = thermo->p(); 
-Info << " [+] Reading density rho\n"  ; volScalarField& rho = thermo->rho();
+Info << " [+] Reading density rho\n"  ;
+volScalarField rho(thermo->rho());
 Info << " [+] Reading velocity U\n"   ;
 volVectorField U
 (
@@ -26,31 +27,33 @@ volVectorField U
  );
 Info << " [+] Reading enthalpy h and internal energy e\n";
 volScalarField& he = thermo->h(); // he();
+volScalarField& h  = he;
+volScalarField& small_e  = he;
 if (he.name() == "e")
   {
-    volScalarField& e = he;
+    volScalarField& small_e = he;
     volScalarField h_obj
       (
        IOobject("h", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::NO_WRITE),
-       e + p/rho
+       small_e + p/rho
        );
-    volScalarField& h = h_obj;
+    volScalarField& h = h_obj; Info << h.name();  //  just for remove some warnings
   }
-else if (he.name() == "h")
+ else // (he.name() == "h")
    {
      volScalarField& h = he;
      volScalarField e_obj
        (
-	IOobject("e", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::NO_WRITE)
+	IOobject("e", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::NO_WRITE),
+	h - p/rho
 	);
-     volScalarField& e = e_obj; 
+     volScalarField& small_e = e_obj; Info << small_e.name();  //  just for remove some warnings
    }
-else { return 1; }
 Info << " [+] Reading Total Energy E\n";
 volScalarField E
 (
  IOobject("E", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::NO_WRITE),
- e + 0.5*magSqr(U)
+ small_e + 0.5*magSqr(U)
 );
 
 
@@ -127,7 +130,7 @@ Info << " [+] Reading rho Flux\n";
 surfaceScalarField rhoFlux
 (
  IOobject("rhoFlux", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::NO_WRITE),
- linearInterpolate( rho*U ) & Sf;
+ linearInterpolate( rho*U ) & Sf
 );
 Info << " [+] Reading rhoU Flux\n";
 surfaceVectorField rhoUFlux
@@ -136,10 +139,10 @@ surfaceVectorField rhoUFlux
  rhoFlux * linearInterpolate(U)
 );
 Info << " [+] Reading rhoE Flux\n";
-volScalarField rhoEFlux
+surfaceScalarField rhoEFlux
 (
- IOobject("rhoE", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::NO_WRITE)
- linearInterpolate( U *(E+p) )
+ IOobject("rhoE", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::NO_WRITE),
+ linearInterpolate( U *(E+p) ) & Sf
 );
 
 
@@ -150,7 +153,7 @@ volScalarField rhoEFlux
 // Create Gradient fields
 Info << "\nReading Gradient Fields\n";
 Info << " [+] Reading grad P\n"; volVectorField gradP(fvc::grad(p));
-Info << " [+] Reading grad U\n"; volTensorFIeld gradU(fvc::grad(U));
+Info << " [+] Reading grad U\n"; volTensorField gradU(fvc::grad(U));
 Info << " [+] Reading grad T\n"; volVectorField gradT(fvc::grad(T));
 
 
@@ -181,12 +184,20 @@ volScalarField& p_theo_   = p_theo;
 volVectorField& rhoU_     = rhoU;
 volScalarField& rhoE_     = rhoE;
 volVectorField& U_tilde_  = U_tilde;
-surfaceScalarField& rhoFlux_ = dbnsFlux.rhoFlux();
-surfaceVectorField& rhoUFlux_ = dbnsFlux.rhoUFlux();
-surfaceScalarField& rhoEFlux_ = dbnsFlux.rhoEFlux();
-arbMesh arbitraryMesh(MDN_, rho_, U_, p_, E_, T, h_, rho_theo_, U_theo_, p_theo_,  rhoU_, rhoE_, U_tilde_, rhoFlux_, rhoUFlux_, rhoEFlux_, thermo);
+surfaceScalarField& rhoFlux_  = rhoFlux;//dbnsFlux.rhoFlux();
+surfaceVectorField& rhoUFlux_ = rhoUFlux;//dbnsFlux.rhoUFlux();
+surfaceScalarField& rhoEFlux_ = rhoEFlux;//dbnsFlux.rhoEFlux();
+arbMesh arbitraryMesh(MDN_, thermo(), rho_, U_, E_, p_, h_, rho_theo_, U_theo_, p_theo_, rhoU_, rhoE_, U_tilde_, rhoFlux_, rhoUFlux_, rhoEFlux_);
 arbMesh& aMsh = arbitraryMesh;
 
+
+
+
+
+
+
+// Create mass flux alias for easier coupling with other code components
+const surfaceScalarField& phi = rhoFlux;
 
 // Now that every variables is read, they are corrected to comply with the initial conditions of arbMesh
 aMsh.correctInitialVariables();
@@ -196,8 +207,6 @@ rho.write();
 U.write();
 p.write();
 MDN.write();
-rho_TALE.write();
-U_TALE.write();
 p_theo.write();
 U_theo.write();
 T.write();

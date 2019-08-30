@@ -241,8 +241,8 @@ void arbMesh::updateFields()
       scalar gamma = Cp[cell] / Cv[cell];
       scalar x1 = C[cell].x();
       scalar x2 = C[cell].y();
-      scalar x3 = C[cell].z();
-      vector pos = vector(x1, x2, x3);
+      //scalar x3 = C[cell].z();
+      //vector pos = vector(x1, x2, x3);
       scalar v1 = Uinf*Foam::cos(theta);
       scalar v2 = Vinf*Foam::sin(theta);
 
@@ -269,7 +269,7 @@ void arbMesh::updateFields()
 tensor arbMesh::Fw(vector& xyz)
 {
   scalar t = mesh_.time().value();
-  scalar x = xyz[0], y = xyz[1], z = xyz[2];
+  scalar x = xyz[0], y = xyz[1];//, z = xyz[2];
   scalar pii = Foam::mathematicalConstant::pi, Tper = 2;
   tensor F(
 	   1+pii/5*Foam::cos(pii*x/10)*Foam::sin(2*pii*y/15)*Foam::sin(2*pii*t/Tper),
@@ -419,8 +419,8 @@ void arbMesh::correctInitialVariables()
       scalar gamma = Cp[cell] / Cv[cell];
       scalar x1 = C[cell].x();
       scalar x2 = C[cell].y();
-      scalar x3 = C[cell].z();
-      vector pos = vector(x1, x2, x3);
+      //scalar x3 = C[cell].z();
+      //vector pos = vector(x1, x2, x3);
       scalar v1 = Uinf*Foam::cos(theta);
       scalar v2 = Vinf*Foam::sin(theta);
 

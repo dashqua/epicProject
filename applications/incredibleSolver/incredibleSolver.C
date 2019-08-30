@@ -111,27 +111,27 @@ int main(int argc, char *argv[])
 	    // Use EUL variables to get TALE variables
 	    aMsh.computeTALEfromEUL();
 
-	    surfaceScalarField rhoFlux_TALE  = aMsh.FluxTALEfromEUL(rhoFlux);
-	    surfaceVectorField rhoUFlux_TALE = aMsh.FluxTALEfromEUL(rhoEFlux);
-	    surfaceScalarField rhoEFlux_TALE = aMsh.FluxTALEfromEUL(rhoEFlux);
+	    //surfaceScalarField rhoFlux_TALE  = aMsh.FluxTALEfromEUL(rhoFlux);
+	    //surfaceVectorField rhoUFlux_TALE = aMsh.FluxTALEfromEUL(rhoEFlux);
+	    //surfaceScalarField rhoEFlux_TALE = aMsh.FluxTALEfromEUL(rhoEFlux);
 	      
             // Time integration
             solve
             (
                 1.0/beta[i]*fvm::ddt(rho)
-              + fvc::div(rhoFlux_TALE)
+              + fvc::div(rhoFlux)
             );
 
             solve
             (
                 1.0/beta[i]*fvm::ddt(rhoU)
-              + fvc::div(rhoUFlux_TALE)
+              + fvc::div(rhoUFlux)
             );
 
             solve
             (
                 1.0/beta[i]*fvm::ddt(rhoE)
-              + fvc::div(rhoEFlux_TALE)
+              + fvc::div(rhoEFlux)
             );
 
 #           include "updateFields.H"

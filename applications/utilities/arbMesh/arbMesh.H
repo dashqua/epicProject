@@ -65,6 +65,7 @@ class arbMesh
 {
 private:
   pointVectorField& MDN_;
+  basicThermo& thermo_;
   volScalarField& rho_;
   volVectorField& U_;
   volScalarField& p_;
@@ -99,27 +100,27 @@ public:
   // Static data members
   //- Static data staticData
   //static const dataType staticData;
-        //- Construct from Field
-  explicit arbMesh(
-	   pointVectorField& MDN,
-	   volVectorField& U,
-	   volScalarField& p,
-	   volScalarField& E,
-	   volScalarField& h,
-	   volScalarField& rho_theo,
-	   volVectorField& U_theo,
-	   volScalarField& p_theo,
-	   volVectorField& rhoU,
-	   volScalarField& rhoE,
-	   volVectorField& U_tilde,
-	   surfaceScalarField& rhoFlux,
-	   surfaceVectorField& rhoUFlux,
-	   surfaceScalarField& rhoEFlux,
-	   basicThermo& thermo
-		   )
+  //- Construct from Field
+  explicit arbMesh(pointVectorField& MDN,
+		   basicThermo& thermo,
+		   volScalarField& rho,		   
+		   volVectorField& U,
+		   volScalarField& E,
+		   volScalarField& p,
+		   volScalarField& h,
+		   volScalarField& rho_theo,
+		   volVectorField& U_theo,
+		   volScalarField& p_theo,
+		   volVectorField& rhoU,
+		   volScalarField& rhoE,
+		   volVectorField& U_tilde,
+		   surfaceScalarField& rhoFlux,
+		   surfaceVectorField& rhoUFlux,
+		   surfaceScalarField& rhoEFlux )
     :
     MDN_(MDN),
-    rho_(thermo.rho()),
+    thermo_(thermo),
+    rho_(rho),
     U_(U),
     p_(p),
     E_(E),
@@ -131,8 +132,9 @@ public:
     rhoU_(rhoU),
     rhoE_(rhoE),
     U_tilde_(U_tilde),
-    mesh_(p.mesh()),
-    Cv_(thermo.Cv()), Cp_(thermo.Cp())
+    mesh_(U.mesh()),
+    Cv_(thermo_.Cv()),
+    Cp_(thermo_.Cp())
     { }
   //rhoFlux_  = rhoFlux;
     //rhoUFlux_ = rhoUFlux;
