@@ -26,55 +26,113 @@ License
 #include "RiemannSolver.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
-
-//const dataType Foam::RiemannSolver::staticData();
-
-
 // * * * * * * * * * * * * * Static Member Functions * * * * * * * * * * * * //
-
-
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
-
-
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
 
-// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::RiemannSolver::RiemannSolver()
-:
-    baseClassName(),
-    data_()
-{}
-
-/*
-Foam::RiemannSolver::RiemannSolver(const dataType& data)
-:
-    baseClassName(),
-    data_(data)
-{}
-*/
-/*
-Foam::RiemannSolver::RiemannSolver(const RiemannSolver&)
-:
-    baseClassName(),
-    data_()
-{}
-*/
-
-// * * * * * * * * * * * * * * * * Selectors * * * * * * * * * * * * * * * * //
-
-Foam::autoPtr<Foam::RiemannSolver>
-Foam::RiemannSolver::New()
+void RiemannSolver::computeFlux
+(
+     surfaceScalarField& rhoFlux,
+     surfaceVectorField& rhoUFlux,
+     surfaceScalarField& rhoEFlux,
+     volVectorField& gradP,
+     volTensorField& gradU,
+     volVectorField& gradT
+)
 {
-    return autoPtr<RiemannSolver>(new RiemannSolver);
+  /* This function compute the 3 fluxes using Riemann Solver.
+     It is inspired from numericFlux::computeFlux() from dbnsFlux library
+     in foam-extend-4.0. This function does not require foam-extend-4.0 but
+     OpenFOAM-6 instead.
+  */
+
+  // Step 1a: Settings
+  const unallocLabelList& owner          = mesh_.owner();
+  const unallocLabelList& neighbour      = mesh_.neighbour();
+  const surfaceVectorField& Sf           = mesh_.Sf();
+  const surfaceScalarField& magSf        = mesh_.magSf();
+  const volVectorField& cellCentre       = mesh_.C();
+  const surfaceVectorField& faceCentre   = mesh_.Cf();
+  const volScalarField Cv                = thermo_.Cv();
+  const volScalarField R                 = thermo_.Cp() - Cv;
+  gradP = fvc::grad(p_);
+  gradU = fvc::grad(U_);
+  gradT = fvc::grad(T_);
+
+  // Step 1b: Limiters stuff
+
+  // Step 2a: Computation of fluxes for internal faces
+  forAll(owner, face)
+  {
+    const label own = owner[face];
+    const label nei = owner[face];
+    const vector deltaRLeft  = faceCentre[face] - cellCentre[own];
+    const vector deltaRRight = faceCentre[face] - cellCentre[nei];
+
+    evaluateFlux
+    (
+
+    );
+  }
+
+  // Step 2b: Computation of fluxes for boundary faces
+  forAll(rhoFlux.boundaryField(), patch)
+  {
+    const fvPatch& curPatch = p_.boundaryField()[patch].patch();
+    // Fluxes
+    fvsPatchScalarField& pRhoFlux  = rhoFlux.boundaryField()[patch];
+    fvsPatchVectorField& pRhoUFlux = rhoUFlux.boundaryField()[patch];
+    fvsPatchScalarField& pRhoEFLux = rhoEFlux.boundaryField()[patch];
+    // Patch Fields
+    const fvPatchScalarField& pp   = p_.boundaryField()[patch];
+    const vectorField& pU          = U_.boundaryField()[patch];
+    const scalarField& pT          = T_.boundaryField()[patch];
+    const scalarField& pCv         = Cv.boundaryField()[patch];
+    const scalarField& pR          = R.boundaryField()[patch];
+    //Gradients
+    const fvPatchVectorField& pGradP = gradP.boundaryField()[patch];
+    const fvPatchTensorField& pGradU = gradU.boundaryField()[patch];
+    const fvPatchVectorField& pGradT = gradT.boundaryField()[patch];
+    //Limiters stuff
+    //Face areas
+    const fvsPatchVectorField& pSf = Sf.boundaryField()[patch];
+    const fvsPatchScalarField& pMagSf = magSf.boundaryField()[patch];
+
+    forAll(pp, facei)
+    {
+      evaluateFlux
+      (
+
+      );
+    }
+  }    
 }
 
 
-// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
+RiemannSolver::evaluateFlux();
+{
 
-Foam::RiemannSolver::~RiemannSolver()
-{}
+
+}
+
+
+
+
+
+
+
+
+
+void RiemannSolver::evaluateFlux(){}
+
+
+
+
+
+
+
 
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //

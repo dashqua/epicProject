@@ -36,7 +36,13 @@ SourceFiles
 #ifndef RiemannSolver_H
 #define RiemannSolver_H
 
-//#include ".H"
+#include "polyMesh.H"
+#include "GeometricField.H"
+#include "pointFields.H"
+#include "fvCFD.H"
+#include "fvMesh.H"
+#include "volPointInterpolation.H"
+#include "basicThermo.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -53,58 +59,67 @@ class RiemannSolver;
 \*---------------------------------------------------------------------------*/
 
 class RiemannSolver
-:
-    public baseClassName
 {
-    // Private data
+private:
 
-        //- Description of data_
-  //dataType data_;
-
-
-    // Private Member Functions
-
-        //- Disallow default bitwise copy construct
-  //RiemannSolver(const RiemannSolver&);
-
-        //- Disallow default bitwise assignment
-  //void operator=(const RiemannSolver&);
-
-
+  const fvMesh& mesh_;
+  basicThermo& thermo_;
+  volVectorField& U_;
+  volScalarField& E_;
+  volScalarField& p_;
+  volScalarField& h_;
+  const volScalarField& T_;
+  
 public:
+  // Constructor
+  RiemannSolver
+  (
+    const fvMesh& mesh,
+    basicThermo& thermo,
+    volVectorField& U,
+    volScalarField& E,
+    volScalarField& p,
+    volScalarField& h,
+    const volScalarField& T
+   )
+    :
+    mesh_(mesh),
+    thermo_(thermo),
+    U_(U),
+    E_(E),
+    p_(p),
+    h_(h),
+    T_(T)  
+  {}
 
-    // Static data members
+  // Destructor
+  ~RiemannSolver()
+  {}
 
-        //- Static data staticData
-  //static const dataType staticData;
+  // Methods
+  void computeFlux(surfaceScalarField& , surfaceVectorField& , surfaceScalarField&, volVectorField&, volTensorField&, volVectorField&);
 
-
-    // Constructors
-
-        //- Construct null
-        RiemannSolver();
-
-        //- Construct from components
-  //RiemannSolver(const dataType& data);
-
-        //- Construct from Istream
-  //RiemannSolver(Istream&);
-
-        //- Construct as copy
-  //RiemannSolver(const RiemannSolver&);
+  void evaluateFlux();
+  
+  //- Select null constructed
+  //static autoPtr<RiemannSolver> New();
 
 
-    // Selectors
-
-        //- Select null constructed
-        static autoPtr<RiemannSolver> New();
+  
 
 
-    //- Destructor
-    ~RiemannSolver();
 
 
-    // Member Functions
+
+
+
+
+
+
+
+
+
+  // Member Functions
 
         // Access
 
