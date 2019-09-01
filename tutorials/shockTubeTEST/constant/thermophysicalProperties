@@ -9,49 +9,16 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volVectorField;
-    location    "0";
-    object      U_theo;
+    class       dictionary;
+    object      thermophysicalProperties;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 1 -1 0 0 0 0];
+thermoType      hPsiThermo<pureMixture<constTransport<specieThermo<hConstThermo<perfectGas>>>>>;
 
-internalField   uniform (0 0 0);
-
-boundaryField
-{
-    inlet
-    {
-        type            cyclic;
-        value           uniform (0 0 0);
-    }
-    outlet
-    {
-        type            cyclic;
-        value           uniform (0 0 0);
-    }
-    top
-    {
-        type            cyclic;
-        value           uniform (0 0 0);
-    }
-    bottom
-    {
-        type            cyclic;
-        value           uniform (0 0 0);
-    }
-    left
-    {
-        type            cyclic;
-        value           uniform (0 0 0);
-    }
-    right
-    {
-        type            cyclic;
-        value           uniform (0 0 0);
-    }
-}
+// name, nMoles, mol weight, CP, Hf, mu, Pr;
+// mixture         air 1 28.9 1007 0 0 0.7;
+mixture         air 1 11640.2561438975 2.5 0 0 0.7;
 
 
 // ************************************************************************* //

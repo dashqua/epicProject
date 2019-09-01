@@ -49,6 +49,7 @@ Author
 #include "numericFlux.H"
 
 #include "arbMesh.H"
+#include "RiemannSolver.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -103,13 +104,14 @@ int main(int argc, char *argv[])
         forAll (beta, i)
         {
 	    // Compute EUL variables from TALE variables
-            aMsh.computeEULfromTALE();
+	    //aMsh.computeEULfromTALE();
 	  
 	    // Solve the approximate Riemann problem for this time step
-            dbnsFlux.computeFlux(aMsh);
-
+	    //dbnsFlux.computeFlux(aMsh);
+	    RS.computeFlux( rhoFlux, rhoUFlux, rhoEFlux, gradP, gradU, gradT);
+	  
 	    // Use EUL variables to get TALE variables
-	    aMsh.computeTALEfromEUL();
+	    //aMsh.computeTALEfromEUL();
 
 	    //surfaceScalarField rhoFlux_TALE  = aMsh.FluxTALEfromEUL(rhoFlux);
 	    //surfaceVectorField rhoUFlux_TALE = aMsh.FluxTALEfromEUL(rhoEFlux);
@@ -135,10 +137,11 @@ int main(int argc, char *argv[])
             );
 
 #           include "updateFields.H"
+
         }
 
 	// theoretical variables are updated.
-	aMsh.updateFields();	
+	//aMsh.updateFields();	
 	
         runTime.write();
 

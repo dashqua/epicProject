@@ -22,34 +22,32 @@ internalField   uniform 273.15;
 boundaryField
 {
     inlet
-    {
-        type            cyclic;
-        value           uniform 273.15;
+    {      
+      type            cyclic;
     }
     outlet
     {
-        type            cyclic;
-        value           uniform 273.15;
-    }
-    top
-    {
-        type            cyclic;
-        value           uniform 273.15;
-    }
-    bottom
-    {
-        type            cyclic;
-        value           uniform 273.15;
+      type            cyclic;
     }
     left
     {
-        type            cyclic;
-        value           uniform 273.15;
+      type            cyclic;
     }
     right
     {
-        type            cyclic;
-        value           uniform 273.15;
+      type            cyclic;
+    }
+    top
+    {
+      type            cyclic;
+    }
+    bottom
+    {
+      type            cyclic;
+    }    
+    defaultFaces
+    {
+      type            empty;//slip;//wall;
     }
 }
 

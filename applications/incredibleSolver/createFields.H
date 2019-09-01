@@ -7,7 +7,7 @@ autoPtr<basicPsiThermo> thermo
 Info << "\n Reading mesh information\n";
 Info << " [+] Reading cell centers\n";
 const surfaceVectorField& Sf = mesh.Sf();
-const volVectorField& C = mesh.C();
+//const volVectorField& C = mesh.C();
 Info << " [+] Reading pMesh\n";
 pointMesh pMesh(mesh);
 
@@ -18,7 +18,11 @@ Info << "\nReading primitive variables\n";
 Info << " [+] Reading temperature T\n"; const volScalarField& T = thermo->T();
 Info << " [+] Reading pressure p\n"   ; volScalarField& p = thermo->p(); 
 Info << " [+] Reading density rho\n"  ;
-volScalarField rho(thermo->rho());
+volScalarField rho
+(
+ IOobject("rho", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::AUTO_WRITE),
+ thermo->rho()
+);
 Info << " [+] Reading velocity U\n"   ;
 volVectorField U
 (
@@ -55,8 +59,13 @@ volScalarField E
  IOobject("E", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::NO_WRITE),
  small_e + 0.5*magSqr(U)
 );
+Info << " [+] Reading Cv\n";
+volScalarField Cv = thermo->Cv();
 
 
+// check dim U, E and p
+///Info << U.dimensions;
+U.write(); E.write(); p.write();
 
 
 // Conservative variables
@@ -141,8 +150,8 @@ surfaceVectorField rhoUFlux
 Info << " [+] Reading rhoE Flux\n";
 surfaceScalarField rhoEFlux
 (
- IOobject("rhoE", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::NO_WRITE),
- linearInterpolate( U *(E+p) ) & Sf
+ IOobject("rhoEFlux", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::NO_WRITE),
+ rhoFlux * linearInterpolate(Cv * T + magSqr(U))//linearInterpolate( U * (E+p) ) & Sf
 );
 
 
@@ -157,17 +166,10 @@ Info << " [+] Reading grad U\n"; volTensorField gradU(fvc::grad(U));
 Info << " [+] Reading grad T\n"; volVectorField gradT(fvc::grad(T));
 
 
-
-  
-
-
-
 // Create numeric flux
-Info << "\nInstanciation of flux\n";
-autoPtr<basicNumericFlux> dbnsFluxPtr = basicNumericFlux::New(p, U, T, thermo() );
-basicNumericFlux& dbnsFlux = dbnsFluxPtr();
-// Create mass flux alias for easier coupling with other code components
-//const surfaceScalarField& phi = dbnsFlux.rhoFlux();
+//Info << "\nInstanciation of flux\n";
+//autoPtr<basicNumericFlux> dbnsFluxPtr = basicNumericFlux::New(p, U, T, thermo() );
+//basicNumericFlux& dbnsFlux = dbnsFluxPtr();
 
 
 
@@ -191,16 +193,15 @@ arbMesh arbitraryMesh(MDN_, thermo(), rho_, U_, E_, p_, h_, rho_theo_, U_theo_, 
 arbMesh& aMsh = arbitraryMesh;
 
 
-
-
-
-
-
 // Create mass flux alias for easier coupling with other code components
 const surfaceScalarField& phi = rhoFlux;
 
 // Now that every variables is read, they are corrected to comply with the initial conditions of arbMesh
-aMsh.correctInitialVariables();
+//aMsh.correctInitialVariables();
+
+// Create Riemann Solver
+Info << "\nInitializing the Riemann Solver\n";
+RiemannSolver RS(thermo(), U_, E_, p_, h_, T);
 
 Info << "\nWrite-up of some variables\n" << endl;
 rho.write();

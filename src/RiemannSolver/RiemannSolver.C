@@ -80,23 +80,37 @@ void RiemannSolver::computeFlux
     const label nei = owner[face];
     const vector deltaRLeft  = faceCentre[face] - cellCentre[own];
     const vector deltaRRight = faceCentre[face] - cellCentre[nei];
-    /*
+    
     evaluateFluxInternal
     (
-
+     rhoFlux[face],
+     rhoUFlux[face],
+     rhoEFlux[face],
+     p_[own] + pLimiter[own] * (deltaRLeft & gradP[own]),
+     p_[nei] + pLimiter[nei] * (deltaRRight & gradP[nei]),
+     U_[own] + cmptMultiply(ULimiter[own], (deltaRLeft & gradU[own])),
+     U_[nei] + cmptMultiply(ULimiter[nei], (deltaRRight & gradU[nei])),
+     T_[own] + TLimiter[own] * (deltaRLeft & gradT[own]),
+     T_[nei] + TLimiter[nei] * (deltaRRight & gradT[nei]),
+     R[own],
+     R[nei],
+     Cv[own],
+     Cv[nei],
+     Sf[face],
+     magSf[face]
     );
-    */
+    
   }
 
   // Step 2b: Computation of fluxes for boundary faces
   forAll(rhoFlux.boundaryField(), patch)
   {
-    /*     UNCOMMENT WHEN FUNCTION IS CODED
+    //     UNCOMMENT WHEN FUNCTION IS CODED
     const fvPatch& curPatch = p_.boundaryField()[patch].patch();
     // Fluxes
     fvsPatchScalarField& pRhoFlux  = rhoFlux.boundaryField()[patch];
     fvsPatchVectorField& pRhoUFlux = rhoUFlux.boundaryField()[patch];
-    fvsPatchScalarField& pRhoEFLux = rhoEFlux.boundaryField()[patch];
+    fvsPatchScalarField& pRhoEFlux = rhoEFlux.boundaryField()[patch];
     // Patch Fields
     const fvPatchScalarField& pp   = p_.boundaryField()[patch];
     const vectorField& pU          = U_.boundaryField()[patch];
@@ -108,18 +122,36 @@ void RiemannSolver::computeFlux
     const fvPatchTensorField& pGradU = gradU.boundaryField()[patch];
     const fvPatchVectorField& pGradT = gradT.boundaryField()[patch];
     //Limiters stuff
+    const fvPatchScalarField& pPatchLim = pLimiter.boundaryField()[patch];
+    const fvPatchVectorField& UPatchLim = ULimiter.boundaryField()[patch];
+    const fvPatchScalarField& TPatchLim = TLimiter.boundaryField()[patch];
+    
     //Face areas
     const fvsPatchVectorField& pSf = Sf.boundaryField()[patch];
     const fvsPatchScalarField& pMagSf = magSf.boundaryField()[patch];
-
-    forAll(pp, facei)
+    //
+    forAll(pp, face)
     {
       evaluateFluxBoundary
       (
-
+       pRhoFlux[face],
+       pRhoUFlux[face],
+       pRhoEFlux[face],
+       pp[face],
+       pp[face],
+       pU[face],
+       pU[face],
+       pT[face],
+       pT[face],
+       pR[face],
+       pR[face],
+       pCv[face],
+       pCv[face],
+       pSf[face],
+       pMagSf[face]
       );
     }
-    */
+    //
   }    
 }
 
@@ -254,8 +286,47 @@ void RiemannSolver::evaluateFluxInternal
 }
 
 
-void RiemannSolver::evaluateFluxBoundary()
-{}
+void RiemannSolver::evaluateFluxBoundary
+(
+ scalar& rhoFlux,
+ vector& rhoUFlux,
+ scalar& rhoEFlux,
+ const scalar& pLeft,
+ const scalar& pRight,
+ const vector& ULeft,
+ const vector& URight,
+ const scalar& TLeft,
+ const scalar& TRight,
+ const scalar& RLeft,
+ const scalar& RRight,
+ const scalar& CvLeft,
+ const scalar& CvRight,
+ const vector& Sf,
+ const scalar& magSf
+ )
+{
+  // At the moment, internal and boundary faces are evaluated
+  // with the same routine ( like initial algorithm ),
+  // See Jibran's for actual parsing of that..
+  evaluateFluxInternal
+  (
+   rhoFlux,
+   rhoUFlux,
+   rhoEFlux,
+   pLeft,
+   pRight,
+   ULeft,
+   URight,
+   TLeft,
+   TRight,
+   RLeft,
+   RRight,
+   CvLeft,
+   CvRight,
+   Sf,
+   magSf
+  );
+}
 
 
 

@@ -2,6 +2,7 @@ EXE_INC = \
     -DFULLDEBUG -g -O0 \
     -I$(EPIC_PROJECT_DIR)/src/PRE_dbns/lnInclude \
     -I$(EPIC_PROJECT_DIR)/applications/utilities/arbMesh/lnInclude \
+    -I$(EPIC_PROJECT_DIR)/src/RiemannSolver/lnInclude \
     -I$(LIB_SRC)/dbns/lnInclude \
     -I$(LIB_SRC)/finiteVolume/lnInclude \
     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
@@ -14,4 +15,5 @@ EXE_LIBS = \
     -lspecie \
     -L$(FOAM_USER_LIBBIN) \
     -lPRE_dbns \
-    -larbMesh
+    -larbMesh \
+    -lRiemannSolver

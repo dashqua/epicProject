@@ -9,47 +9,47 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volVectorField;
+    class       volScalarField;
     location    "0";
-    object      U_theo;
+    object      E;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 1 -1 0 0 0 0];
+dimensions      [0 2 -2 0 0 0 0];
 
-internalField   uniform (0 0 0);
+internalField   uniform 683.375;
 
 boundaryField
 {
     inlet
     {
         type            cyclic;
-        value           uniform (0 0 0);
+        value           uniform 683.375;
     }
     outlet
     {
         type            cyclic;
-        value           uniform (0 0 0);
+        value           uniform 683.375;
     }
     top
     {
         type            cyclic;
-        value           uniform (0 0 0);
+        value           uniform 683.375;
     }
     bottom
     {
         type            cyclic;
-        value           uniform (0 0 0);
+        value           uniform 683.375;
     }
     left
     {
         type            cyclic;
-        value           uniform (0 0 0);
+        value           uniform 683.375;
     }
     right
     {
         type            cyclic;
-        value           uniform (0 0 0);
+        value           uniform 683.375;
     }
 }
 

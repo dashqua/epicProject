@@ -9,49 +9,63 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volVectorField;
-    location    "0";
-    object      U_theo;
+    class       dictionary;
+    object      blockMeshDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 1 -1 0 0 0 0];
+convertToMeters 1;
 
-internalField   uniform (0 0 0);
+vertices
+(
+    (0 0 0)
+    (1 0 0)
+    (1 0.1 0)
+    (0 0.1 0)
+    (0 0 0.1)
+    (1 0 0.1)
+    (1 0.1 0.1)
+    (0 0.1 0.1)
+);
 
-boundaryField
-{
-    inlet
-    {
-        type            cyclic;
-        value           uniform (0 0 0);
-    }
-    outlet
-    {
-        type            cyclic;
-        value           uniform (0 0 0);
-    }
-    top
-    {
-        type            cyclic;
-        value           uniform (0 0 0);
-    }
-    bottom
-    {
-        type            cyclic;
-        value           uniform (0 0 0);
-    }
-    left
-    {
-        type            cyclic;
-        value           uniform (0 0 0);
-    }
-    right
-    {
-        type            cyclic;
-        value           uniform (0 0 0);
-    }
-}
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) (100 1 1) simpleGrading (1 1 1)
+);
+
+edges
+(
+);
+
+patches
+(
+    patch inlet
+    (
+        (0 4 7 3)
+    )
+    patch outlet
+    (
+        (2 6 5 1)
+    )
+    symmetryPlane bottom
+    (
+        (1 5 4 0)
+    )
+    symmetryPlane top
+    (
+        (3 7 6 2)
+    )
+
+    // empty frontAndBack
+    // (
+    //     (0 3 2 1)
+    //     (4 5 6 7)
+    // )
+);
+
+mergePatchPairs
+(
+);
 
 
 // ************************************************************************* //

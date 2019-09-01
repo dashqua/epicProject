@@ -9,49 +9,48 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volVectorField;
-    location    "0";
-    object      U_theo;
+    class       dictionary;
+    object      controlDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 1 -1 0 0 0 0];
+startFrom       startTime;
 
-internalField   uniform (0 0 0);
+startTime       0;
 
-boundaryField
-{
-    inlet
-    {
-        type            cyclic;
-        value           uniform (0 0 0);
-    }
-    outlet
-    {
-        type            cyclic;
-        value           uniform (0 0 0);
-    }
-    top
-    {
-        type            cyclic;
-        value           uniform (0 0 0);
-    }
-    bottom
-    {
-        type            cyclic;
-        value           uniform (0 0 0);
-    }
-    left
-    {
-        type            cyclic;
-        value           uniform (0 0 0);
-    }
-    right
-    {
-        type            cyclic;
-        value           uniform (0 0 0);
-    }
-}
+stopAt          endTime;
+
+endTime         0.1;
+
+deltaT          0.00001;
+
+writeControl    timeStep;
+
+writeInterval   20;
+
+purgeWrite      0;
+
+writeFormat     ascii;
+
+writePrecision  6;
+
+writeCompression compressed;
+
+timeFormat      general;
+
+timePrecision   6;
+
+graphFormat     raw;
+
+runTimeModifiable yes;
+
+adjustTimeStep  no;
+
+// maxCo
+maxCo           2.5;
+
+// maxDeltaT
+maxDeltaT       1;
 
 
 // ************************************************************************* //

@@ -73,9 +73,8 @@ private:
   
 public:
   // Constructor
-  RiemannSolver
+  explicit RiemannSolver
   (
-    const fvMesh& mesh,
     basicThermo& thermo,
     volVectorField& U,
     volScalarField& E,
@@ -84,13 +83,13 @@ public:
     const volScalarField& T
    )
     :
-    mesh_(mesh),
     thermo_(thermo),
     U_(U),
     E_(E),
     p_(p),
     h_(h),
-    T_(T)  
+    T_(T),
+    mesh_(U.mesh())
   {}
 
   // Destructor
@@ -102,7 +101,7 @@ public:
 
   void evaluateFluxInternal(scalar&, vector&, scalar&, const scalar&, const scalar&, const vector&, const vector&, const scalar&, const scalar&, const scalar&, const scalar&, const scalar&, const scalar&, const vector&, const scalar&);
   
-  void evaluateFluxBoundary();
+  void evaluateFluxBoundary(scalar&, vector&, scalar&, const scalar&, const scalar&, const vector&, const vector&, const scalar&, const scalar&, const scalar&, const scalar&, const scalar&, const scalar&, const vector&, const scalar&);
   
   //- Select null constructed
   //static autoPtr<RiemannSolver> New();

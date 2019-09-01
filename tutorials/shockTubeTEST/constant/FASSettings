@@ -10,38 +10,11 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    object      fvSolution;
+    object      FASSettings;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-solvers
-{
-    rho
-    {}
+minClusterSize 3;
+maxClusterSize 10;
+nLevel         1;
 
-    rhoU
-    {}
-
-    rhoE
-    {}
-
-    p
-    {}
-
-    U
-    {}
-
-    T
-    {}
-}
-
-fieldBounds
-{
-    rho 0.001 10000;
-    p   0.001 1e7;
-    T   0.001 10000;
-    p*psi 0.001 1e7;
-}
-
-
-// ************************************************************************* //
