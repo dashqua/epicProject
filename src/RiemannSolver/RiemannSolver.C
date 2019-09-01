@@ -60,9 +60,19 @@ void RiemannSolver::computeFlux
   gradP = fvc::grad(p_);
   gradU = fvc::grad(U_);
   gradT = fvc::grad(T_);
+  //gradP.correctBoundaryConditions();
+  //gradU.correctBoundaryConditions();
+  //gradT.correctBoundaryConditions();
 
   // Step 1b: Limiters stuff
-
+  MDLimiter<scalar, BarthJespersenLimiter> scalarPLimiter(p_, gradP);
+  MDLimiter<vector, BarthJespersenLimiter> vectorULimiter(U_, gradU);
+  MDLimiter<scalar, BarthJespersenLimiter> scalarTLimiter(T_, gradT);
+  const volScalarField& pLimiter = scalarPLimiter.phiLimiter();
+  const volVectorField& ULimiter = vectorULimiter.phiLimiter();
+  const volScalarField& TLimiter = scalarTLimiter.phiLimiter();
+  
+  
   // Step 2a: Computation of fluxes for internal faces
   forAll(owner, face)
   {
@@ -70,16 +80,18 @@ void RiemannSolver::computeFlux
     const label nei = owner[face];
     const vector deltaRLeft  = faceCentre[face] - cellCentre[own];
     const vector deltaRRight = faceCentre[face] - cellCentre[nei];
-
-    evaluateFlux
+    /*
+    evaluateFluxInternal
     (
 
     );
+    */
   }
 
   // Step 2b: Computation of fluxes for boundary faces
   forAll(rhoFlux.boundaryField(), patch)
   {
+    /*     UNCOMMENT WHEN FUNCTION IS CODED
     const fvPatch& curPatch = p_.boundaryField()[patch].patch();
     // Fluxes
     fvsPatchScalarField& pRhoFlux  = rhoFlux.boundaryField()[patch];
@@ -102,30 +114,148 @@ void RiemannSolver::computeFlux
 
     forAll(pp, facei)
     {
-      evaluateFlux
+      evaluateFluxBoundary
       (
 
       );
     }
+    */
   }    
 }
 
 
-RiemannSolver::evaluateFlux();
+
+
+
+void RiemannSolver::evaluateFluxInternal
+(
+ scalar& rhoFlux,
+ vector& rhoUFlux,
+ scalar& rhoEFlux,
+ const scalar& pLeft,
+ const scalar& pRight,
+ const vector& ULeft,
+ const vector& URight,
+ const scalar& TLeft,
+ const scalar& TRight,
+ const scalar& RLeft,
+ const scalar& RRight,
+ const scalar& CvLeft,
+ const scalar& CvRight,
+ const vector& Sf,
+ const scalar& magSf
+ )
 {
+  // Step 0 : Decode variables
+  scalar rhoLeft = pLeft/(RLeft * TLeft);
+  scalar rhoRight = pRight/(RRight * TRight);
+  scalar eLeft = CvLeft * TLeft + 0.5*magSqr(ULeft);
+  scalar eRight = CvRight * TRight + 0.5*magSqr(URight);
+  const scalar kappaLeft = (CvLeft+RLeft)/CvLeft;
+  const scalar kappaRight = (CvRight+RRight)/CvRight;
+  vector normalVector = Sf/magSf;
+  const scalar contrVLeft = (ULeft & normalVector);
+  const scalar contrVRight = (URight & normalVector);
+  const scalar hLeft = eLeft + pLeft/rhoLeft;
+  const scalar hRight = eRight + pRight/rhoRight;
 
+  // Step 1a : Compute Roe's averaged variables
+  const scalar rhoTilde = sqrt(max( rhoLeft*rhoRight , SMALL ));
+  const scalar rhoLeftSqrt = sqrt(max(rhoLeft,SMALL));
+  const scalar rhoRightSqrt = sqrt(max(rhoRight,SMALL));
+  const scalar wLeft = rhoLeftSqrt/(rhoLeftSqrt + rhoRightSqrt);
+  const scalar wRight = rhoRightSqrt/(rhoLeftSqrt + rhoRightSqrt);
+  const vector UTilde = ULeft*wLeft + URight*wRight;
+  const scalar hTilde = hLeft*wLeft + hRight*wRight;
+  const scalar qTildeSquare = magSqr(UTilde);
+  const scalar kappaTilde = kappaLeft*wLeft + kappaRight*wRight;
+  const scalar aTilde =
+    sqrt(max( (kappaTilde-1)*(hTilde-0.5*qTildeSquare) ,SMALL));
+  const scalar contrVTilde (UTilde & normalVector);
 
+  // Step 1b : Compute Primitive differences
+  const scalar deltaP      = pRight - pLeft;
+  const scalar deltaRho    = rhoRight - rhoLeft;
+  const vector deltaU      = URight - ULeft;
+  const scalar deltaContrV = (deltaU & normalVector);
+
+  // Step 2 : Compute eigenvalues
+  scalar lambda1   = mag(contrVTilde - aTilde);
+  scalar lambda234 = mag(contrVTilde);
+  scalar lambda5   = mag(contrVTilde + aTilde);
+  //scalar lambdaMax = max(max(lambda1,lambda234),lambda5);
+
+  // Step 3 : Compute eigenvectors
+  const scalar K1_1   = 1;
+  const vector K1_234 = UTilde - aTilde*normalVector;
+  const scalar K1_5   = hTilde - aTilde*contrVTilde;
+
+  const scalar K23_1   = 0;
+  const vector K23_234 = vector(1,1,1) - normalVector;
+  const scalar K23_5   = ( UTilde & vector(1,1,1) ) - deltaContrV ; 
+
+  const scalar K4_1   = 1;
+  const vector K4_234 = UTilde;
+  const scalar K4_5   = 0.5 * qTildeSquare;
+
+  const scalar K5_1   = 1;
+  const vector K5_234 = UTilde + aTilde*normalVector;
+  const scalar K5_5   = hTilde + aTilde*contrVTilde;    
+  
+  // Step 4 : Compute wave strengths
+  const scalar alpha1   = 
+    (deltaP - rhoTilde*aTilde*deltaContrV)/(2.0*sqr(aTilde));
+  const scalar alpha23 = 
+    rhoTilde * ((deltaU & vector(1,1,1))  - deltaContrV);
+  const scalar alpha4   = deltaRho - deltaP/sqr(aTilde);
+  const scalar alpha5   =
+    (deltaP + rhoTilde*aTilde*deltaContrV)/(2.0*sqr(aTilde));
+
+  // Step 5 : Build actual fluxOA
+  // Step 5a : Compute Delta F
+  const scalar diffF1_1   = lambda1 * alpha1 * K1_1;
+  const vector diffF1_234 = lambda1 * alpha1 * K1_234;
+  const scalar diffF1_5   = lambda1 * alpha1 * K1_5;
+  //
+  const scalar diffF23_1   = lambda234 * alpha23 * K23_1;
+  const vector diffF23_234 = lambda234 *
+    tensor(0, alpha23,alpha23,alpha23,0,alpha23,alpha23,alpha23,0) & K23_234;
+  const scalar diffF23_5   = lambda234 * alpha23 * K23_5;
+  //
+  const scalar diffF4_1   = lambda234 * alpha4 * K4_1;
+  const vector diffF4_234 = lambda234 * alpha4 * K4_234;
+  const scalar diffF4_5   = lambda234 * alpha4 * K4_5;
+  //
+  const scalar diffF5_1   = lambda5 * alpha5 * K5_1;
+  const vector diffF5_234 = lambda5 * alpha5 * K5_234;
+  const scalar diffF5_5   = lambda5 * alpha5 * K5_5;
+
+  // Step 5b : Compute Left and right flux
+  const scalar fluxLeft_1   = rhoLeft*contrVLeft;
+  const vector fluxLeft_234 = ULeft*fluxLeft_1 + pLeft*normalVector;
+  const scalar fluxLeft_5   = hLeft*fluxLeft_1;
+  //
+  const scalar fluxRight_1   = rhoRight*contrVRight;
+  const vector fluxRight_234 = URight*fluxRight_1 + pRight*normalVector;
+  const scalar fluxRight_5   = hRight*fluxRight_1;
+
+  // Step 5c : Assemble fluxes
+  const scalar flux1 =
+    0.5 * (fluxLeft_1 + fluxRight_1 - diffF1_1 - diffF23_1 - diffF4_1 - diffF5_1);
+  const vector flux234 =
+    0.5 * (fluxLeft_234 + fluxRight_234 - diffF1_234 - diffF23_234 - diffF4_234 - diffF5_234);
+  const scalar flux5 =
+    0.5 * (fluxLeft_5 + fluxRight_5 - diffF1_5 - diffF23_5 - diffF4_5 - diffF5_5);
+
+  // Step 5d : Update fluxes
+  rhoFlux  = flux1 * magSf;
+  rhoUFlux = flux234 * magSf;
+  rhoEFlux = flux5 * magSf;
 }
 
 
-
-
-
-
-
-
-
-void RiemannSolver::evaluateFlux(){}
+void RiemannSolver::evaluateFluxBoundary()
+{}
 
 
 

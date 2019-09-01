@@ -43,6 +43,7 @@ SourceFiles
 #include "fvMesh.H"
 #include "volPointInterpolation.H"
 #include "basicThermo.H"
+#include "MDLimiter.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -99,7 +100,9 @@ public:
   // Methods
   void computeFlux(surfaceScalarField& , surfaceVectorField& , surfaceScalarField&, volVectorField&, volTensorField&, volVectorField&);
 
-  void evaluateFlux();
+  void evaluateFluxInternal(scalar&, vector&, scalar&, const scalar&, const scalar&, const vector&, const vector&, const scalar&, const scalar&, const scalar&, const scalar&, const scalar&, const scalar&, const vector&, const scalar&);
+  
+  void evaluateFluxBoundary();
   
   //- Select null constructed
   //static autoPtr<RiemannSolver> New();
