@@ -65,7 +65,7 @@ volScalarField Cv = thermo->Cv();
 
 // check dim U, E and p
 ///Info << U.dimensions;
-U.write(); E.write(); p.write();
+//U.write(); E.write(); p.write();
 
 
 // Conservative variables
@@ -80,7 +80,7 @@ Info << " [+] Reading rho*E";
 volScalarField rhoE
 (
  IOobject("rhoE", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::NO_WRITE),
- rho*E
+ rho * (h + 0.5*magSqr(U)) - p //rho*E
 );
 
 
@@ -94,7 +94,7 @@ pointVectorField MDN
  IOobject("MDN", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::AUTO_WRITE),
  pMesh,
  dimensionedVector("MDN", dimLength, vector::zero)
- );
+);
 
 // write mesh velocity field on mesh not pmesh for now
 Info << " [+] Reading arbitrary velocity Utilde\n";
@@ -145,13 +145,13 @@ Info << " [+] Reading rhoU Flux\n";
 surfaceVectorField rhoUFlux
 (
  IOobject("rhoUFlux", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::NO_WRITE),
- rhoFlux * linearInterpolate(U)
+ rhoFlux * linearInterpolate( U )
 );
 Info << " [+] Reading rhoE Flux\n";
 surfaceScalarField rhoEFlux
 (
  IOobject("rhoEFlux", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::NO_WRITE),
- rhoFlux * linearInterpolate(Cv * T + magSqr(U))//linearInterpolate( U * (E+p) ) & Sf
+ rhoFlux * linearInterpolate(Cv*T + magSqr(U))//linearInterpolate( U * (E+p) ) & Sf
 );
 
 
@@ -167,9 +167,9 @@ Info << " [+] Reading grad T\n"; volVectorField gradT(fvc::grad(T));
 
 
 // Create numeric flux
-//Info << "\nInstanciation of flux\n";
-//autoPtr<basicNumericFlux> dbnsFluxPtr = basicNumericFlux::New(p, U, T, thermo() );
-//basicNumericFlux& dbnsFlux = dbnsFluxPtr();
+Info << "\nInstanciation of DBNS flux\n";
+autoPtr<basicNumericFlux> dbnsFluxPtr = basicNumericFlux::New(p, U, T, thermo() );
+basicNumericFlux& dbnsFlux = dbnsFluxPtr();
 
 
 

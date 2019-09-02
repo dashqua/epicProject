@@ -80,20 +80,23 @@ int main(int argc, char *argv[])
 #       include "readTimeControls.H"
 #       include "readFieldBounds.H"
 
-      // The following replaces #include "compressibleCourantNo.H"
+//////// The following replaces #include "compressibleCourantNo.H"
       scalar CoNum = 0.0;
       scalar meanCoNum = 0.0;
+      if (mesh.nInternalFaces())
       {
-	scalarField sumPhi
-	  (
-	   fvc::surfaceSum(mag(phi))().internalField()/rho.internalField()
-	   );
-	CoNum = 0.5*gMax(sumPhi/mesh.V().field())*runTime.deltaTValue();
-	meanCoNum =
-	  0.5*(gSum(sumPhi)/gSum(mesh.V().field()))*runTime.deltaTValue();
+	volScalarField speed_of_sound = sqrt(thermo->Cp() / thermo->Cv() * (thermo->Cp() - thermo->Cv()) * T);
+	surfaceScalarField acCo =
+	  (mag(phi) / (fvc::interpolate(rho) * mesh.magSf()) + fvc::interpolate(speed_of_sound))
+	  * mesh.surfaceInterpolation::deltaCoeffs() * runTime.deltaT();
+	
+	CoNum = gMax(acCo.internalField());
+
+	meanCoNum = gSum(acCo.internalField())  / mesh.nInternalFaces();
       }
-      Info<< "Courant Number mean: " << meanCoNum  << " max: " << CoNum << endl;
-      // 
+      Info << "Acoustic Courant Number mean: " << meanCoNum
+	   << " max: " << CoNum << endl;
+//////// 
 #       include "setDeltaT.H"
 
         runTime++;
@@ -107,8 +110,9 @@ int main(int argc, char *argv[])
 	    //aMsh.computeEULfromTALE();
 	  
 	    // Solve the approximate Riemann problem for this time step
-	    //dbnsFlux.computeFlux(aMsh);
-	    RS.computeFlux( rhoFlux, rhoUFlux, rhoEFlux, gradP, gradU, gradT);
+	    dbnsFlux.computeFlux(aMsh);
+	    rhoFlux = dbnsFlux.rhoFlux();    rhoUFlux = dbnsFlux.rhoUFlux();    rhoEFlux = dbnsFlux.rhoEFlux();
+	    //RS.computeFlux( rhoFlux, rhoUFlux, rhoEFlux, gradP, gradU, gradT);
 	  
 	    // Use EUL variables to get TALE variables
 	    //aMsh.computeTALEfromEUL();
@@ -116,7 +120,7 @@ int main(int argc, char *argv[])
 	    //surfaceScalarField rhoFlux_TALE  = aMsh.FluxTALEfromEUL(rhoFlux);
 	    //surfaceVectorField rhoUFlux_TALE = aMsh.FluxTALEfromEUL(rhoEFlux);
 	    //surfaceScalarField rhoEFlux_TALE = aMsh.FluxTALEfromEUL(rhoEFlux);
-	      
+	    
             // Time integration
             solve
             (

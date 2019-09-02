@@ -37,9 +37,9 @@ solvers
 
 fieldBounds
 {
-    rho 0.001 1e7;
+    rho 0.001 1e4;
     p   0.001 1e7;
-    T   0.001 1e7;
+    T   0.001 1e4;
 }
 
 
