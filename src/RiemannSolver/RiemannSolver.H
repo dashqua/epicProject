@@ -50,11 +50,6 @@ SourceFiles
 namespace Foam
 {
 
-
-// Forward declaration of friend functions and operators
-class RiemannSolver;
-
-
 /*---------------------------------------------------------------------------*\
                          Class RiemannSolver Declaration
 \*---------------------------------------------------------------------------*/
@@ -83,13 +78,13 @@ public:
     const volScalarField& T
    )
     :
+    mesh_(U.mesh()),
     thermo_(thermo),
     U_(U),
     E_(E),
     p_(p),
     h_(h),
-    T_(T),
-    mesh_(U.mesh())
+    T_(T)
   {}
 
   // Destructor

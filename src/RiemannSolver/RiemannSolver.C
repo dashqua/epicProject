@@ -77,7 +77,7 @@ void RiemannSolver::computeFlux
   forAll(owner, face)
   {
     const label own = owner[face];
-    const label nei = owner[face];
+    const label nei = neighbour[face];
     const vector deltaRLeft  = faceCentre[face] - cellCentre[own];
     const vector deltaRRight = faceCentre[face] - cellCentre[nei];
     
@@ -111,22 +111,22 @@ void RiemannSolver::computeFlux
     fvsPatchVectorField& pRhoUFlux = rhoUFlux.boundaryField()[patch];
     fvsPatchScalarField& pRhoEFlux = rhoEFlux.boundaryField()[patch];
     // Patch Fields
-    const fvPatchScalarField& pp   = p_.boundaryField()[patch];
-    const vectorField& pU          = U_.boundaryField()[patch];
-    const scalarField& pT          = T_.boundaryField()[patch];
-    const scalarField& pCv         = Cv.boundaryField()[patch];
-    const scalarField& pR          = R.boundaryField()[patch];
+    const fvPatchScalarField& pp        = p_.boundaryField()[patch];
+    const vectorField& pU               = U_.boundaryField()[patch];
+    const scalarField& pT               = T_.boundaryField()[patch];
+    const scalarField& pCv              = Cv.boundaryField()[patch];
+    const scalarField& pR               = R.boundaryField()[patch];
     //Gradients
-    const fvPatchVectorField& pGradP = gradP.boundaryField()[patch];
-    const fvPatchTensorField& pGradU = gradU.boundaryField()[patch];
-    const fvPatchVectorField& pGradT = gradT.boundaryField()[patch];
+    const fvPatchVectorField& pGradP    = gradP.boundaryField()[patch];
+    const fvPatchTensorField& pGradU    = gradU.boundaryField()[patch];
+    const fvPatchVectorField& pGradT    = gradT.boundaryField()[patch];
     //Limiters stuff
     const fvPatchScalarField& pPatchLim = pLimiter.boundaryField()[patch];
     const fvPatchVectorField& UPatchLim = ULimiter.boundaryField()[patch];
     const fvPatchScalarField& TPatchLim = TLimiter.boundaryField()[patch];    
     //Face areas
-    const fvsPatchVectorField& pSf = Sf.boundaryField()[patch];
-    const fvsPatchScalarField& pMagSf = magSf.boundaryField()[patch];
+    const fvsPatchVectorField& pSf      = Sf.boundaryField()[patch];
+    const fvsPatchScalarField& pMagSf   = magSf.boundaryField()[patch];
     //
     forAll(pp, face)
     {
@@ -222,16 +222,16 @@ void RiemannSolver::evaluateFluxInternal
   scalar lambda1   = mag(contrVTilde - aTilde);
   scalar lambda234 = mag(contrVTilde);
   scalar lambda5   = mag(contrVTilde + aTilde);
-  //scalar lambdaMax = max(max(lambda1,lambda234),lambda5);
+  scalar lambdaMax = max(max(lambda1,lambda234),lambda5);  
 
   // Step 3 : Compute eigenvectors
   const scalar K1_1   = 1;
   const vector K1_234 = UTilde - aTilde*normalVector;
   const scalar K1_5   = hTilde - aTilde*contrVTilde;
 
-  const scalar K23_1   = 0;
-  const vector K23_234 = vector(1,1,1) - normalVector;
-  const scalar K23_5   = ( UTilde & vector(1,1,1) ) - contrVTilde ; 
+  //const scalar K23_1   = 0;
+  //const vector K23_234 = vector(1,1,1) - normalVector;
+  //const scalar K23_5   = ( UTilde & vector(1,1,1) ) - contrVTilde ; 
 
   const scalar K4_1   = 1;
   const vector K4_234 = UTilde;

@@ -1,4 +1,4 @@
-/*---------------------------------------------------------------------------*\
+/*---------------------------------------------------------------------------* \
   =========                 |
   \\      /  F ield         | foam-extend: Open Source CFD
    \\    /   O peration     | Version:     4.0
@@ -110,10 +110,11 @@ int main(int argc, char *argv[])
 	    //aMsh.computeEULfromTALE();
 	  
 	    // Solve the approximate Riemann problem for this time step
-	    dbnsFlux.computeFlux(aMsh);
-	    rhoFlux = dbnsFlux.rhoFlux();    rhoUFlux = dbnsFlux.rhoUFlux();    rhoEFlux = dbnsFlux.rhoEFlux();
-	    //RS.computeFlux( rhoFlux, rhoUFlux, rhoEFlux, gradP, gradU, gradT);
-	  
+	  //dbnsFlux.computeFlux(aMsh);
+	  //rhoFlux = dbnsFlux.rhoFlux();    rhoUFlux = dbnsFlux.rhoUFlux();    rhoEFlux = dbnsFlux.rhoEFlux();
+	  //forAll(mesh, cell){ Info << rhoFlux[cell] << endl; }
+	  RS.computeFlux( rhoFlux, rhoUFlux, rhoEFlux, gradP, gradU, gradT);  Info << "\n\n";
+	  //forAll(mesh, cell){ Info << rhoFlux[cell] << endl; }
 	    // Use EUL variables to get TALE variables
 	    //aMsh.computeTALEfromEUL();
 
