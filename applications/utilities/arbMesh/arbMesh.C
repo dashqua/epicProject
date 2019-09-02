@@ -35,7 +35,7 @@ pointVectorField Foam::arbMesh::MDN()
 scalar Foam::arbMesh::jw(vector& xyz)
 {
     // Get Jw
-    scalar pii = Foam::mathematicalConstant::pi;
+  scalar pii = constant::mathematical::pi;
     scalar Tper = 2;
     scalar t = mesh_.time().value();
     scalar x = xyz[0];
@@ -103,7 +103,7 @@ vector Foam::arbMesh::apply_mapping(vector coord)
   vector res = coord;
   scalar ptX = res[0];  // apply MDN_ displacement for the point coord
   scalar ptY = res[1];
-  scalar pii = Foam::mathematicalConstant::pi;
+  scalar pii = constant::mathematical::pi;
   scalar Tper = 2;
   res[0] = ptX + 2 * Foam::sin(pii*ptX/10) * Foam::sin(2*pii*ptY/15) * Foam::sin(2*pii*t/Tper);
   res[1] = ptY + 3/2 * Foam::sin(pii*ptX/10) * Foam::sin(2*pii*ptY/15) * Foam::sin(4*pii*t/Tper);
@@ -175,7 +175,7 @@ vector Foam::arbMesh::getMagSf(vectorList x)
 
 vector arbMesh::phix(vector& xyz)
 {
-  scalar pii = Foam::mathematicalConstant::pi;
+  scalar pii = constant::mathematical::pi;
   scalar T = 2;
   scalar t = mesh_.time().value();
   scalar x = xyz[0];
@@ -188,7 +188,7 @@ vector arbMesh::phix(vector& xyz)
 
 vector arbMesh::vw(vector& xyz)
 {
-  scalar pii = Foam::mathematicalConstant::pi;
+  scalar pii = constant::mathematical::pi;
   scalar T = 2;
   scalar t = mesh_.time().value();
   scalar x = xyz[0];
@@ -232,7 +232,7 @@ void arbMesh::updateFields()
   scalar Uinf = 0.8944;
   scalar Vinf = 0.4472;
   scalar Pinf = 3;
-  scalar pii  = Foam::mathematicalConstant::pi;
+  scalar pii  = constant::mathematical::pi;
   scalar pii2 = pii*pii;
   scalar t = mesh_.time().value();
   volVectorField C = mesh_.C();
@@ -270,7 +270,7 @@ tensor arbMesh::Fw(vector& xyz)
 {
   scalar t = mesh_.time().value();
   scalar x = xyz[0], y = xyz[1];//, z = xyz[2];
-  scalar pii = Foam::mathematicalConstant::pi, Tper = 2;
+  scalar pii = constant::mathematical::pi, Tper = 2;
   tensor F(
 	   1+pii/5*Foam::cos(pii*x/10)*Foam::sin(2*pii*y/15)*Foam::sin(2*pii*t/Tper),
 	   4*pii/15*Foam::sin(pii*x/10)*Foam::cos(2*pii*y/15)*Foam::sin(2*pii*t/Tper),
@@ -409,7 +409,7 @@ void arbMesh::correctInitialVariables()
   scalar Uinf = 0.8944;
   scalar Vinf = 0.4472;
   scalar Pinf = 3;
-  scalar pii  = Foam::mathematicalConstant::pi;
+  scalar pii  = constant::mathematical::pi;
   scalar pii2 = pii*pii;
   scalar t = mesh_.time().value();
   volVectorField C = mesh_.C();

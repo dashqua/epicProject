@@ -1,8 +1,5 @@
 Info << "Reading thermophysical properties\n" << endl;
-autoPtr<basicPsiThermo> thermo
-(
- basicPsiThermo::New(mesh)
-);
+autoPtr<psiThermo> thermo( psiThermo::New(mesh) );
 
 Info << "\n Reading mesh information\n";
 Info << " [+] Reading cell centers\n";
@@ -30,7 +27,7 @@ volVectorField U
  mesh
  );
 Info << " [+] Reading enthalpy h and internal energy e\n";
-volScalarField& he = thermo->h(); // he();
+volScalarField& he = thermo->he();
 volScalarField& h  = he;
 volScalarField& small_e  = he;
 if (he.name() == "e")
@@ -41,7 +38,7 @@ if (he.name() == "e")
        IOobject("h", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::NO_WRITE),
        small_e + p/rho
        );
-    volScalarField& h = h_obj; Info << h.name();  //  just for remove some warnings
+    volScalarField& h = h_obj; Info << h; // to avoid warnings
   }
  else // (he.name() == "h")
    {
@@ -51,7 +48,7 @@ if (he.name() == "e")
 	IOobject("e", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::NO_WRITE),
 	h - p/rho
 	);
-     volScalarField& small_e = e_obj; Info << small_e.name();  //  just for remove some warnings
+     volScalarField& small_e = e_obj; Info << small_e; // to avoid warnings
    }
 Info << " [+] Reading Total Energy E\n";
 volScalarField E
@@ -166,10 +163,6 @@ Info << " [+] Reading grad U\n"; volTensorField gradU(fvc::grad(U));
 Info << " [+] Reading grad T\n"; volVectorField gradT(fvc::grad(T));
 
 
-// Create numeric flux
-Info << "\nInstanciation of DBNS flux\n";
-autoPtr<basicNumericFlux> dbnsFluxPtr = basicNumericFlux::New(p, U, T, thermo() );
-basicNumericFlux& dbnsFlux = dbnsFluxPtr();
 
 
 

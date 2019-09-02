@@ -132,8 +132,8 @@ public:
             const unallocLabelList& owner = mesh_.owner();
             const unallocLabelList& neighbour = mesh_.neighbour();
 
-            Field<Type>& phiMinIn = phiMinValue.internalField();
-            Field<Type>& phiMaxIn = phiMaxValue.internalField();
+            Field<Type> phiMinIn = phiMinValue.internalField();
+            Field<Type> phiMaxIn = phiMaxValue.internalField();
 
             forAll (owner, faceI)
             {
@@ -186,7 +186,7 @@ public:
             // Create limiter function
             LimiterFunctionType limitFunction;
 
-            FieldType& phiLimiterIn = phiLimiter_.internalField();
+            FieldType phiLimiterIn = phiLimiter_.internalField();
 
             const GradFieldType& gradPhiIn = gradPhi.internalField();
 

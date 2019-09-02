@@ -29,25 +29,22 @@ Description
     using enthalpy based thermo packages
 
 Author
-    Hrvoje Jasak
+    Thomas Di Giusto, based on the work of Hrvoje Jasak and Aleksandar Jemcov
 
 \*---------------------------------------------------------------------------*/
 
+// Core headers
 #include "fvCFD.H"
-#include "basicPsiThermo.H"
+#include "psiThermo.H"
 #include "bound.H"
-#include "hllcFlux.H"
-#include "hllcALEFlux.H"
-#include "roeFlux.H"
-#include "rusanovFlux.H"
-#include "PRE_rusanovFlux.H"
-#include "betaFlux.H"
+
+// Limiters
 #include "MDLimiter.H"
 #include "firstOrderLimiter.H"
 #include "BarthJespersenLimiter.H"
 #include "VenkatakrishnanLimiter.H"
-#include "numericFlux.H"
 
+// Custom libraries
 #include "arbMesh.H"
 #include "RiemannSolver.H"
 
@@ -110,18 +107,11 @@ int main(int argc, char *argv[])
 	    //aMsh.computeEULfromTALE();
 	  
 	    // Solve the approximate Riemann problem for this time step
-	  //dbnsFlux.computeFlux(aMsh);
-	  //rhoFlux = dbnsFlux.rhoFlux();    rhoUFlux = dbnsFlux.rhoUFlux();    rhoEFlux = dbnsFlux.rhoEFlux();
-	  //forAll(mesh, cell){ Info << rhoFlux[cell] << endl; }
-	  RS.computeFlux( rhoFlux, rhoUFlux, rhoEFlux, gradP, gradU, gradT);  Info << "\n\n";
-	  //forAll(mesh, cell){ Info << rhoFlux[cell] << endl; }
+	    RS.computeFlux( rhoFlux, rhoUFlux, rhoEFlux, gradP, gradU, gradT);
+
 	    // Use EUL variables to get TALE variables
 	    //aMsh.computeTALEfromEUL();
 
-	    //surfaceScalarField rhoFlux_TALE  = aMsh.FluxTALEfromEUL(rhoFlux);
-	    //surfaceVectorField rhoUFlux_TALE = aMsh.FluxTALEfromEUL(rhoEFlux);
-	    //surfaceScalarField rhoEFlux_TALE = aMsh.FluxTALEfromEUL(rhoEFlux);
-	    
             // Time integration
             solve
             (
