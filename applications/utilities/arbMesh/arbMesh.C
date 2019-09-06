@@ -352,7 +352,7 @@ void arbMesh::computeTALEfromEUL()
       rhoFlux_[face]  = this->detFw(pos) * this->transposeHw(pos) & rhoFlux_[face];
       rhoUFlux_[face] = this->detFw(pos) * this->transposeHw(pos) & rhoUFlux_[face];
       rhoEFlux_[face] = this->detFw(pos) * this->transposeHw(pos) & rhoEFlux_[face];
-    }*/
+    }
 
 
 
@@ -462,6 +462,109 @@ void arbMesh::correctInitialVariables()
       // Updating Mesh Displacement Vector
       MDN_[ptI] = this->phix(pos);    
     }    
+}
+
+void arbMesh::computeFluxALEfromEUL()
+{
+  const unallocLabelList& owner     = mesh_.owner();
+  const unallocLabelList& neighbour = mesh_.neighbour();
+  
+    
+  forAll(owner, face)
+  {
+    // Step 0: Decoding quantities
+    const label own = owner[face];
+    const label nei = neighbour[face];
+    const scalar pLeft     = p_[own] + .... ;
+    const vector ULeft     = U_[own] + ..... ;
+    const scalar TLeft     = T_[own] + ... ;
+    const scalar RLeft     = R_[own];
+    const scalar CvLeft    = Cv_[own];
+    const scalar CpLeft    = Cp_[own];
+    const scalar gammaLeft = CpLeft/CvLeft;
+    //     code right values here before compiling /!\
+
+    const rhoLeft     = pLeft/(RLeft*TLeft);
+    const rhoRight    = pRight/(RRight*TRight);
+    const rhoLeftSqr  = Foam::sqrt(max(rhoLeft,SMALL));
+    const rhoRightSqr = Foam::sqrt(max(rhoRight,SMALL));
+    const eLeft       = CvLeft*TLeft+0.5*magSqr(ULeft);
+    const eRight      = CvRight*TRight+0.5*magSqr(URight);
+    const wLeft       = rhoLeft/(rhoLeftSqr+rhoRightSqr);
+    const wRight      = rhoRight/(rhoLeftSqr+rhoRightSqr);
+    
+    const scalar rhoTilde    = Foam::sqrt(max( rhoLeft*rhoRight ,SMALL));
+    const scalar UTilde      = ULeft*wLeft + URight*wRight;
+    const scalar gammaTilde  = gammaLeft*wLeft + gammaRight*wRight;
+    const scalar qTildeSquare= mag(UTilde);
+    
+    const vector Sf = mesh_.Sf()[face];
+    const scalar magSf = mesh_.magSf()[face];
+    const vector normaVector = Sf / magSf;
+    const scalar contrVTilde = UTilde & normalVector;
+    const scalar contrVLeft  = ULeft & normalVector;
+    const scalar contrVRight = URight & normalVector;
+    
+    // Step 1: Computation of eigenvalues
+    const scalar lambda_1   = 2*Foam::sqrt(max( rhoTilde,SMALL)) * contrVTilde;
+    const scalar lambda_234 = lambda_1 / 2;
+    const scalar lambda_5   = lambda_234 / gammaTilde;
+    //const scalar lambdaMax  = max(max(lambda_1,lambda_234),lambda_5);
+
+    // Step 2: Computation of eigenvectors
+    const scalar K1_1   = 1;
+    const vector K1_234 = UTilde;
+    const scalar K1_5   = (hTilde+(gamma-1)*qTildeSquare) / (2*gamma -1);
+    //
+    const scalar K23_1   = 0;
+    const vector K23_234 = vector(1,1,1) - normalVector;
+    const scalar K23_5   = UTilde & ( vector(1,1,1) - normalVector);
+    //
+    const scalar K4_1    = 0;
+    const vector K4_234  = Utilde;
+    const scalar K4_5    = qTildeSquare;
+    //
+    const scalar K5_1    = 0;
+    const vector K5_234  = vector(0,0,0);
+    const scalar K5_5    = 1;
+
+    // Step 2b: some alpha *eigenv
+    const scalar alphaK23_1   = 0;
+    const vector alphaK23_234 = rhoTilde * ( deltaU - deltaContrV*normalVector  );
+    const scalar alphaK23_5   = rhoTilde * (( UTilde & deltaU ) - contrVTilde*deltaContrV);
+    
+    // Step 3: Recalculation of wave strengths
+    // ATM : they are the same as for eulerian
+    const scalar alpha1   = (deltaP - rhoTilde*aTilde*deltaContrV)/(2.0*sqr(aTilde));
+    //const scalar alpha23= rhoTilde * ((deltaU & vector(1,1,1))  - deltaContrV);
+    const scalar alpha4   = deltaRho - deltaP/sqr(aTilde);
+    const scalar alpha5   = (deltaP + rhoTilde*aTilde*deltaContrV)/(2.0*sqr(aTilde));
+
+    // Step 4: Assembly of flux differences
+    const scalar DF1_1    = lambda_1 * alpha1 * K1_1;
+    const vector DF1_234  = lambda_1 * alpha1 * K1_234;
+    const scalar DF1_5    = lambda_1 * alpha1 * K1_5;
+    //
+    const scalar DF23_1   = lambda_234 * alphaK23_1;
+    const vector DF23_234 = lambda_234 * alphaK23_234;
+    const scalar DF23_5   = lambda_234 * alphaK23_5;
+    //
+    const scalar DF4_1    = lambda_234 * alpha4 * K4_1;
+    const vector DF4_234  = lambda_234 * alpha4 * K4_234;
+    const scalar DF4_5    = lambda_234 * alpha4 * K4_5;
+    //
+    const scalar DF5_1    = lambda_5 * alpha5 * K5_1;
+    const vector DF5_234  = lambda_5 * alpha5 * K5_234;
+    const scalar DF5_5    = lambda_5 * alpha5 * K5_5;
+
+    // Step 5: Update of fluxes
+    const scalar fluxALE1   = 0.5 * (DF1_1 + DF23_1 + DF4_1 + DF5_1);
+    const vector fluxALE234 = 0.5 * (DF1_234 + DF23_234 + DF4_234 + DF5_234);
+    const scalar fluxALE5   = 0.5 * (DF1_5 + DF23_5 + DF4_5 + DF5_5);
+    
+    // Step 5b: Apply the updates on flux
+    
+  }
 }
 
 

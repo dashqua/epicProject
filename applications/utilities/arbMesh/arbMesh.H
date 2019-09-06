@@ -81,9 +81,9 @@ private:
   const fvMesh& mesh_;
   const volScalarField& Cv_;
   const volScalarField& Cp_;
-  //surfaceScalarField rhoFlux_;
-  //surfaceVectorField rhoUFlux_;
-  //surfaceScalarField rhoEFlux_;
+  surfaceScalarField& rhoFlux_;
+  surfaceVectorField& rhoUFlux_;
+  surfaceScalarField& rhoEFlux_;
 
 
   
@@ -132,6 +132,9 @@ public:
     rhoU_(rhoU),
     rhoE_(rhoE),
     U_tilde_(U_tilde),
+    rhoFlux_(rhoFlux),
+    rhoUFlux_(rhoUFlux),
+    rhoEFlux_(rhoEFlux),
     mesh_(U.mesh()),
     Cv_(thermo_.Cv()),
     Cp_(thermo_.Cp())
@@ -164,13 +167,18 @@ public:
   tensor invFw(vector& xyz);                    // inverse of Def Grad
   tensor Hw(vector& xyz);                       // Area Map JF^-T
   tensor transposeHw(vector& xyz);              // transpose of Area Map
-  tensor inverseTransposeHw(vector& xyz);         // inverseTranspose of Area Map
+  tensor inverseTransposeHw(vector& xyz);       // inverseTranspose of Area Map
   
   ////////////////////////////////////////////////
   void computeTALEfromEUL();                    // Compute TALE variables from EUL variables
   void computeEULfromTALE();                    // Compute EUL variables from TALE variables
   void correctInitialVariables();               // Correct Variables to comply with initial cond
 
+
+  //////////////////////////////////////////////// Compute ALE Fluxes - substract Delta tilde F_i
+  void computeFluxALEfromEUL();
+
+  
   ////////////////////////////////////////////////
   //surfaceScalarField FluxTALEfromEUL(const surfaceScalarField& rhoFlux);
   //surfaceVectorField FluxTALEfromEUL(const surfaceVectorField& rhoUFlux);
