@@ -42,7 +42,7 @@ SourceFiles
 #include "fvCFD.H"
 #include "pointMesh.H"
 #include "GeometricField.H"
-#include "pointFields.H"
+#include "pointField.H"
 #include "volPointInterpolation.H"
 #include "fvMesh.H"
 #include "vectorList.H"
@@ -84,7 +84,11 @@ private:
   surfaceScalarField& rhoFlux_;
   surfaceVectorField& rhoUFlux_;
   surfaceScalarField& rhoEFlux_;
-
+  volVectorField& cellCenter_;
+  pointVectorField& spatialNodes_;
+  pointVectorField& materialNodes_;
+  surfaceVectorField& faceCenters_;
+  surfaceVectorField& spatialNormals_;
 
   
     // Private data
@@ -116,7 +120,13 @@ public:
 		   volVectorField& U_tilde,
 		   surfaceScalarField& rhoFlux,
 		   surfaceVectorField& rhoUFlux,
-		   surfaceScalarField& rhoEFlux )
+		   surfaceScalarField& rhoEFlux,
+		   volVectorField& cellCenter,
+		   pointVectorField& spatialNodes,
+		   pointVectorField& materialNodes,
+		   surfaceVectorField& faceCenters,
+		   surfaceVectorField& spatialNormals
+		   )
     :
     MDN_(MDN),
     thermo_(thermo),
@@ -137,7 +147,12 @@ public:
     rhoEFlux_(rhoEFlux),
     mesh_(U.mesh()),
     Cv_(thermo_.Cv()),
-    Cp_(thermo_.Cp())
+    Cp_(thermo_.Cp()),
+    cellCenter_(cellCenter),
+    spatialNodes_(spatialNodes),
+    materialNodes_(materialNodes),
+    faceCenters_(faceCenters),
+    spatialNormals_(spatialNormals)
     { }
   //rhoFlux_  = rhoFlux;
     //rhoUFlux_ = rhoUFlux;
@@ -177,7 +192,7 @@ public:
 
   //////////////////////////////////////////////// Compute ALE Fluxes - substract Delta tilde F_i
   void computeFluxALEfromEUL();
-
+  void updateCoordinates();
   
   ////////////////////////////////////////////////
   //surfaceScalarField FluxTALEfromEUL(const surfaceScalarField& rhoFlux);

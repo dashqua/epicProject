@@ -17,4 +17,4 @@ rm -rf perf*
 #gmshToFoam shocktube.msh
 #rm -rf shocktube.msh
 
-blockMesh
+#blockMesh

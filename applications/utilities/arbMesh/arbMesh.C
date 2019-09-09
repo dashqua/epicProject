@@ -402,13 +402,12 @@ void arbMesh::correctInitialVariables()
   scalar I  = 5.0;
   scalar I2 = I*I;
   scalar r  = 1.5;
+  scalar r2 = r*r;
   scalar theta = Foam::atan(0.5);
-  const volScalarField Cv = this->Cv_;
-  const volScalarField Cp = this->Cp_;
   scalar Rhoinf = 1;
   scalar Uinf = 0.8944;
   scalar Vinf = 0.4472;
-  scalar Pinf = 3;
+  scalar Pinf = 3.;
   scalar pii  = constant::mathematical::pi;
   scalar pii2 = pii*pii;
   scalar t = mesh_.time().value();
@@ -416,27 +415,27 @@ void arbMesh::correctInitialVariables()
   Info << " [+] Correcting theoretical and conserved variables\n";
   forAll(C, cell)
     {
-      scalar gamma = Cp[cell] / Cv[cell];
+      scalar gamma = Cp_[cell]/Cv_[cell];
       scalar x1 = C[cell].x();
       scalar x2 = C[cell].y();
       //scalar x3 = C[cell].z();
       //vector pos = vector(x1, x2, x3);
       scalar v1 = Uinf*Foam::cos(theta);
       scalar v2 = Vinf*Foam::sin(theta);
-
+      Info << Cp_[cell] << "   " << Cv_[cell];//pow( 1 - I2*M2*(gamma-1)/(8*pii2)  , 1./(gamma-1) ) ; Info << "top";      
       // Correcting theoretical U, rho and p    
-      rho_theo_[cell] = Rhoinf * Foam::pow( 1 - I2*M2*(gamma-1)/(8*pii2) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/(r*r)) , 1/(gamma-1));
+      rho_theo_[cell] = Rhoinf * Foam::pow( 1 - I2*M2*(gamma-1)/(8*pii2) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/r2) , 1/(gamma-1)); Info << "1";
       U_theo_[cell] = vector(
-	     Uinf * ( Foam::cos(theta)- I*(x2-v2*t)/(2*pii*r) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/(r*r))/2 ),
-	     Vinf * ( Foam::sin(theta)- I*(x1-v1*t)/(2*pii*r) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/(r*r))/2 ),
+	     Uinf * ( Foam::cos(theta)- I*(x2-v2*t)/(2*pii*r) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/r2)/2 ),
+	     Vinf * ( Foam::sin(theta)- I*(x1-v1*t)/(2*pii*r) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/r2)/2 ),
 	     0);
-      p_theo_[cell] = Pinf * Foam::pow( 1 - I2*M2*(gamma-1)/(8*pii2) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/(r*r)) , gamma/(gamma-1));
+      p_theo_[cell] = Pinf * Foam::pow( 1 - I2*M2*(gamma-1)/(8*pii2) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/r2) , gamma/(gamma-1));
 
       // Correcting Primitive Fields       
       rho_[cell] = rho_theo_[cell];
       U_[cell]   = U_theo_[cell];
       p_[cell]   = p_theo_[cell]; 
-	
+
       // Correcting Conserved Fields
       rhoU_[cell] = rho_[cell] * U_[cell];
       rhoE_[cell] = rho_[cell] * E_[cell]; // (h_[cell] + 0.5*magSqr(U_));
@@ -475,37 +474,62 @@ void arbMesh::computeFluxALEfromEUL()
     // Step 0: Decoding quantities
     const label own = owner[face];
     const label nei = neighbour[face];
-    const scalar pLeft     = p_[own] + .... ;
-    const vector ULeft     = U_[own] + ..... ;
-    const scalar TLeft     = T_[own] + ... ;
-    const scalar RLeft     = R_[own];
+    const scalar pLeft     = p_[own] ;//+ .... ;
+    const vector ULeft     = U_[own] ;//+ ..... ;
+    const scalar TLeft     = T_[own] ;//+ ... ;
+    const scalar hLeft     = h_[own];
+    const scalar RLeft     = Cp_[own] - Cv_[own];
     const scalar CvLeft    = Cv_[own];
     const scalar CpLeft    = Cp_[own];
     const scalar gammaLeft = CpLeft/CvLeft;
+    //
+    const scalar pRight     = p_[nei] ;//+ .... ;
+    const vector URight     = U_[nei] ;//+ ..... ;
+    const scalar TRight     = T_[nei] ;//+ ... ;
+    const scalar hRight     = h_[nei];
+    const scalar RRight     = Cp_[nei] - Cv_[nei];
+    const scalar CvRight    = Cv_[nei];
+    const scalar CpRight    = Cp_[nei];
+    const scalar gammaRight = CpLeft/CvLeft;    
     //     code right values here before compiling /!\
 
-    const rhoLeft     = pLeft/(RLeft*TLeft);
-    const rhoRight    = pRight/(RRight*TRight);
-    const rhoLeftSqr  = Foam::sqrt(max(rhoLeft,SMALL));
-    const rhoRightSqr = Foam::sqrt(max(rhoRight,SMALL));
-    const eLeft       = CvLeft*TLeft+0.5*magSqr(ULeft);
-    const eRight      = CvRight*TRight+0.5*magSqr(URight);
-    const wLeft       = rhoLeft/(rhoLeftSqr+rhoRightSqr);
-    const wRight      = rhoRight/(rhoLeftSqr+rhoRightSqr);
-    
+    const scalar rhoLeft     = pLeft/(RLeft*TLeft);
+    const scalar rhoRight    = pRight/(RRight*TRight);
+    const scalar rhoLeftSqr  = Foam::sqrt(max(rhoLeft,SMALL));
+    const scalar rhoRightSqr = Foam::sqrt(max(rhoRight,SMALL));
+    const scalar eLeft       = CvLeft*TLeft+0.5*magSqr(ULeft);
+    const scalar eRight      = CvRight*TRight+0.5*magSqr(URight);
+    const scalar wLeft       = rhoLeft/(rhoLeftSqr+rhoRightSqr);
+    const scalar wRight      = rhoRight/(rhoLeftSqr+rhoRightSqr);
+    const scalar kappaLeft   = Cp_[own]/Cv_[own];
+    const scalar kappaRight  = Cp_[nei]/Cv_[nei];
+      //
     const scalar rhoTilde    = Foam::sqrt(max( rhoLeft*rhoRight ,SMALL));
-    const scalar UTilde      = ULeft*wLeft + URight*wRight;
+    const vector UTilde      = ULeft*wLeft + URight*wRight;
+    const scalar hTilde      = hLeft*wLeft + hRight*wRight;
     const scalar gammaTilde  = gammaLeft*wLeft + gammaRight*wRight;
     const scalar qTildeSquare= mag(UTilde);
+    const scalar kappaTilde  = kappaLeft*wLeft + kappaRight*wRight;
     
     const vector Sf = mesh_.Sf()[face];
     const scalar magSf = mesh_.magSf()[face];
-    const vector normaVector = Sf / magSf;
+    const vector normalVector = Sf / magSf;
     const scalar contrVTilde = UTilde & normalVector;
     const scalar contrVLeft  = ULeft & normalVector;
     const scalar contrVRight = URight & normalVector;
+
+    const scalar deltaP = pRight - pLeft;
+    const vector deltaU = URight - ULeft;
+    const scalar deltaContrV = deltaU & normalVector;
+    const scalar deltaRho = rhoRight - rhoLeft;
+    const scalar aTilde = sqrt(max( (kappaTilde-1)*(hTilde-0.5*qTildeSquare) ,SMALL));
     
     // Step 1: Computation of eigenvalues
+    vector centerLeft_ = mesh_.Cf()[own]; vector& centerLeft = centerLeft_;
+    vector centerRight_= mesh_.Cf()[nei]; vector& centerRight = centerRight_;
+    const vector arbULeft   = this->vw(centerLeft);    
+    const vector arbURight  = this->vw(centerRight);
+    const vector arbUTilde  = arbULeft*wLeft + arbURight*wRight;  
     const scalar lambda_1   = 2*Foam::sqrt(max( rhoTilde,SMALL)) * contrVTilde;
     const scalar lambda_234 = lambda_1 / 2;
     const scalar lambda_5   = lambda_234 / gammaTilde;
@@ -514,14 +538,14 @@ void arbMesh::computeFluxALEfromEUL()
     // Step 2: Computation of eigenvectors
     const scalar K1_1   = 1;
     const vector K1_234 = UTilde;
-    const scalar K1_5   = (hTilde+(gamma-1)*qTildeSquare) / (2*gamma -1);
+    const scalar K1_5   = (hTilde+ (gammaTilde-1)*qTildeSquare) / (2*gammaTilde -1);
     //
     const scalar K23_1   = 0;
     const vector K23_234 = vector(1,1,1) - normalVector;
     const scalar K23_5   = UTilde & ( vector(1,1,1) - normalVector);
     //
     const scalar K4_1    = 0;
-    const vector K4_234  = Utilde;
+    const vector K4_234  = UTilde;
     const scalar K4_5    = qTildeSquare;
     //
     const scalar K5_1    = 0;
@@ -563,10 +587,17 @@ void arbMesh::computeFluxALEfromEUL()
     const scalar fluxALE5   = 0.5 * (DF1_5 + DF23_5 + DF4_5 + DF5_5);
     
     // Step 5b: Apply the updates on flux
-    
+    rhoFlux_  -= fluxALE1 * magSf;
+    rhoUFlux_ -= fluxALE234 * magSf;
+    rhoEFlux_ -= fluxALE5 * magSf;
   }
 }
 
+
+void arbMesh::updateCoordinates()
+{
+  
+}
 
 /*
 surfaceScalarField arbMesh::FluxTALEfromEUL(const surfaceScalarField& rhoFlux)

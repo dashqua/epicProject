@@ -109,6 +109,10 @@ int main(int argc, char *argv[])
 	    // Solve the approximate Riemann problem for this time step
 	    RS.computeFlux( rhoFlux, rhoUFlux, rhoEFlux, gradP, gradU, gradT);
 
+	    // Add ALE FLux
+	    //if ( mesh.time().value() > 0.001 )
+	    //  aMsh.computeFluxALEfromEUL();
+	    
 	    // Use EUL variables to get TALE variables
 	    //aMsh.computeTALEfromEUL();
 
@@ -132,7 +136,14 @@ int main(int argc, char *argv[])
             );
 
 #           include "updateFields.H"
-
+	    if (runTime.outputTime())
+	      {
+		MDN.write();
+		p.write();
+		U.write();
+		T.write();
+		rho.write();
+	      }
         }
 
 	// theoretical variables are updated.

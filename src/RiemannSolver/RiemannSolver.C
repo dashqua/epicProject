@@ -111,11 +111,11 @@ void RiemannSolver::computeFlux
     fvsPatchVectorField pRhoUFlux = rhoUFlux.boundaryField()[patch];
     fvsPatchScalarField pRhoEFlux = rhoEFlux.boundaryField()[patch];
     // Patch Fields
-    const fvPatchScalarField& pp        = p_.boundaryField()[patch];
-    const vectorField& pU               = U_.boundaryField()[patch];
-    const scalarField& pT               = T_.boundaryField()[patch];
-    const scalarField& pCv              = Cv.boundaryField()[patch];
-    const scalarField& pR               = R.boundaryField()[patch];
+    const fvPatchScalarField& pp  = p_.boundaryField()[patch];
+    const vectorField& pU         = U_.boundaryField()[patch];
+    const scalarField& pT         = T_.boundaryField()[patch];
+    const scalarField& pCv        = Cv.boundaryField()[patch];
+    const scalarField& pR         = R.boundaryField()[patch];
     //Gradients
     //const fvPatchVectorField& pGradP    = gradP.boundaryField()[patch];
     //const fvPatchTensorField& pGradU    = gradU.boundaryField()[patch];
@@ -194,14 +194,14 @@ void RiemannSolver::evaluateFluxInternal
   const scalar rhoLeftSqrt = sqrt(max(rhoLeft,SMALL));
   const scalar rhoRightSqrt = sqrt(max(rhoRight,SMALL));
   const scalar wLeft = rhoLeftSqrt/(rhoLeftSqrt + rhoRightSqrt);
-  const scalar wRight = rhoRightSqrt/(rhoLeftSqrt + rhoRightSqrt);
+  const scalar wRight = 1-wLeft;//rhoRightSqrt/(rhoLeftSqrt + rhoRightSqrt);
   const vector UTilde = ULeft*wLeft + URight*wRight;
   const scalar hTilde = hLeft*wLeft + hRight*wRight;
   const scalar qTildeSquare = magSqr(UTilde);
   const scalar kappaTilde = kappaLeft*wLeft + kappaRight*wRight;
   const scalar aTilde =
     sqrt(max( (kappaTilde-1)*(hTilde-0.5*qTildeSquare) ,SMALL));
-  const scalar contrVTilde (UTilde & normalVector);
+  const scalar contrVTilde = (UTilde & normalVector);
 
   // Step 1b : Compute Primitive differences
   const scalar deltaP      = pRight - pLeft;
@@ -215,14 +215,16 @@ void RiemannSolver::evaluateFluxInternal
   //const scalar alpha23 = 
   //rhoTilde * ((deltaU & vector(1,1,1))  - deltaContrV);
   const scalar alpha4   = deltaRho - deltaP/sqr(aTilde);
-  const scalar alpha5   =
-    (deltaP + rhoTilde*aTilde*deltaContrV)/(2.0*sqr(aTilde));
+  const scalar alpha5   = (deltaP + rhoTilde*aTilde*deltaContrV)/(2.0*sqr(aTilde));
 
   // Step 2 : Compute eigenvalues
   scalar lambda1   = mag(contrVTilde - aTilde);
   scalar lambda234 = mag(contrVTilde);
   scalar lambda5   = mag(contrVTilde + aTilde);
-  //scalar lambdaMax = max(max(lambda1,lambda234),lambda5);  
+  scalar lambdaMax = max(max(lambda1,lambda234),lambda5);  
+  // Step 2b : This will have to be removed
+  //lambda1 = lambdaMax; lambda234 = lambdaMax; lambda5 = lambdaMax;
+
   
   // Step 3 : Compute eigenvectors
   const scalar K1_1   = 1;

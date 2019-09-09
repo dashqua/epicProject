@@ -4,7 +4,7 @@ autoPtr<psiThermo> thermo( psiThermo::New(mesh) );
 Info << "\n Reading mesh information\n";
 Info << " [+] Reading cell centers\n";
 const surfaceVectorField& Sf = mesh.Sf();
-//const volVectorField& C = mesh.C();
+const volVectorField& C = mesh.C();
 Info << " [+] Reading pMesh\n";
 pointMesh pMesh(mesh);
 
@@ -166,6 +166,34 @@ Info << " [+] Reading grad T\n"; volVectorField gradT(fvc::grad(T));
 
 
 
+
+// Create ALE fields -
+// cellCenters, spatialNodes, materialNodes, faceCenters, spatialNormals
+Info << "\nReading ALE Flux\n";
+Info << " [+] Reading Spatial cell centers CC\n";
+volVectorField cellCenters( IOobject("cellCenters", mesh), C);
+Info << " [+] Reading Spatial Nodes NN\n";
+pointVectorField spatialNodes
+(
+ IOobject("spatialNodes", mesh), pMesh,
+ dimensionedVector("spatialNodes", dimensionSet(0,1,0,0,0,0,0),vector::zero)
+ ); spatialNodes.primitiveFieldRef() = mesh.points();
+Info << " [+] Reading Material Nodes NN\n";
+pointVectorField materialNodes
+(
+ IOobject("materialNodes", mesh), pMesh,
+ dimensionedVector("materialNodes", dimensionSet(0,1,0,0,0,0,0),vector::zero)
+);
+Info << " [+] Reading Spatial Face Centers\n";
+surfaceVectorField faceCenters = mesh.Cf();
+Info << " [+] Reading Spatial Normals\n";
+surfaceVectorField spatialNormals = Sf/mesh.magSf();
+
+
+
+// cc,nn,NN, FC,n
+
+
 Info << "\nReading Arbitrary Mesh Object\n";
 pointVectorField& MDN_    = MDN;
 volScalarField& rho_      = rho;
@@ -182,7 +210,12 @@ volVectorField& U_tilde_  = U_tilde;
 surfaceScalarField& rhoFlux_  = rhoFlux;//dbnsFlux.rhoFlux();
 surfaceVectorField& rhoUFlux_ = rhoUFlux;//dbnsFlux.rhoUFlux();
 surfaceScalarField& rhoEFlux_ = rhoEFlux;//dbnsFlux.rhoEFlux();
-arbMesh arbitraryMesh(MDN_, thermo(), rho_, U_, E_, p_, h_, rho_theo_, U_theo_, p_theo_, rhoU_, rhoE_, U_tilde_, rhoFlux_, rhoUFlux_, rhoEFlux_);
+volVectorField& cellCenters_        = cellCenters;
+pointVectorField& spatialNodes_     = spatialNodes;
+pointVectorField& materialNodes_    = materialNodes;
+surfaceVectorField& faceCenters_    = faceCenters;
+surfaceVectorField& spatialNormals_ = spatialNormals;
+arbMesh arbitraryMesh(MDN_, thermo(), rho_, U_, E_, p_, h_, rho_theo_, U_theo_, p_theo_, rhoU_, rhoE_, U_tilde_, rhoFlux_, rhoUFlux_, rhoEFlux_, cellCenters_, spatialNodes_, materialNodes_, faceCenters_, spatialNormals);
 arbMesh& aMsh = arbitraryMesh;
 
 

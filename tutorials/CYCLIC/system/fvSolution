@@ -16,23 +16,32 @@ FoamFile
 
 solvers
 {
-    rho
-    {}
+  "(rho|rhoU|rhoE)"
+    {
+      solver diagonal;
+    }
 
-    rhoU
-    {}
-
-    rhoE
-    {}
-
-    p
-    {}
+  //p
+  //{}
 
     U
-    {}
+    {
+      solver smoothSolver;
+      smoother  GaussSeidel;
+      nSweeps  2;
+      tolerance   1e-09;
+      reTol   0.01;
+    }
 
-    T
-    {}
+    h
+    {
+      $U;
+      tolerance   1e-10;
+      reTol   0;
+    }
+    
+    //T
+    //{}
 }
 
 fieldBounds
@@ -40,7 +49,6 @@ fieldBounds
     rho 0.001 10000;
     p   0.001 1e7;
     T   0.001 10000;
-    p*psi 0.001 1e7;
 }
 
 
