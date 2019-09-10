@@ -207,7 +207,7 @@ vector arbMesh::c(label& cell)
   scalar z = this->mesh_.C()[cell].z();
   vector pos = vector(x,y,z);
   vector& posref = pos;
-  vector c =this->U_theo_[cell] - this->vw(posref);
+  vector c =this->U_[cell] - this->vw(posref);
   return c;
 }
 
@@ -236,24 +236,7 @@ void arbMesh::updateFields()
   scalar pii2 = pii*pii;
   scalar t = mesh_.time().value();
   volVectorField C = mesh_.C();
-  forAll(C, cell)
-    {
-      scalar gamma = Cp[cell] / Cv[cell];
-      scalar x1 = C[cell].x();
-      scalar x2 = C[cell].y();
-      //scalar x3 = C[cell].z();
-      //vector pos = vector(x1, x2, x3);
-      scalar v1 = Uinf*Foam::cos(theta);
-      scalar v2 = Vinf*Foam::sin(theta);
 
-      // Updating theoretical U, rho and p    
-      rho_theo_[cell] = Rhoinf * Foam::pow( 1 - I2*M2*(gamma-1)/(8*pii2) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/(r*r)) , 1/(gamma-1));
-      U_theo_[cell] = vector(
-	     Uinf * ( Foam::cos(theta)- I*(x2-v2*t)/(2*pii*r) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/(r*r))/2 ),
-	     Vinf * ( Foam::sin(theta)- I*(x1-v1*t)/(2*pii*r) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/(r*r))/2 ),
-	     0);
-      p_theo_[cell] = Pinf * Foam::pow( 1 - I2*M2*(gamma-1)/(8*pii2) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/(r*r)) , gamma/(gamma-1));
-    }
   Info << " [+] Update Mesh Displacement\n";
   forAll(mesh_.points(), ptI)
     {
@@ -395,7 +378,6 @@ void arbMesh::computeEULfromTALE()
 void arbMesh::correctInitialVariables()
 {
   Info << "\nCorrection of Initial Variables\n" << endl;
-  Info << " [+] Correcting theoretical variables\n";
   Info << " [+] Correcting U, rho and p fields\n";
   scalar M  = 0.5;
   scalar M2 = M*M;
@@ -412,7 +394,7 @@ void arbMesh::correctInitialVariables()
   scalar pii2 = pii*pii;
   scalar t = mesh_.time().value();
   volVectorField C = mesh_.C();
-  Info << " [+] Correcting theoretical and conserved variables\n";
+  Info << " [+] Correcting primitive and conserved variables\n";
   forAll(C, cell)
     {
       scalar gamma = Cp_[cell]/Cv_[cell];
@@ -423,18 +405,13 @@ void arbMesh::correctInitialVariables()
       scalar v1 = Uinf*Foam::cos(theta);
       scalar v2 = Vinf*Foam::sin(theta);
       Info << Cp_[cell] << "   " << Cv_[cell];//pow( 1 - I2*M2*(gamma-1)/(8*pii2)  , 1./(gamma-1) ) ; Info << "top";      
-      // Correcting theoretical U, rho and p    
-      rho_theo_[cell] = Rhoinf * Foam::pow( 1 - I2*M2*(gamma-1)/(8*pii2) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/r2) , 1/(gamma-1)); Info << "1";
-      U_theo_[cell] = vector(
+      // Correcting primitive fields
+      rho_[cell] = Rhoinf * Foam::pow( 1 - I2*M2*(gamma-1)/(8*pii2) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/r2) , 1/(gamma-1)); Info << "1";
+      U_[cell] = vector(
 	     Uinf * ( Foam::cos(theta)- I*(x2-v2*t)/(2*pii*r) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/r2)/2 ),
 	     Vinf * ( Foam::sin(theta)- I*(x1-v1*t)/(2*pii*r) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/r2)/2 ),
 	     0);
-      p_theo_[cell] = Pinf * Foam::pow( 1 - I2*M2*(gamma-1)/(8*pii2) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/r2) , gamma/(gamma-1));
-
-      // Correcting Primitive Fields       
-      rho_[cell] = rho_theo_[cell];
-      U_[cell]   = U_theo_[cell];
-      p_[cell]   = p_theo_[cell]; 
+      p_[cell] = Pinf * Foam::pow( 1 - I2*M2*(gamma-1)/(8*pii2) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/r2) , gamma/(gamma-1));
 
       // Correcting Conserved Fields
       rhoU_[cell] = rho_[cell] * U_[cell];

@@ -101,6 +101,7 @@ volVectorField U_tilde
  U
 );
 
+/*
 Info << "\nReading analytic fields\n";
 Info << " [+] Reading theoretical U\n";
 volVectorField U_theo
@@ -123,7 +124,7 @@ volScalarField p_theo
  IOobject("p_theo", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::AUTO_WRITE),
  3 * (rho/rho)
 );
-
+*/
 
 
 
@@ -201,9 +202,9 @@ volVectorField& U_        = U;
 volScalarField& p_        = p;
 volScalarField& E_        = E;
 volScalarField& h_        = h;
-volScalarField& rho_theo_ = rho_theo;
-volVectorField& U_theo_   = U_theo;
-volScalarField& p_theo_   = p_theo;
+//volScalarField& rho_theo_ = rho_theo;
+//volVectorField& U_theo_   = U_theo;
+//volScalarField& p_theo_   = p_theo;
 volVectorField& rhoU_     = rhoU;
 volScalarField& rhoE_     = rhoE;
 volVectorField& U_tilde_  = U_tilde;
@@ -215,15 +216,12 @@ pointVectorField& spatialNodes_     = spatialNodes;
 pointVectorField& materialNodes_    = materialNodes;
 surfaceVectorField& faceCenters_    = faceCenters;
 surfaceVectorField& spatialNormals_ = spatialNormals;
-arbMesh arbitraryMesh(MDN_, thermo(), rho_, U_, E_, p_, h_, rho_theo_, U_theo_, p_theo_, rhoU_, rhoE_, U_tilde_, rhoFlux_, rhoUFlux_, rhoEFlux_, cellCenters_, spatialNodes_, materialNodes_, faceCenters_, spatialNormals);
+arbMesh arbitraryMesh(MDN_, thermo(), rho_, U_, E_, p_, h_, rhoU_, rhoE_, U_tilde_, rhoFlux_, rhoUFlux_, rhoEFlux_, cellCenters_, spatialNodes_, materialNodes_, faceCenters_, spatialNormals);
 arbMesh& aMsh = arbitraryMesh;
 
 
 // Create mass flux alias for easier coupling with other code components
 const surfaceScalarField& phi = rhoFlux;
-
-// Now that every variables is read, they are corrected to comply with the initial conditions of arbMesh
-//aMsh.correctInitialVariables();
 
 // Create Riemann Solver
 Info << "\nInitializing the Riemann Solver\n";
@@ -234,6 +232,4 @@ rho.write();
 U.write();
 p.write();
 MDN.write();
-p_theo.write();
-U_theo.write();
 T.write();

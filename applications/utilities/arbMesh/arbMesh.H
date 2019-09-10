@@ -72,9 +72,6 @@ private:
   volScalarField& E_;
   const volScalarField& T_;
   volScalarField& h_;
-  volScalarField& rho_theo_;
-  volVectorField& U_theo_;
-  volScalarField& p_theo_;
   volVectorField& rhoU_;
   volScalarField& rhoE_;
   volVectorField& U_tilde_;
@@ -112,9 +109,6 @@ public:
 		   volScalarField& E,
 		   volScalarField& p,
 		   volScalarField& h,
-		   volScalarField& rho_theo,
-		   volVectorField& U_theo,
-		   volScalarField& p_theo,
 		   volVectorField& rhoU,
 		   volScalarField& rhoE,
 		   volVectorField& U_tilde,
@@ -136,9 +130,6 @@ public:
     E_(E),
     T_(thermo.T()),
     h_(h),
-    rho_theo_(rho_theo),
-    U_theo_(U_theo),
-    p_theo_(p_theo),
     rhoU_(rhoU),
     rhoE_(rhoE),
     U_tilde_(U_tilde),
@@ -175,7 +166,7 @@ public:
   vector c(label& cell);                        // convective velocity
   
   ////////////////////////////////////////////////
-  void updateFields();                          // Update theoretical, TALE and MDN fields
+  void updateFields();                          // Update TALE and MDN fields
   tensor Fw(vector& xyz);                       // Deformation Gradient
   scalar detFw(vector& xyz);                    // Jacobian of Def Grad (Vol Map)
   tensor transposeFw(vector& xyz);              // transpose of Def Grad 
@@ -187,7 +178,7 @@ public:
   ////////////////////////////////////////////////
   void computeTALEfromEUL();                    // Compute TALE variables from EUL variables
   void computeEULfromTALE();                    // Compute EUL variables from TALE variables
-  void correctInitialVariables();               // Correct Variables to comply with initial cond
+  void correctInitialVariables();               // Correct Variables to comply with initial cond  -> TO REMOVE
 
 
   //////////////////////////////////////////////// Compute ALE Fluxes - substract Delta tilde F_i

@@ -66,50 +66,53 @@ int main(int argc, char *argv[])
   volScalarField Cp_ = thermo->Cp();
 
   
-  Info << "\nGeneration of ANalytic FIelds\n" << endl;
+  while (runTime.run())
+  {
+    Info << "\nGeneration of ANalytic FIelds  == Time: " << runTime.value() << endl;
 
-  scalar M  = 0.5;
-  scalar M2 = M*M;
-  scalar I  = 5.0;
-  scalar I2 = I*I;
-  scalar r  = 1.5;
-  scalar r2 = r*r;
-  scalar theta = Foam::atan(0.5);
-  scalar Rhoinf = 1;
-  scalar Uinf = 0.8944;
-  scalar Vinf = 0.4472;
-  scalar Pinf = 3.;
-  scalar pii  = constant::mathematical::pi;
-  scalar pii2 = pii*pii;
-  scalar t = mesh.time().value();
-  volVectorField C = mesh.C();
-  forAll(C, cell)
-    {
-      scalar gamma = Cp_[cell]/Cv_[cell];
-      scalar x1 = C[cell].x();
-      scalar x2 = C[cell].y();
-      //scalar x3 = C[cell].z();
-      //vector pos = vector(x1, x2, x3);
-      scalar v1 = Uinf*Foam::cos(theta);
-      scalar v2 = Vinf*Foam::sin(theta);      
-      // Correcting theoretical U, rho and p 
-      rho_theo[cell] = Rhoinf * Foam::pow( 1 - I2*M2*(gamma-1)/(8*pii2) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/r2) , 1/(gamma-1)); Info << "1";
-      U_theo[cell] = vector(
-             Uinf * ( Foam::cos(theta)- I*(x2-v2*t)/(2*pii*r) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/r2)/2 ),
-             Vinf * ( Foam::sin(theta)- I*(x1-v1*t)/(2*pii*r) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/r2)/2 ),
-             0);
-      p_theo[cell] = Pinf * Foam::pow( 1 - I2*M2*(gamma-1)/(8*pii2) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/r2) , gamma/(gamma-1));
-    }
+    scalar M  = 0.5;
+    scalar M2 = M*M;
+    scalar I  = 5.0;
+    scalar I2 = I*I;
+    scalar r  = 1.5;
+    scalar r2 = r*r;
+    scalar theta = Foam::atan(0.5);
+    scalar Rhoinf = 1;
+    scalar Uinf = 0.8944;
+    scalar Vinf = 0.4472;
+    scalar Pinf = 3.;
+    scalar pii  = constant::mathematical::pi;
+    scalar pii2 = pii*pii;
+    scalar t = mesh.time().value();
+    volVectorField C = mesh.C();
+    forAll(C, cell)
+      {
+	scalar gamma = Cp_[cell]/Cv_[cell];
+	scalar x1 = C[cell].x();
+	scalar x2 = C[cell].y();
+	//scalar x3 = C[cell].z();
+	//vector pos = vector(x1, x2, x3);
+	scalar v1 = Uinf*Foam::cos(theta);
+	scalar v2 = Vinf*Foam::sin(theta);      
+	// Correcting theoretical U, rho and p 
+	rho_theo[cell] = Rhoinf * Foam::pow( 1 - I2*M2*(gamma-1)/(8*pii2) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/r2) , 1/(gamma-1)); 
+	U_theo[cell] = vector(
+			      Uinf * ( Foam::cos(theta)- I*(x2-v2*t)/(2*pii*r) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/r2)/2 ),
+			      Vinf * ( Foam::sin(theta)- I*(x1-v1*t)/(2*pii*r) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/r2)/2 ),
+			      0);
+	p_theo[cell] = Pinf * Foam::pow( 1 - I2*M2*(gamma-1)/(8*pii2) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/r2) , gamma/(gamma-1));
+      }
 
-  p_theo.correctBoundaryConditions();
-  U_theo.correctBoundaryConditions();
-  rho_theo.correctBoundaryConditions();
+    p_theo.correctBoundaryConditions();
+    U_theo.correctBoundaryConditions();
+    rho_theo.correctBoundaryConditions();
   
-  p_theo.write();
-  U_theo.write();
-  rho_theo.write();
+    p_theo.write();
+    U_theo.write();
+    rho_theo.write();
 
-
+    runTime++;
+  }
 
 
 
