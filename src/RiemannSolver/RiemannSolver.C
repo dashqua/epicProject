@@ -217,7 +217,7 @@ void RiemannSolver::evaluateFluxInternal
   const scalar alpha4   = deltaRho - deltaP/sqr(aTilde);
   const scalar alpha5   = (deltaP + rhoTilde*aTilde*deltaContrV)/(2.0*sqr(aTilde));
 
-  // Step 2 : Compute eigenvalues
+  // Step 2a : Compute eigenvalues
   scalar lambda1   = mag(contrVTilde - aTilde);
   scalar lambda234 = mag(contrVTilde);
   scalar lambda5   = mag(contrVTilde + aTilde);
@@ -225,7 +225,25 @@ void RiemannSolver::evaluateFluxInternal
   // Step 2b : This will have to be removed
   //lambda1 = lambdaMax; lambda234 = lambdaMax; lambda5 = lambdaMax;
 
-  
+  // Step 2b: Harten entropy fix
+  const scalar UL = ULeft &normalVector;
+  const scalar UR = URight & normalVector;
+  const scalar cLeft =
+    sqrt(max((kappaLeft-1)*(hLeft-0.5*magSqr(ULeft)),SMALL));
+  const scalar cRight =
+    sqrt(max((kappaRight-1)*(hRight-0.5*magSqr(URight)),SMALL));
+  scalar eps = 2*max((UR - cRight) - (UL - cLeft),SMALL);
+  if (lambda1 < eps)
+    lambda1 = (sqrt(lambda1)+sqr(eps))/(2.0*eps);
+  eps = 2*max(UR - UL,SMALL);
+  if (lambda234 < eps)
+    lambda234 = (sqrt(lambda234)+sqr(eps))/(2.0*eps);
+  eps = 2*max((UR+cRight)-(UL+cLeft),SMALL);
+  if (lambda5 < eps)
+    lambda5 = (sqrt(lambda5)+sqrt(eps))/(2.0*eps);
+
+
+      
   // Step 3 : Compute eigenvectors
   const scalar K1_1   = 1;
   const vector K1_234 = UTilde - aTilde*normalVector;

@@ -13,12 +13,17 @@ pointMesh pMesh(mesh);
 // Primitive variables
 Info << "\nReading primitive variables\n";
 Info << " [+] Reading temperature T\n"; const volScalarField& T = thermo->T();
-Info << " [+] Reading pressure p\n"   ; volScalarField& p = thermo->p(); 
+Info << " [+] Reading pressure p\n"   ; //volScalarField& p = thermo->p();
+volScalarField p
+(
+ IOobject("p", runTime.timeName(), mesh, IOobject::MUST_READ, IOobject::AUTO_WRITE),
+ mesh
+ );
 Info << " [+] Reading density rho\n"  ;
 volScalarField rho
 (
- IOobject("rho", runTime.timeName(), mesh, IOobject::NO_READ, IOobject::AUTO_WRITE),
- thermo->rho()
+ IOobject("rho", runTime.timeName(), mesh, IOobject::MUST_READ, IOobject::AUTO_WRITE),
+ mesh // thermo->rho()
 );
 Info << " [+] Reading velocity U\n"   ;
 volVectorField U
