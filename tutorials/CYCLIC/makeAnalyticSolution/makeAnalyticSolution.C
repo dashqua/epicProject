@@ -107,10 +107,13 @@ int main(int argc, char *argv[])
     U_theo.correctBoundaryConditions();
     rho_theo.correctBoundaryConditions();
   
-    p_theo.write();
-    U_theo.write();
-    rho_theo.write();
-
+    if (runTime.outputTime())
+    {
+      p_theo.write();
+      U_theo.write();
+      rho_theo.write();
+    }
+    
     runTime++;
   }
 

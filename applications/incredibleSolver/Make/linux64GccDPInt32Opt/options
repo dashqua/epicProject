@@ -53,11 +53,12 @@
 
 # 8 "<command-line>" 2
 # 1 "Make/options"
-EXE_INC = -DFULLDEBUG -g -O0 -I$(EPIC_PROJECT_DIR)/applications/utilities/arbMesh/lnInclude -I$(EPIC_PROJECT_DIR)/src/RiemannSolver/lnInclude -I$(LIB_SRC)/finiteVolume/lnInclude -I$(LIB_SRC)/meshTools/lnInclude -I$(LIB_SRC)/transportModels/compressible/lnInclude -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude -I$(LIB_SRC)/thermophysicalModels/specie/lnInclude
-# 10 "Make/options"
+EXE_INC = -DFULLDEBUG -g -O0 -I$(EPIC_PROJECT_DIR)/applications/utilities/arbMesh/lnInclude -I$(EPIC_PROJECT_DIR)/src/RiemannSolver/lnInclude -I$(EPIC_PROJECT_DIR)/applications/utilities/someFunctions/lnInclude -I$(LIB_SRC)/finiteVolume/lnInclude -I$(LIB_SRC)/meshTools/lnInclude -I$(LIB_SRC)/transportModels/compressible/lnInclude -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude -I$(LIB_SRC)/thermophysicalModels/specie/lnInclude
+# 11 "Make/options"
 
 
-EXE_LIBS = -lfiniteVolume -lfluidThermophysicalModels -lspecie -L$(FOAM_USER_LIBBIN) -larbMesh -lRiemannSolver
+EXE_LIBS = -lfiniteVolume -lfluidThermophysicalModels -lspecie -L$(FOAM_USER_LIBBIN) -larbMesh -lRiemannSolver -lsomeFunctions
+
 
 
 

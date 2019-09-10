@@ -48,6 +48,9 @@ Author
 #include "arbMesh.H"
 #include "RiemannSolver.H"
 
+// Custom functions
+#include "someFunctions.H"
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 int main(int argc, char *argv[])
@@ -77,7 +80,7 @@ int main(int argc, char *argv[])
 #       include "readTimeControls.H"
 #       include "readFieldBounds.H"
 
-//////// The following replaces #include "compressibleCourantNo.H"
+//////// The following replaces #include "compressibleCourantNo.H"//////////////
       scalar CoNum = 0.0;
       scalar meanCoNum = 0.0;
       if (mesh.nInternalFaces())
@@ -93,7 +96,7 @@ int main(int argc, char *argv[])
       }
       Info << "Acoustic Courant Number mean: " << meanCoNum
 	   << " max: " << CoNum << endl;
-//////// 
+//////// ///////////////////////////////////////////////////////////////////////
 #       include "setDeltaT.H"
 
         runTime++;
@@ -136,19 +139,17 @@ int main(int argc, char *argv[])
             );
 
 #           include "updateFields.H"
-	    if (runTime.outputTime())
-	      {
-		MDN.write();
-		p.write();
-		U.write();
-		T.write();
-		rho.write();
-	      }
         }
 
-	// theoretical variables are updated.
-	//aMsh.updateFields();	
-	
+	if (runTime.outputTime())
+	  {
+	    MDN.write();
+	    p.write();
+	    U.write();
+	    T.write();
+	    rho.write();
+	  }
+
         runTime.write();
 
         Info<< "    ExecutionTime = "

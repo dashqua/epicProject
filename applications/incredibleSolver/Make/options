@@ -2,6 +2,7 @@ EXE_INC = \
     -DFULLDEBUG -g -O0 \
     -I$(EPIC_PROJECT_DIR)/applications/utilities/arbMesh/lnInclude \
     -I$(EPIC_PROJECT_DIR)/src/RiemannSolver/lnInclude \
+    -I$(EPIC_PROJECT_DIR)/applications/utilities/someFunctions/lnInclude \
     -I$(LIB_SRC)/finiteVolume/lnInclude \
     -I$(LIB_SRC)/meshTools/lnInclude \
     -I$(LIB_SRC)/transportModels/compressible/lnInclude \
@@ -15,5 +16,6 @@ EXE_LIBS = \
     -lspecie \
     -L$(FOAM_USER_LIBBIN) \
     -larbMesh \
-    -lRiemannSolver
+    -lRiemannSolver \
+    -lsomeFunctions
     

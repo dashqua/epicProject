@@ -9,6 +9,7 @@ GMSH="/home/thomas/gmsh-3.0.6-Linux64/bin/gmsh"
 # Clean everything in here
 cleanCase
 rm -rf perf*
+rm -rf log*
 
 # Generate the mesh, copy it and get the polyMesh with gmshtofoam
 #rm -rf constant/polyMesh

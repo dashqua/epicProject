@@ -47,7 +47,7 @@ void RiemannSolver::computeFlux
      in foam-extend-4.0. This function should not require foam-extend-4.0 but
      OpenFOAM-6 instead.
   */
-
+  
   // Step 1a: Settings
   const unallocLabelList& owner          = mesh_.owner();
   const unallocLabelList& neighbour      = mesh_.neighbour();
