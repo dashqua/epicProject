@@ -66,7 +66,7 @@ class dynamicArbitraryFvMesh
         scalar refPlaneX_;
 
         pointIOField stationaryPoints_;
-
+        pointField initialPoints_;
 
     // Private Member Functions
 

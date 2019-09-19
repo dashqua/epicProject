@@ -53,19 +53,22 @@
 
 # 8 "<command-line>" 2
 # 1 "Make/options"
-EXE_INC = 	-I$(LIB_SRC)/triSurface/lnInclude 	-I$(LIB_SRC)/meshTools/lnInclude 	-I$(LIB_SRC)/dynamicMesh/lnInclude 	-I$(LIB_SRC)/dynamicFvMesh/lnInclude 	-I$(LIB_SRC)/finiteVolume/lnInclude
+EXE_INC = 	-I$(LIB_SRC)/triSurface/lnInclude 	-I$(LIB_SRC)/meshTools/lnInclude 	-I$(LIB_SRC)/dynamicMesh/lnInclude 	-I$(LIB_SRC)/dynamicFvMesh/lnInclude 	-I$(LIB_SRC)/finiteVolume/lnInclude 	-I$(PARMGRIDGEN_INCLUDE_DIR)/IMlib 	-I$(PARMGRIDGEN_INCLUDE_DIR)Lib
 
 
 
 
 
 
-IB_LIBS = 	-libtriSurface 	-lmeshTools 	-ldynamicMesh 	-ldynamicFvMesh	-lfiniteVolume
+
+
+IB_LIBS = 	-libtriSurface 	-lmeshTools 	-ldynamicMesh 	-ldynamicFvMesh	-lfiniteVolume 	-L$(PARMGRIDGEN_LIB_DIR) -lIMlib -lMGridGen
 
 
 
 
 
-	
+
+		
 
 

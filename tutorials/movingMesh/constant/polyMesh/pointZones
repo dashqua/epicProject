@@ -8,20 +8,14 @@
 FoamFile
 {
     version     2.0;
-    format      ascii;
-    class       dictionary;
-    location    "constant";
-    object      dynamicMeshDict;
+    format      binary;
+    class       regIOobject;
+    location    "constant/polyMesh";
+    object      pointZones;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dynamicFvMesh   dynamicArbitraryFvMesh;
-motionSolverLibs ("libfvMotionSolvers.so");
-dynamicArbitraryFvMeshCoeffs
-{
-  amplitude 0.06;
-  frequency 2;
-  refPlaneX 0;
-}
+0
+()
 
 // ************************************************************************* //

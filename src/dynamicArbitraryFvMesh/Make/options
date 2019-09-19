@@ -3,14 +3,17 @@ EXE_INC = \
 	-I$(LIB_SRC)/meshTools/lnInclude     \
 	-I$(LIB_SRC)/dynamicMesh/lnInclude   \
 	-I$(LIB_SRC)/dynamicFvMesh/lnInclude \
-	-I$(LIB_SRC)/finiteVolume/lnInclude
+	-I$(LIB_SRC)/finiteVolume/lnInclude  \
+	-I$(PARMGRIDGEN_INCLUDE_DIR)/IMlib   \
+	-I$(PARMGRIDGEN_INCLUDE_DIR)Lib
 
 IB_LIBS = \
 	-libtriSurface \
 	-lmeshTools    \
 	-ldynamicMesh  \
 	-ldynamicFvMesh\
-	-lfiniteVolume
-	
+	-lfiniteVolume \
+	-L$(PARMGRIDGEN_LIB_DIR) -lIMlib -lMGridGen
+		
 
 

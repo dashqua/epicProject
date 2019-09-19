@@ -77,6 +77,8 @@ Foam::dynamicArbitraryFvMesh::dynamicArbitraryFvMesh(const IOobject& io)
         << "amplitude: " << amplitude_
         << " frequency: " << frequency_
         << " refPlaneX: " << refPlaneX_ << endl;
+
+    initialPoints_ = stationaryPoints_;
 }
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -89,32 +91,38 @@ Foam::dynamicArbitraryFvMesh::~dynamicArbitraryFvMesh()
 
 bool Foam::dynamicArbitraryFvMesh::update()
 {
+  /*
     scalar scalingFunction =
         0.5*
         (
             ::cos(constant::mathematical::twoPi*frequency_*time().value())
           - 1.0
         );
-
+  */
     Info<< "Mesh scaling. Time = " << time().value() << " scaling: "
-        << scalingFunction << endl;
+      //<< scalingFunction << endl;
+	<< "arbitrary scaling" << endl;
 
-    pointField newPoints = stationaryPoints_;
 
-    newPoints.replace
-    (
-        vector::X,
-        stationaryPoints_.component(vector::X)*
-        (
-            1.0
-          + pos0
-            (
-              - (stationaryPoints_.component(vector::X))
-              - refPlaneX_
-            )*amplitude_*scalingFunction
-        )
-    );
-
+    scalar pi = constant::mathematical::pi;
+    scalar T = 2.;
+    scalar t = this->time().value();
+    
+    pointField newPoints = stationaryPoints_;    
+    forAll(newPoints, point)
+      {
+	//Info << newPoints[point] << endl ;
+	scalar x = initialPoints_[point].x();
+	scalar y = initialPoints_[point].y();
+	scalar z = initialPoints_[point].z();
+	newPoints[point] = vector
+	  (
+	   x + 2*Foam::sin(pi*x/10.)*Foam::sin(2*pi*y/15.)*Foam::sin(2*pi*t/T),
+	   y + 3./2. *Foam::sin(pi*x/10.)*Foam::sin(2*pi*y/15.)*Foam::sin(4*pi*t/T),
+	   0
+	   );
+      }
+    
     fvMesh::movePoints(newPoints);
 
     lookupObjectRef<volVectorField>("U").correctBoundaryConditions();

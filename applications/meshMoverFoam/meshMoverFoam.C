@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
   
   // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+  mesh.update();
   while (runTime.run())
   {
     runTime++;
