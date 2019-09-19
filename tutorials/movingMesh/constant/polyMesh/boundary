@@ -21,36 +21,36 @@ FoamFile
     {
         type            patch;
         physicalType    patch;
-        nFaces          162;
-        startFace       2680;
+        nFaces          722;
+        startFace       11670;
     }
     top
     {
         type            patch;
         physicalType    patch;
-        nFaces          9;
-        startFace       2842;
+        nFaces          19;
+        startFace       12392;
     }
     outlet
     {
         type            patch;
         physicalType    patch;
-        nFaces          9;
-        startFace       2851;
+        nFaces          19;
+        startFace       12411;
     }
     bottom
     {
         type            patch;
         physicalType    patch;
-        nFaces          9;
-        startFace       2860;
+        nFaces          19;
+        startFace       12430;
     }
     inlet
     {
         type            patch;
         physicalType    patch;
-        nFaces          9;
-        startFace       2869;
+        nFaces          19;
+        startFace       12449;
     }
 )
 

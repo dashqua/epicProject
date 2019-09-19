@@ -49,12 +49,7 @@ int main(int argc, char *argv[])
   while (runTime.run())
   {
     runTime++;
-    Info<<"writing of update datafile\n";
-    forAll(meshpoints, point)
-      {
-	Info << "";
-      }
-    
+
     Info<< "mesh.update()\n";
     mesh.update();
 
