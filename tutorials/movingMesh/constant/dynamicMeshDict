@@ -15,17 +15,14 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dynamicFvMesh   dynamicMotionSolverFvMesh;
-
-motionSolverLibs ("libsixDoFRigidBodyMotion.so");
-
-solver    sixDoFRigidBodyMotion;
-
-sixDoFRigidBodyMotionCoeffs
+dynamicFvMesh   dynamicInkJetFvMesh;
+motionSolverLibs ("libfvMotionSolvers.so");
+//solver    sixDoFRigidBodyMotion;
+dynamicInkJetFvMeshCoeffs
 {
-  patches
-
-
+  amplitude 0.06;
+  frequency 2;
+  refPlaneX 0;
 }
 
 // ************************************************************************* //

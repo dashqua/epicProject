@@ -29,6 +29,9 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "fvCFD.H"
+#include "dynamicArbitraryFvMesh.H"
+#include "pimpleControl.H"
+#include "pointFields.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -36,14 +39,34 @@ int main(int argc, char *argv[])
 {
     #include "setRootCase.H"
     #include "createTime.H"
+    #include "createDynamicFvMesh.H"
+    #include "createFields.H"
+    #include "createDyMControls.H"
+  
+  // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-    // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+  while (runTime.run())
+  {
+    runTime++;
+    Info<<"writing of update datafile\n";
+    forAll(meshpoints, point)
+      {
+	Info << "";
+      }
+    
+    Info<< "mesh.update()\n";
+    mesh.update();
 
+
+    
+    runTime.write();
+    
     Info<< nl << "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
         << "  ClockTime = " << runTime.elapsedClockTime() << " s"
         << nl << endl;
 
     Info<< "End\n" << endl;
+  }
 
     return 0;
 }
