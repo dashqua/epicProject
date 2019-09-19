@@ -116,6 +116,14 @@ void RiemannSolver::computeFlux
     const scalarField& pT         = T_.boundaryField()[patch];
     const scalarField& pCv        = Cv.boundaryField()[patch];
     const scalarField& pR         = R.boundaryField()[patch];
+
+
+    const label own = owner[patch];
+    const label nei = neighbour[patch];
+    const vector deltaRLeft  = faceCentre[patch] - cellCentre[own];
+    const vector deltaRRight = faceCentre[patch] - cellCentre[nei];
+    
+
     //Gradients
     //const fvPatchVectorField& pGradP    = gradP.boundaryField()[patch];
     //const fvPatchTensorField& pGradU    = gradU.boundaryField()[patch];
@@ -132,6 +140,22 @@ void RiemannSolver::computeFlux
     {
       evaluateFluxBoundary
       (
+       rhoFlux[face],
+       rhoUFlux[face],
+       rhoEFlux[face],
+       p_[own] + pLimiter[own] * (deltaRLeft & gradP[own]),
+       p_[nei] + pLimiter[nei] * (deltaRRight & gradP[nei]),
+       U_[own] + cmptMultiply(ULimiter[own], (deltaRLeft & gradU[own])),
+       U_[nei] + cmptMultiply(ULimiter[nei], (deltaRRight & gradU[nei])),
+       T_[own] + TLimiter[own] * (deltaRLeft & gradT[own]),
+       T_[nei] + TLimiter[nei] * (deltaRRight & gradT[nei]),
+       R[own],
+       R[nei],
+       Cv[own],
+       Cv[nei],
+       Sf[face],
+       magSf[face]
+     /*
        pRhoFlux[face],
        pRhoUFlux[face],
        pRhoEFlux[face],
@@ -147,6 +171,7 @@ void RiemannSolver::computeFlux
        pCv[face],
        pSf[face],
        pMagSf[face]
+     */
       );
     }
     //

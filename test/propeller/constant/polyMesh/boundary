@@ -1,0 +1,91 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  6
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      binary;
+    class       polyBoundaryMesh;
+    location    "constant/polyMesh";
+    object      boundary;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+9
+(
+    outerCylinder
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          640;
+        startFace       1576984;
+    }
+    propellerTip
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          21703;
+        startFace       1577624;
+    }
+    propellerStem1
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          192;
+        startFace       1599327;
+    }
+    propellerStem2
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          576;
+        startFace       1599519;
+    }
+    propellerStem3
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          1536;
+        startFace       1600095;
+    }
+    AMI1
+    {
+        type            cyclicAMI;
+        inGroups        1(cyclicAMI);
+        nFaces          18496;
+        startFace       1601631;
+        matchTolerance  0.0001;
+        transform       noOrdering;
+        neighbourPatch  AMI2;
+        method          faceAreaWeightAMI;
+    }
+    AMI2
+    {
+        type            cyclicAMI;
+        inGroups        1(cyclicAMI);
+        nFaces          18720;
+        startFace       1620127;
+        matchTolerance  0.0001;
+        transform       noOrdering;
+        neighbourPatch  AMI1;
+        method          faceAreaWeightAMI;
+    }
+    inlet
+    {
+        type            patch;
+        nFaces          652;
+        startFace       1638847;
+    }
+    outlet
+    {
+        type            patch;
+        nFaces          112;
+        startFace       1639499;
+    }
+)
+
+// ************************************************************************* //
