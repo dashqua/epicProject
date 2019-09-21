@@ -20,11 +20,11 @@ dimensions      [0 1 -1 0 0 0 0];
 internalField   nonuniform List<vector> 
 5835
 (
-(6.87967e-20 0 0)
-(2.36556e-25 0 0)
-(7.96358e-08 0 0)
-(1.44279e-05 0 0)
-(1.30308 0 0)
+(-6.87967e-19 0 0)
+(-2.36556e-24 0 0)
+(-7.96358e-07 0 0)
+(-0.000144279 0 0)
+(-13.0308 0 0)
 (0 0 0)
 (0 0 0)
 (0 0 0)
@@ -5862,27 +5862,27 @@ boundaryField
 {
     sides
     {
-        type            calculated;
+        type            fixedValue;
         value           uniform (0 0 0);
     }
     top
     {
-        type            calculated;
+        type            fixedValue;
         value           uniform (0 0 0);
     }
     outlet
     {
-        type            calculated;
+        type            fixedValue;
         value           uniform (0 0 0);
     }
     bottom
     {
-        type            calculated;
+        type            fixedValue;
         value           uniform (0 0 0);
     }
     inlet
     {
-        type            calculated;
+        type            fixedValue;
         value           uniform (0 0 0);
     }
 }

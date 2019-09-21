@@ -74,8 +74,9 @@ int main(int argc, char *argv[])
 	    {
 	      const label own = owner[iface]; //change U value for owner cell of that face
 	      scalar x = mesh.C()[own].x(), y = mesh.C()[own].y();
-	      U[own] = vector(1e4*Foam::exp(-(x+y)*(x+y))*Foam::cos(t)*Foam::cos(t),0,0);
-	      Info << x << " " << y << " " << U[own].x() << endl;
+	      //U[own] = vector(-1e4*Foam::exp(-(x+y)*(x+y))*Foam::cos(t)*Foam::cos(t),0,0);
+	      p[own] = 1000;
+	      Info << x << " " << y << " " << U[own] << p << endl;
 	    }
 	}
     }

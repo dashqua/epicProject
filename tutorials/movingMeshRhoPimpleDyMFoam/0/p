@@ -15,7 +15,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 2 -2 0 0 0 0];
+dimensions      [1 -1 -2 0 0 0 0];
 
 internalField   uniform 1;
 
@@ -23,27 +23,27 @@ boundaryField
 {
     sides
     {
-        type            calculated;
+        type            fixedValue;
         value           uniform 1;
     }
     top
     {
-        type            calculated;
+        type            fixedValue;
         value           uniform 1;
     }
     outlet
     {
-        type            calculated;
+        type            fixedValue;
         value           uniform 1;
     }
     bottom
     {
-        type            calculated;
+        type            fixedValue;
         value           uniform 1;
     }
     inlet
     {
-        type            calculated;
+        type            fixedValue;
         value           uniform 1;
     }
 }
