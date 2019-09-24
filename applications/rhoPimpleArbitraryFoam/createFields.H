@@ -38,7 +38,7 @@ volVectorField U
     mesh
 );
 
-const scalar pi = Foan::constant::mathematical::pi;
+const scalar pi = Foam::constant::mathematical::pi;
 const scalar T = 2.0;
 volVectorField Uarb
 (
@@ -50,7 +50,20 @@ volVectorField Uarb
         IOobject::NO_READ,
         IOobject::NO_WRITE
     ),
-    mesh
+    U
+);
+
+volVectorField convVel
+(
+    IOobject
+    (
+        "Uarb",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::NO_WRITE
+    ),
+    U
 );
 
 #include "compressibleCreatePhi.H"

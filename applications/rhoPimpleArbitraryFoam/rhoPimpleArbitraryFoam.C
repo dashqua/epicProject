@@ -104,9 +104,28 @@ int main(int argc, char *argv[])
 
         Info<< "Time = " << runTime.timeName() << nl << endl;
 
+	  //Update arbitrary velocity
+	  forAll(mesh.cells(), cell)
+	    {
+	      scalar x = mesh.C()[cell].x();
+	      scalar y = mesh.C()[cell].y();
+	      scalar t = runTime.value();
+	      Uarb[cell] = vector
+		(
+		 4.*pi/T *Foam::sin(pi*x/10.)*Foam::sin(pi*y*2./15.)*Foam::cos(2.*pi*t/T),
+		 6.*pi/T *Foam::sin(pi*x/10.)*Foam::sin(pi*y*2./15.)*Foam::cos(4.*pi*t/T),
+		 0
+		);
+	    }
+	  volVectorField Utemp = U;
+	  U = U - Uarb;
+	  convVel = U - Uarb;
+
+	
         // --- Pressure-velocity PIMPLE corrector loop
         while (pimple.loop())
         {
+	  
             if (pimple.firstIter() || moveMeshOuterCorrectors)
             {
                 // Store momentum to set rhoUf for introduced faces.
@@ -169,6 +188,9 @@ int main(int argc, char *argv[])
             }
         }
 
+	U = Utemp;
+	
+	
         rho = thermo.rho();
 
         runTime.write();
