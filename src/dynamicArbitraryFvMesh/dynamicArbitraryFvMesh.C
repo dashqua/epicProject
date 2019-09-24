@@ -91,14 +91,6 @@ Foam::dynamicArbitraryFvMesh::~dynamicArbitraryFvMesh()
 
 bool Foam::dynamicArbitraryFvMesh::update()
 {
-  /*
-    scalar scalingFunction =
-        0.5*
-        (
-            ::cos(constant::mathematical::twoPi*frequency_*time().value())
-          - 1.0
-        );
-  */
     Info<< "Mesh scaling. Time = " << time().value() << " scaling: "
       //<< scalingFunction << endl;
 	<< "arbitrary scaling" << endl;
@@ -107,8 +99,54 @@ bool Foam::dynamicArbitraryFvMesh::update()
     scalar pi = constant::mathematical::pi;
     scalar T = 2.;
     scalar t = this->time().value();
+    scalar dt = this->time().deltaTValue();
+
+    pointField newPoints = stationaryPoints_;
+
+
+    newPoints.replace
+    (
+     vector::X,
+     stationaryPoints_.component(vector::X) + 2. *
+     Foam::sin(pi*stationaryPoints_.component(vector::X)/10) *
+     Foam::sin(2*pi*stationaryPoints_.component(vector::Y)/15) *
+     Foam::sin(2*pi*t/T)
+    );
+
+    newPoints.replace
+    (
+     vector::Y,
+     stationaryPoints_.component(vector::Y) +  3./2. *
+     Foam::sin(pi*stationaryPoints_.component(vector::X)/10) *
+     Foam::sin(2*pi*stationaryPoints_.component(vector::Y)/15) *
+     Foam::sin(4*pi*t/T)
+    );
+
     
-    pointField newPoints = stationaryPoints_;    
+    // addition of temporal displacement vector
+    // x^n+1 - x^n
+    /*
+    newPoints.replace
+    (
+     vector::X,
+     stationaryPoints_.component(vector::X) +  dt*4*pi/T *
+     Foam::sin(pi*stationaryPoints_.component(vector::X)/10) *
+     Foam::sin(2*pi*stationaryPoints_.component(vector::Y)/15) *
+     Foam::cos(2*pi*t/T)
+    );
+
+    newPoints.replace
+    (
+     vector::Y,
+     stationaryPoints_.component(vector::Y) +  dt*6*pi/T *
+     Foam::sin(pi*stationaryPoints_.component(vector::X)/10) *
+     Foam::sin(2*pi*stationaryPoints_.component(vector::Y)/15) *
+     Foam::cos(4*pi*t/T)
+    );
+    */
+
+      
+    /*
     forAll(newPoints, point)
       {
 	//Info << newPoints[point] << endl ;
@@ -122,7 +160,7 @@ bool Foam::dynamicArbitraryFvMesh::update()
 	   0
 	   );
       }
-    
+    */
     fvMesh::movePoints(newPoints);
 
     lookupObjectRef<volVectorField>("U").correctBoundaryConditions();

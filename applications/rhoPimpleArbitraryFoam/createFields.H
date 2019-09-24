@@ -38,6 +38,21 @@ volVectorField U
     mesh
 );
 
+const scalar pi = Foan::constant::mathematical::pi;
+const scalar T = 2.0;
+volVectorField Uarb
+(
+    IOobject
+    (
+        "Uarb",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::NO_WRITE
+    ),
+    mesh
+);
+
 #include "compressibleCreatePhi.H"
 
 pressureControl pressureControl(p, rho, pimple.dict(), false);
