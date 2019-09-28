@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
         runTime++;
 
         Info<< "Time = " << runTime.timeName() << nl << endl;
-
+	/*
 	  //Update arbitrary velocity
 	  forAll(mesh.cells(), cell)
 	    {
@@ -112,15 +112,15 @@ int main(int argc, char *argv[])
 	      scalar t = runTime.value();
 	      Uarb[cell] = vector
 		(
-		 4.*pi/T *Foam::sin(pi*x/10.)*Foam::sin(pi*y*2./15.)*Foam::cos(2.*pi*t/T),
-		 6.*pi/T *Foam::sin(pi*x/10.)*Foam::sin(pi*y*2./15.)*Foam::cos(4.*pi*t/T),
+		 4.*pi/Tp *Foam::sin(pi*x/10.)*Foam::sin(pi*y*2./15.)*Foam::cos(2.*pi*t/Tp),
+		 6.*pi/Tp *Foam::sin(pi*x/10.)*Foam::sin(pi*y*2./15.)*Foam::cos(4.*pi*t/Tp),
 		 0
 		);
 	    }
 	  volVectorField Utemp = U;
 	  U = U - Uarb;
 	  convVel = U - Uarb;
-
+	*/
 	
         // --- Pressure-velocity PIMPLE corrector loop
         while (pimple.loop())
@@ -188,8 +188,9 @@ int main(int argc, char *argv[])
             }
         }
 
+	/*
 	U = Utemp;
-	
+	*/
 	
         rho = thermo.rho();
 

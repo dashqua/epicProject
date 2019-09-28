@@ -1,4 +1,0 @@
-makeInitialConditions.C: In function ‘int main(int, char**)’:
-makeInitialConditions.C:55:10: warning: unused variable ‘t’ [-Wunused-variable]
-   scalar t = mesh.time().value();
-          ^

@@ -39,7 +39,7 @@ volVectorField U
 );
 
 const scalar pi = Foam::constant::mathematical::pi;
-const scalar T = 2.0;
+const scalar Tp = 2.0;
 volVectorField Uarb
 (
     IOobject

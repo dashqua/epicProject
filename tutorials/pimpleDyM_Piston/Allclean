@@ -1,4 +1,0 @@
-#!/bin/sh
-foamListTimes -rm
-rm log*
-rm -rf constant/polyMesh
