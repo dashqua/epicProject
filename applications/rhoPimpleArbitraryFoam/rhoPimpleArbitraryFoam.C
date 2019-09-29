@@ -37,7 +37,7 @@ Description
 #include "dynamicFvMesh.H"
 #include "dynamicArbitraryFvMesh.H"
 #include "fluidThermo.H"
-#include "turbulentFluidThermoModel.H"
+//#include "turbulentFluidThermoModel.H"
 #include "bound.H"
 #include "pimpleControl.H"
 #include "pressureControl.H"
@@ -60,8 +60,8 @@ int main(int argc, char *argv[])
     #include "createFields.H"
     #include "createFieldRefs.H"
     #include "createRhoUfIfPresent.H"
-
-    turbulence->validate();
+  
+  //turbulence->validate();
 
     if (!LTS)
     {
@@ -75,6 +75,26 @@ int main(int argc, char *argv[])
 
     while (runTime.run())
     {
+	/*
+	  //Update arbitrary velocity
+	  forAll(mesh.cells(), cell)
+	    {
+	      scalar x = mesh.C()[cell].x();
+	      scalar y = mesh.C()[cell].y();
+	      scalar t = runTime.value();
+	      Uarb[cell] = vector
+		(
+		 4.*pi/Tp *Foam::sin(pi*x/10.)*Foam::sin(pi*y*2./15.)*Foam::cos(2.*pi*t/Tp),
+		 6.*pi/Tp *Foam::sin(pi*x/10.)*Foam::sin(pi*y*2./15.)*Foam::cos(4.*pi*t/Tp),
+		 0
+		);
+	    }
+	  volVectorField Utemp = U;
+	  U = U - Uarb;
+	  convVel = U - Uarb;
+	*/
+	
+
         #include "readDyMControls.H"
 
         // Store divrhoU from the previous mesh so that it can be mapped
@@ -103,25 +123,7 @@ int main(int argc, char *argv[])
         runTime++;
 
         Info<< "Time = " << runTime.timeName() << nl << endl;
-	/*
-	  //Update arbitrary velocity
-	  forAll(mesh.cells(), cell)
-	    {
-	      scalar x = mesh.C()[cell].x();
-	      scalar y = mesh.C()[cell].y();
-	      scalar t = runTime.value();
-	      Uarb[cell] = vector
-		(
-		 4.*pi/Tp *Foam::sin(pi*x/10.)*Foam::sin(pi*y*2./15.)*Foam::cos(2.*pi*t/Tp),
-		 6.*pi/Tp *Foam::sin(pi*x/10.)*Foam::sin(pi*y*2./15.)*Foam::cos(4.*pi*t/Tp),
-		 0
-		);
-	    }
-	  volVectorField Utemp = U;
-	  U = U - Uarb;
-	  convVel = U - Uarb;
-	*/
-	
+
         // --- Pressure-velocity PIMPLE corrector loop
         while (pimple.loop())
         {
@@ -182,10 +184,10 @@ int main(int argc, char *argv[])
                 }
             }
 
-            if (pimple.turbCorr())
-            {
-                turbulence->correct();
-            }
+            //if (pimple.turbCorr())
+            //{
+            //    turbulence->correct();
+            //}
         }
 
 	/*

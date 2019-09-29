@@ -52,6 +52,12 @@ pointSync false;
 patches
 (
  {
+   name emptyPatches_empt;
+   patchInfo { type empty; }
+   constructFrom patches;
+   patches (emptyPatches);
+ }
+ {
    name top_cyc;
    patchInfo { type cyclic; neighbourPatch bottom_cyc; }
    constructFrom patches;

@@ -72,6 +72,7 @@ pressureControl pressureControl(p, rho, pimple.dict(), false);
 
 mesh.setFluxRequired(p.name());
 
+/*
 Info<< "Creating turbulence model\n" << endl;
 autoPtr<compressible::turbulenceModel> turbulence
 (
@@ -83,7 +84,7 @@ autoPtr<compressible::turbulenceModel> turbulence
         thermo
     )
 );
-
+*/
 Info<< "Creating field dpdt\n" << endl;
 volScalarField dpdt
 (

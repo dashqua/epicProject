@@ -10,47 +10,59 @@ FoamFile
     version     2.0;
     format      ascii;
     class       polyBoundaryMesh;
-    location    "constant/polyMesh";
+    location    "0.0001/polyMesh";
     object      boundary;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 5
 (
-    top
+    emptyPatches_empt
     {
-        type            patch;
-        physicalType    patch;
-        nFaces          40;
-        startFace       2930;
+        type            empty;
+        inGroups        1(empty);
+        nFaces          4800;
+        startFace       12538;
     }
-    inlet
+    top_cyc
     {
-        type            patch;
-        physicalType    patch;
-        nFaces          30;
-        startFace       2970;
+        type            cyclic;
+        inGroups        1(cyclic);
+        nFaces          158;
+        startFace       17338;
+        matchTolerance  0.0001;
+        transform       unknown;
+        neighbourPatch  bottom_cyc;
     }
-    bottom
+    bottom_cyc
     {
-        type            patch;
-        physicalType    patch;
-        nFaces          40;
-        startFace       3000;
+        type            cyclic;
+        inGroups        1(cyclic);
+        nFaces          158;
+        startFace       17496;
+        matchTolerance  0.0001;
+        transform       unknown;
+        neighbourPatch  top_cyc;
     }
-    outlet
+    inlet_cyc
     {
-        type            patch;
-        physicalType    patch;
-        nFaces          30;
-        startFace       3040;
+        type            cyclic;
+        inGroups        1(cyclic);
+        nFaces          116;
+        startFace       17654;
+        matchTolerance  0.0001;
+        transform       unknown;
+        neighbourPatch  outlet_cyc;
     }
-    emptyPatches
+    outlet_cyc
     {
-        type            patch;
-        physicalType    patch;
-        nFaces          1200;
-        startFace       3070;
+        type            cyclic;
+        inGroups        1(cyclic);
+        nFaces          116;
+        startFace       17770;
+        matchTolerance  0.0001;
+        transform       unknown;
+        neighbourPatch  inlet_cyc;
     }
 )
 

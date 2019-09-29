@@ -17,19 +17,19 @@ FoamFile
 
 application     rhoPimpleArbitraryFoam;//meshMoverFoam;//rhoCentralDyMFoam;
 
-startFrom       latestTime;//startTime;
+startFrom       startTime;//latestTime;//startTime;
 
 startTime       0;
 
 stopAt          endTime;
 
-endTime         2.0;
+endTime         1.0;
 
-deltaT          1e-02;
+deltaT          1e-04;
 
 writeControl    adjustableRunTime;
 
-writeInterval   1e-2;
+writeInterval   1e-04;
 
 purgeWrite      0;
 
@@ -47,8 +47,10 @@ runTimeModifiable true;
 
 adjustTimeStep  yes;
 
-maxCo           0.2;
+maxCo           1.0;
 
-maxDeltaT       1;
+maxDi           100;
+
+maxDeltaT       .1;
 
 // ************************************************************************* //

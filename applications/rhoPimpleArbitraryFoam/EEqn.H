@@ -15,7 +15,7 @@
             )
           : -dpdt
         )
-      - fvm::laplacian(turbulence->alphaEff(), he)
+	//- fvm::laplacian(turbulence->alphaEff(), he)
      ==
         fvOptions(rho, he)
     );

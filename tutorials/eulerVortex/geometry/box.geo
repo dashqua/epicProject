@@ -34,9 +34,9 @@ Transfinite Surface {21} = {6, 8, 10, 5};
 //+
 Transfinite Surface {22} = {1, 2, 3, 4};
 //+
-Transfinite Line {9, 1, 17, 3} = 16 Using Progression 1;
+Transfinite Line {9, 1, 17, 3} = 31 Using Progression 1;
 //+
-Transfinite Line {4, 5, 2, 13} = 21 Using Progression 1;
+Transfinite Line {4, 5, 2, 13} = 41 Using Progression 1;
 //+
 
 
@@ -57,3 +57,5 @@ Surface Loop(1) = {21, 8, 22, 20, 16, 12};
 Volume(1) = {1};
 //+
 Physical Volume("volume") = {1};
+//+
+Transfinite Line {7, 11, 15, 6} = 2 Using Progression 1;

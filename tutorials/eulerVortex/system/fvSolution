@@ -20,8 +20,8 @@ solvers
     p
     {
         solver          PBiCGStab;
-        preconditioner  DILU;
-        tolerance       1e-06;
+        preconditioner  diagonal;
+        tolerance       1e-09;
         relTol          0.01;
     }
 
@@ -35,7 +35,7 @@ solvers
     {
         solver          PCG;
         preconditioner  DIC;
-        tolerance       1e-2;
+        tolerance       1e-5;
         relTol          0;
     }
 
@@ -78,8 +78,12 @@ PIMPLE
     transonic           yes;
     nNonOrthogonalCorrectors 0;
 
-    rhoMin              0.1;
-    rhoMax              100.0;
+    //rhoMin              0.1;
+    //rhoMax              100.0;
+    pMax 1000000;
+    
+    pRefCell 0;
+    pRefValue 0;
 }
 
 relaxationFactors

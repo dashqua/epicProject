@@ -5,7 +5,7 @@ tmp<fvVectorMatrix> tUEqn
 (
  fvm::ddt(rho, U) + fvm::div(phi, U)//fvm::div(phi, convVel) //fvm::div(phi, U) - fvm::div(phi, Uarb)
   + MRF.DDt(rho, U)
-  + turbulence->divDevRhoReff(U)
+ //+ turbulence->divDevRhoReff(U)
  ==
  fvOptions(rho, U)
 );

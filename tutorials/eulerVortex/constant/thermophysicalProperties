@@ -30,17 +30,23 @@ mixture
 {
     specie
     {
-        molWeight   28.9;
+      //      molWeight   28.9;
+      nMoles 1;
+      molWeight 11640.2561438975;
     }
     thermodynamics
     {
-        Cp          1007;
-        Hf          2.544e+06;
+      Cp  2.5;
+      Hf  333.55;
+      //Cp          1007;
+      //Hf          2.544e+06;
     }
     transport
     {
-        mu          1e-3;
-        Pr          0.7;
+      mu 0;
+      Pr 0.7;
+      //mu          1e-3;
+      //Pr          0.7;
     }
 }
 
