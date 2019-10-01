@@ -9,49 +9,43 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       polyBoundaryMesh;
-    location    "0.001/polyMesh";
-    object      boundary;
+    class       volScalarField;
+    location    "0";
+    object      T;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-5
-(
+dimensions      [0 0 0 1 0 0 0];
+
+internalField   uniform 300;
+
+boundaryField
+{
     emptyPatches_empt
     {
         type            zeroGradient;
-        inGroups        1(zeroGradient);
-        nFaces          4800;
-        startFace       12538;
     }
     top_cyc
     {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          158;
-        startFace       17338;
+        type            cyclicAMI;
+        value           uniform 300;
     }
     bottom_cyc
     {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          158;
-        startFace       17496;
+        type            cyclicAMI;
+        value           uniform 300;
     }
     inlet_cyc
     {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          116;
-        startFace       17654;
+        type            cyclicAMI;
+        value           uniform 300;
     }
     outlet_cyc
     {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          116;
-        startFace       17770;
+        type            cyclicAMI;
+        value           uniform 300;
     }
-)
+}
+
 
 // ************************************************************************* //

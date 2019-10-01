@@ -9,13 +9,39 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       regIOobject;
-    location    "0.001/polyMesh";
-    object      pointZones;
+    class       volScalarField;
+    location    "0";
+    object      T;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-0
-()
+dimensions      [0 0 0 1 0 0 0];
+
+internalField   uniform 300;
+
+boundaryField
+{
+    emptyPatches_empt
+    {
+        type            empty;
+    }
+
+    "(bottom_cyc|top_cyc)"
+    {
+      type freestream;
+      value $internalField;
+    }
+    inlet_cyc
+    {
+        type            cyclicAMI;
+        value           uniform 300;
+    }
+    outlet_cyc
+    {
+        type            cyclicAMI;
+        value           uniform 300;
+    }
+}
+
 
 // ************************************************************************* //

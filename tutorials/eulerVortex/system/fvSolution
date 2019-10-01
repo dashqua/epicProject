@@ -19,18 +19,192 @@ solvers
 {
     p
     {
-        solver          PBiCGStab;
-        preconditioner  diagonal;
-        tolerance       1e-09;
+      solver PBiCGStab;
+      preconditioner DILU;
+      tolerance 1e-06;
+      relTol 0.01;
+    }
+
+    "(rho|rhoU|rhoE)"
+    {
+        solver          diagonal;
+	tolerance 1e-05;
+	relTol 0;
+    }
+
+    "(U|h|e|R|k|epsilon|omega)"
+    {
+      solver smoothSolver;
+      smoother symGaussSeidel;
+      tolerance 1e-05;
+      relTol 0.1;
+    }
+}
+
+
+PIMPLE
+{
+    momentumPredictor   yes;
+    correctPhi          yes;
+    nOuterCorrectors    2;
+    nCorrectors         2;
+    transonic           yes;
+    nNonOrthogonalCorrectors 0;
+
+    rhoMin              0.1;
+    rhoMax              100.0;
+}
+
+relaxationFactors
+{
+    equations
+    {
+        ".*"        1;
+    }
+}
+
+
+
+
+
+
+  
+  /*
+solvers
+{
+  p
+    {
+      solver          PBiCGStab;
+      preconditioner  DILU;//PIC//diagonal;
+        tolerance       1e-07;
         relTol          0.01;
     }
 
     pFinal
     {
         $p;
+	tolerance  1e-07;
         relTol          0;
     }
 
+    "(rho|U|e|h|k|epsilon|omega)"
+      {
+	solver smoothSolver;
+	smoother symGaussSeidel;
+	tolerance 1e-06;
+	relTol 0.1;
+      }
+
+    "(rho|U|e|h|k|epsilon|omega)Final"
+      {
+	$U;
+	tolerance 1e-06;
+	relTol  0;
+      }
+    PIMPLE
+      {
+	momentumPredictor yes;
+	transonic  no;
+	nOuterCorrectors 50;
+	nCorrectors 1;
+	nNonOrthogonalCorrectors 0;
+	consistent yes;
+
+	rhoMin  0.4;
+	rhoMax 2.0;
+
+	residualControl
+	  {
+	    "(U|k|epsilon)"
+	      {
+		relTol 0;
+		tolerance 0.0001;
+	      }
+	  }
+       
+	turbOnFinalIterOnly no;
+	}    
+
+}
+
+
+PIMPLE
+{
+    momentumPredictor   yes;
+    correctPhi          yes;
+    nOuterCorrectors    2;
+    nCorrectors         2;
+    transonic           yes;
+    nNonOrthogonalCorrectors 0;
+
+    //rhoMin              0.1;
+    //rhoMax              100.0;
+    pMax 1000000;
+    
+    pRefCell 0;
+    pRefValue 0;
+}
+
+
+
+relaxationFactors
+  {
+    fields
+      {
+	"p.*"   0.9;
+	"rho.*" 1;
+      }
+    equations
+      {
+	"U.*" 0.9;
+	"h.*" 0.7;
+	"(k|epsilon|omega)" 0.8;
+      }
+
+  }
+  */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /*
+solvers
+{
+  p
+    {
+      solver          PBiCGStab;
+        preconditioner  diagonal;
+        tolerance       1e-07;
+        relTol          0.01;
+    }
+
+    pFinal
+    {
+        $p;
+	tolerance  1e-07;
+        relTol          0;
+    }
+    
     "pcorr.*"
     {
         solver          PCG;
@@ -59,14 +233,14 @@ solvers
         $U;
         relTol          0;
     }
-
+    
     cellMotionUx
     {
         solver          PCG;
         preconditioner  DIC;
         tolerance       1e-08;
         relTol          0;
-    }
+	}
 }
 
 PIMPLE
@@ -93,6 +267,6 @@ relaxationFactors
         ".*"        1;
     }
 }
-
+  */
 
 // ************************************************************************* //

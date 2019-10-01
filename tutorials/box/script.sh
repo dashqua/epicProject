@@ -12,8 +12,8 @@ rm box.msh
 
 echo " [+] Create patches"
 createPatch > log/log.createPatch
-mkdir -p obj
-mv *.obj obj/ -f
+#mkdir -p obj
+#mv *.obj obj/ -f
 rm constant/poly* -rf
 mv ./0*?/polyMesh constant/
 rm ./0*/ -rf
@@ -25,7 +25,7 @@ checkMesh > log/log.checkMesh
 echo " [+] Run makeInitialConditions"
 ./makeInitialConditions/makeInitialConditions > log/log.makeInitialConditions 
 
-echo "\nSimulation stage"
+#echo "\nSimulation stage"
 #rhoCentralFoam
 #echo " [+] Generate Analytic Sol"
 #./makeAnalyticSolution/makeAnalyticSolution > log/log.makeAnalyticSolution

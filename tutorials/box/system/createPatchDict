@@ -55,29 +55,57 @@ patches
    name emptyPatches_empt;
    patchInfo { type zeroGradient; }
    constructFrom patches;
-   patches (emptyPatches);
+   patches (sides);
  }
  {
    name top_cyc;
-   patchInfo { type wall; }
+   patchInfo
+   {
+        type            cyclicAMI;
+        neighbourPatch  bottom_cyc;
+	matchTolerance  1e-3;
+        transform       translational;
+	separationVector (0. -15 0.);
+   }
    constructFrom patches;
    patches (top);
  }
  {
    name bottom_cyc;
-   patchInfo { type wall; }
+   patchInfo
+   {
+        type            cyclicAMI;
+        neighbourPatch  top_cyc;
+	matchTolerance  1e-3;
+        transform       translational;
+	separationVector (0. 15 0.);
+   }
    constructFrom patches;
    patches (bottom);
  }
  {
    name inlet_cyc;
-   patchInfo { type wall; }
+   patchInfo
+   {
+        type            cyclicAMI;
+        neighbourPatch  outlet_cyc;
+	matchTolerance  1e-3;
+        transform       translational;
+	separationVector (20 .0 .0);
+   }
    constructFrom patches;
    patches (inlet);
  }
  {
    name outlet_cyc;
-   patchInfo { type wall; }
+   patchInfo
+   {
+        type            cyclicAMI;
+        neighbourPatch  inlet_cyc;
+	matchTolerance  1e-3;
+        transform       translational;
+	separationVector (-20 .0 .0);
+   }
    constructFrom patches;
    patches (outlet);
  }
