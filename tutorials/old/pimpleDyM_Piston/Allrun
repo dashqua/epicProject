@@ -1,0 +1,6 @@
+#!/bin/sh
+echo "executing blockMesh"
+blockMesh > log.blockMesh
+
+echo "executing pimpleDyMFoam"
+pimpleDyMFoam > log.pimpleDyMFoam
