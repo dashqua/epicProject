@@ -2402,7 +2402,7 @@ boundaryField
 
     "(bottom_cyc|top_cyc)"
     {
-      type freestream;
+      type freestreamPressure;
       freestreamValue 3;
     }
     

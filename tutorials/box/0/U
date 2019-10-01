@@ -2403,7 +2403,7 @@ boundaryField
     "(bottom_cyc|top_cyc)"
     {
       type freestreamVelocity;
-      freestreamValue (0 0 0);;
+      freestreamValue (0.8944 0.4472 0);
     }
     inlet_cyc
     {

@@ -2403,7 +2403,7 @@ boundaryField
     "(bottom_cyc|top_cyc)"
     {
       type freestream;
-      value $internalField;
+      value 1;
     }
     
     inlet_cyc

@@ -17,19 +17,19 @@ FoamFile
 
 application     pimpleDyMFoam;
 
-startFrom       startTime;//latestTime;/*startTime;
+startFrom       latestTime;/*startTime;
 
-startTime       0;//*/
+startTime       0;*/
 
 stopAt          endTime;
 
-endTime         5;
+endTime         4;
 
 deltaT          1e-3;
 
 writeControl    adjustableRunTime;
 
-writeInterval   0.01;
+writeInterval   0.02;
 
 purgeWrite      0;
 
