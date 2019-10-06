@@ -187,15 +187,16 @@ int main(int argc, char *argv[])
 
         // --- Solve density
         solve(fvm::ddt(rho) + fvc::div(phi));
-
+        rho.correctBoundaryConditions();
+	
         // --- Solve momentum
         solve(fvm::ddt(rhoU) + fvc::div(phiUp));
 
-        U.ref() =
+        U.ref() ==
             rhoU()
            /rho();
         U.correctBoundaryConditions();
-        rhoU.boundaryFieldRef() == rho.boundaryField()*U.boundaryField();
+        //rhoU.boundaryFieldRef() == rho.boundaryField()*U.boundaryField();
 
         if (!inviscid)
         {
@@ -203,7 +204,7 @@ int main(int argc, char *argv[])
             (
                 fvm::ddt(rho, U) - fvc::ddt(rho, U)
               - fvm::laplacian(muEff, U)
-		//- fvc::div(tauMC)
+	      - fvc::div(tauMC)
             );
             rhoU = rho*U;
         }
@@ -214,7 +215,7 @@ int main(int argc, char *argv[])
             "sigmaDotU",
             (
                 fvc::interpolate(muEff)*mesh.magSf()*fvc::snGrad(U)
-		//+ fvc::dotInterpolate(mesh.Sf(), tauMC)
+	     + fvc::dotInterpolate(mesh.Sf(), tauMC)
             )
             & (a_pos*U_pos + a_neg*U_neg)
         );
@@ -223,18 +224,19 @@ int main(int argc, char *argv[])
         (
             fvm::ddt(rhoE)
           + fvc::div(phiEp)
-	    //- fvc::div(sigmaDotU)
+	  - fvc::div(sigmaDotU)
         );
 
-        e = rhoE/rho - 0.5*magSqr(U);
+        e == rhoE/rho - 0.5*magSqr(U);
         e.correctBoundaryConditions();
-        thermo.correct();
+        //thermo.correct();
+	/*
         rhoE.boundaryFieldRef() ==
             rho.boundaryField()*
             (
                 e.boundaryField() + 0.5*magSqr(U.boundaryField())
             );
-
+	*/
         if (!inviscid)
         {
             solve
@@ -242,19 +244,86 @@ int main(int argc, char *argv[])
                 fvm::ddt(rho, e) - fvc::ddt(rho, e)
               - fvm::laplacian(turbulence->alphaEff(), e)
             );
-            thermo.correct();
+            //thermo.correct();
             rhoE = rho*(e + 0.5*magSqr(U));
         }
 
-        p.ref() =
-            rho()
+	///////////////////////////////
+	/// ENFORCEMENT OF PRESSURE ///
+	///////////////////////////////
+	scalar M  = 0.5;
+	scalar M2 = M*M;
+	scalar I  = 5.0;
+	scalar I2 = I*I;
+	scalar r  = 1.5;
+	scalar r2 = r*r;
+	scalar theta = Foam::atan(0.5);
+	//scalar Rhoinf = 1;
+	scalar Uinf = 0.8944;
+	scalar Vinf = 0.4472;
+	scalar Pinf = 3.;
+	scalar pii  = constant::mathematical::pi;
+	scalar pii2 = pii*pii;
+	scalar t = mesh.time().value();
+	volVectorField C = mesh.C();	
+	forAll(C, cell)
+	  {
+	    scalar gamma = 1.3;//Cp_[cell]/Cv_[cell];                                                                                                                        
+	    scalar x1 = C[cell].x();
+	    scalar x2 = C[cell].y();
+	    scalar v1 = Uinf*Foam::cos(theta);
+	    scalar v2 = Vinf*Foam::sin(theta);
+	    p[cell] = Pinf * Foam::pow( 1 - I2*M2*(gamma-1)/(8*pii2) * Foam::exp((1-(x1-v1*t)*(x1-v1*t)-(x2-v2*t)*(x2-v2*t))/r2) , gamma/(gamma-1)) ;
+	  }
+
+	p.correctBoundaryConditions();
+	Info << p[2782] <<endl;
+	///////////////////////////////
+	/// ENFORCEMENT OF BOUNDARY ///
+	///////////////////////////////
+	/*	
+	const polyBoundaryMesh& bm = mesh.boundaryMesh();
+	const label& sidesPatchID = bm.findPatchID("emptyPatches_empt"); 
+	p.boundaryFieldRef().set(sidesPatchID,fvPatchField<scalar>::New("empty", mesh.boundary()[sidesPatchID], p));
+	const label& topPatchID = bm.findPatchID("top_cyc");
+	p.boundaryFieldRef().set(topPatchID,fvPatchField<scalar>::New("fixedValue", mesh.boundary()[topPatchID], p));
+	const label& bottomPatchID = bm.findPatchID("bottom_cyc");
+	p.boundaryFieldRef().set(topPatchID,fvPatchField<scalar>::New("fixedValue", mesh.boundary()[bottomPatchID], p));
+	const label& inletPatchID = bm.findPatchID("inlet_cyc");
+	p.boundaryFieldRef().set(topPatchID,fvPatchField<scalar>::New("fixedValue", mesh.boundary()[inletPatchID], p));
+	const label& outletPatchID = bm.findPatchID("outlet_cyc");
+	p.boundaryFieldRef().set(topPatchID,fvPatchField<scalar>::New("fixedValue", mesh.boundary()[outletPatchID], p));
+	*/
+	/*
+	U.boundaryFieldRef().set(sidesPatchID,fvPatchField<vector>::New("empty", mesh.boundary()[sidesPatchID], U));
+	U.boundaryFieldRef().set(topPatchID,fvPatchField<vector>::New("fixedValue", mesh.boundary()[topPatchID], U));
+	U.boundaryFieldRef().set(topPatchID,fvPatchField<vector>::New("fixedValue", mesh.boundary()[bottomPatchID], U));
+	U.boundaryFieldRef().set(topPatchID,fvPatchField<vector>::New("fixedValue", mesh.boundary()[inletPatchID], U));
+	U.boundaryFieldRef().set(topPatchID,fvPatchField<vector>::New("fixedValue", mesh.boundary()[outletPatchID], U));	
+	*/
+	/*
+        p.ref() =  
+	  rho()
            /psi();
         p.correctBoundaryConditions();
         rho.boundaryFieldRef() == psi.boundaryField()*p.boundaryField();
+	*/
 
+	///////////////////////////////
+	///// END OF ENFORCEMENT //////
+	///////////////////////////////
+
+	
         turbulence->correct();
 
-        runTime.write();
+        //runTime.write();
+	if (runTime.writeTime() )
+	  {
+	    U.write();
+	    T.write();
+	    rho.write();
+	    p.write();
+	  }
 
         Info<< "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
             << "  ClockTime = " << runTime.elapsedClockTime() << " s"

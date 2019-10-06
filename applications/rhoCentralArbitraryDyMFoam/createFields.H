@@ -31,10 +31,10 @@ volScalarField rho
         "rho",
         runTime.timeName(),
         mesh,
-        IOobject::NO_READ,
+        IOobject::MUST_READ,
         IOobject::AUTO_WRITE
     ),
-    thermo.rho()
+    mesh//thermo.rho()
 );
 
 volVectorField rhoU
