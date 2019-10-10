@@ -1,0 +1,3 @@
+makeInitialConditions.C
+
+EXE = ./makeInitialConditions
