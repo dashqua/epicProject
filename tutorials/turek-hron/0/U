@@ -1,0 +1,65 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  6
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    location    "0";
+    object      U;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 -1 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    bar
+    {
+        type            empty;
+    }
+    bottom
+    {
+        type            cyclic;
+    }
+    emptyPatches
+    {
+        type            cyclic;
+    }
+    fixed_holes
+    {
+        type            cyclic;
+    }
+    inlet
+    {
+        type            codedFixedValue;
+        value           uniform (0 0 0);
+        redirectType    increaseToFixedValue;
+        code 
+        #{ 
+            cosnt scalar U = 1;
+            const scalar vcst = 1.5*U*4/0.1681*y*(0.41-y);
+            const scalar cond = t<2 ? 1 : 0;
+            const scalar t = this->db().time().value();
+            operator==(vcst+cond*vcst*(-0.5-cos(t*pi/2)/2));
+        #};
+    }
+    outlet
+    {
+        type            cyclic;
+    }
+    top
+    {
+        type            cyclic;
+    }
+}
+
+
+// ************************************************************************* //

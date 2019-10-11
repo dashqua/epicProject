@@ -258,7 +258,7 @@ int main(int argc, char *argv[])
         if (runTime.writeTime())
           e.write();
 
-        Info<< nl << "Integral of e: " << fvc::domainIntegrate(e).value() << endl;
+        Info<< nl << "Time: " << runTime.value() << "; Integral of e: " << fvc::domainIntegrate(e).value() << endl;
 
         Info<< "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
             << "  ClockTime = " << runTime.elapsedClockTime() << " s"

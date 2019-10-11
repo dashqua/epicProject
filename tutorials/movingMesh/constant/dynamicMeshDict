@@ -1,0 +1,72 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  6
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      dynamicMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dynamicFvMesh dynamicMotionSolverFvMesh;
+
+motionSolverLibs ( "libsixDoFRigidBodyMotionDev.so" );
+ 
+solver          sixDoFRigidBodyMotion;
+
+diffusivity     quadratic inverseDistance 1 ( Body );
+
+
+sixDoFRigidBodyMotionCoeffs
+ {
+     patches         ( Body );
+     innerDistance   25;
+     outerDistance   275;
+     centreOfMass    ( 16.81 -1087.4 -1063.3 );
+     mass            4.1453e+06;
+     g               ( 0 0 -9.8065 );
+     momentOfInertia ( 2.7874e+08 5.8901e+08 6.6762e+08 );
+     velocity        ( 0 -0.5 -0.25 );
+     rhoName         rhoInf;
+     rhoInf          1024.81;
+     accelerationRelaxation 0.9;
+     accelerationDamping 0.95;
+     report          on;
+     reportToFile    on;
+     solver
+     {
+         type            CrankNicolson;
+     }
+     constraints
+     {
+     }
+     restraints
+     {
+         Bouyancy
+         {
+             sixDoFRigidBodyMotionRestraint constantForce;
+             refAttachmentPt ( 16.8 -1087.4 -1062 );
+             constantForce   ( 0 0 4.0994e+07 );
+         }
+     }
+ }
+
+
+/*
+dynamicFvMesh   dynamicArbitraryFvMesh;
+motionSolverLibs ("libfvMotionSolvers.so");
+dynamicArbitraryFvMeshCoeffs
+{
+  amplitude 0.06;
+  frequency 2;
+  refPlaneX 0;
+}
+*/
+// ************************************************************************* //
