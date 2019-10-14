@@ -26,7 +26,7 @@ Plane Surface(1) = {1};
 //+
 Transfinite Surface {1} = {3, 1, 2, 4};
 //+
-Transfinite Line {1, 4, 3, 2} = 101 Using Progression 1;
+Transfinite Line {1, 4, 3, 2} = 151 Using Progression 1;
 //+
 Extrude {0, 0, z} {
   Surface{1}; Line{4}; Line{1}; Line{2}; Line{3}; Layers{1}; Recombine;
