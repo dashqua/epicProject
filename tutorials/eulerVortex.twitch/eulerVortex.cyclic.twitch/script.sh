@@ -33,8 +33,3 @@ cat log/log.rhoCentralArbitraryMFoam  | grep "Integral of e" | sed -e "s/; Integ
 
 
 
-#gnuplot -p -e "set term png; \
-#               set output 'postProcessing/p.png'; \
-#               set style line 1 lw 4 lc rgb '#990042' ps 2 pt 6 pi 5; \
-#               p 'postProcessing/probes/0/p' u 1:2"
-
